@@ -1,7 +1,13 @@
 import './App.css';
 
 import axios from 'axios';
-import { Button, Form, TextArea, TextInput } from 'carbon-components-react';
+import {
+  Button,
+  Form,
+  TextArea,
+  TextInput,
+  Tile
+} from 'carbon-components-react';
 import { ethers } from 'ethers';
 import { BigNumber, Transaction } from 'ethers/utils';
 import * as React from 'react';
@@ -22,6 +28,7 @@ interface ISentinelState {
   conditionAsset: string;
   conditionAssetDecimals: number;
   conditionAssetName: string;
+  sentinelResponse: string;
   signedRecipient: string;
   signedAmount: string;
   signedAsset: string;
@@ -41,6 +48,7 @@ class App extends React.Component<{}, ISentinelState> {
       conditionAsset: '',
       conditionAssetDecimals: 1,
       conditionAssetName: '',
+      sentinelResponse: '',
       signedAmount: '',
       signedAsset: '',
       signedAssetDecimals: 1,
@@ -68,6 +76,13 @@ class App extends React.Component<{}, ISentinelState> {
 
     const dec = new BigNumber(10).pow(this.state.signedAssetDecimals);
     const signedAmount = new BigNumber(this.state.signedAmount).div(dec);
+
+    const tile =
+      this.state.sentinelResponse !== '' ? (
+        <Tile>Sentinel {this.state.sentinelResponse} has been created</Tile>
+      ) : (
+        ''
+      );
 
     return (
       <div className="bx--grid">
@@ -141,6 +156,7 @@ class App extends React.Component<{}, ISentinelState> {
             </div>
           </div>
         </Form>
+        <div>{tile}</div>
       </div>
     );
   }
@@ -166,6 +182,7 @@ class App extends React.Component<{}, ISentinelState> {
 
     if (!decodedTransaction) {
       this.setState({
+        signedTransaction,
         signedTransactionIsValid: !!decodedTransaction
       });
     } else {
@@ -194,6 +211,7 @@ class App extends React.Component<{}, ISentinelState> {
         signedChainId,
         signedRecipient,
         signedSender: decodedTransaction.from!,
+        signedTransaction,
         signedTransactionIsValid: true
       });
     }
@@ -223,7 +241,13 @@ class App extends React.Component<{}, ISentinelState> {
       signedTransaction: this.state.signedTransaction
     };
 
-    await axios.post('http://localhost:3001/scheduled', payload);
+    const response = await axios.post(
+      'http://localhost:3001/scheduled',
+      payload
+    );
+    if (response.data._id) {
+      this.setState({ sentinelResponse: response.data._id });
+    }
   }
 }
 
