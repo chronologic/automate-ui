@@ -40,6 +40,8 @@ interface ISentinelState {
   signedTransactionIsValid: boolean;
 }
 
+const API_URL = process.env.REACT_APP_API_URL + '/scheduled';
+
 class App extends React.Component<{}, ISentinelState> {
   constructor(props: any) {
     super(props);
@@ -249,7 +251,7 @@ class App extends React.Component<{}, ISentinelState> {
     };
 
     const response = await axios.post(
-      'http://localhost:3001/scheduled',
+      API_URL,
       payload
     );
     if (response.data._id) {
