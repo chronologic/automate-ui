@@ -1,19 +1,21 @@
 import { TextInput } from 'carbon-components-react';
-import { BigNumber } from 'ethers/utils/bignumber';
 import * as React from 'react';
+import { IDecodedTransaction } from 'src/api/SentinelAPI';
+import { TokenAPI } from 'src/api/TokenAPI';
 
-interface IDecodedTransaction {
-  signedAsset: string;
-  signedRecipient: string;
-  signedAmount: string;
-  signedAssetDecimals: number;
-  signedAssetName: string;
+import Skeleton from '../Skeleton/Skeleton';
+
+interface IDecodedTransactionView extends IDecodedTransaction {
+  skeleton: boolean;
 }
 
-class DecodedTransaction extends React.Component<IDecodedTransaction, any> {
+class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
   public render() {
-    const dec = new BigNumber(10).pow(this.props.signedAssetDecimals);
-    const signedAmount = new BigNumber(this.props.signedAmount).div(dec);
+    if (this.props.skeleton && !this.props.signedSender) {
+      return <Skeleton/>;
+    }
+
+    const signedAmount = TokenAPI.normalizeDecimals(this.props.signedAmount, this.props.signedAssetDecimals);
     const signedAsset = `${this.props.signedAsset} [ERC-20: ${
       this.props.signedAssetName
     }]`;
