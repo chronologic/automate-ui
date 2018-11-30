@@ -3,6 +3,7 @@ import * as React from 'react';
 import { IDecodedTransaction } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
 
+import Asset from '../Asset/Asset';
 import Skeleton from '../Skeleton/Skeleton';
 
 interface IDecodedTransactionView extends IDecodedTransaction {
@@ -19,21 +20,15 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
       this.props.signedAmount,
       this.props.signedAssetDecimals
     );
-    const signedAsset = `${this.props.signedAsset} [ERC-20: ${
-      this.props.signedAssetName
-    }]`;
 
     return (
       <div>
-        <div className="bx--row row-padding">
-          <div className="bx--col-xs-6">
-            <TextInput
-              labelText="Transaction asset"
-              disabled={true}
-              value={signedAsset}
-            />
-          </div>
-        </div>
+        <Asset
+          label="Transaction asset"
+          disabled={true}
+          address={this.props.signedAsset}
+          chainId={this.props.signedChainId}
+        />
         <div className="bx--row row-padding">
           <div className="bx--col-xs-6">
             <TextInput

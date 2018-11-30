@@ -5,7 +5,6 @@ import {
   TextInput,
   Tile
 } from 'carbon-components-react';
-import { ethers } from 'ethers';
 import { BigNumber } from 'ethers/utils';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
@@ -17,6 +16,7 @@ import {
 } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
 
+import Asset from '../Asset/Asset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 
 interface ISentinelState extends IDecodedTransaction {
@@ -55,14 +55,23 @@ class Schedule extends React.Component<{}, ISentinelState> {
   public render() {
     const send = this.send.bind(this);
     const decode = this.decode.bind(this);
-    const resolveToken = this.resolveToken.bind(this);
-    const parseConditionalAssetAmount = this.parseConditionalAssetAmount.bind(this);
+    const parseConditionalAssetAmount = this.parseConditionalAssetAmount.bind(
+      this
+    );
 
     const conditionAssetAmount = TokenAPI.withDecimals(
       this.state.conditionAssetAmount,
       this.state.conditionAssetDecimals
     ).toString();
- 
+
+    const emitConditional = (args: any) => {
+      const { address, decimals } = args;
+      this.setState({
+        conditionAsset: address,
+        conditionAssetDecimals: decimals
+      });
+    };
+
     const response = this.renderResponse();
 
     return (
@@ -89,29 +98,12 @@ class Schedule extends React.Component<{}, ISentinelState> {
           <div className="bx--row row-padding bx--type-gamma">
             Conditional Parameters
           </div>
-          <div className="bx--row row-padding">
-            <div className="bx--col-xs-6">
-              <TextInput
-                id="ConditionalAsset"
-                labelText="Conditional asset"
-                value={this.state.conditionAsset}
-                // tslint:disable-next-line:jsx-no-lambda
-                onChange={(e: any) => resolveToken(e.target.value)}
-                disabled={this.state.signedTransaction === ''}
-                invalid={this.state.conditionAssetValidationError !== ''}
-                invalidText={this.state.conditionAssetValidationError}
-              />
-            </div>
-            <div className="bx--col-xs-2">
-              <TextInput
-                id="ConditionalAssetName"
-                className="bx--col-xs-6"
-                labelText="Asset name"
-                value={this.state.conditionAssetName}
-                disabled={true}
-              />
-            </div>
-          </div>
+          <Asset
+            label="Conditional asset"
+            chainId={this.state.signedChainId}
+            disabled={this.state.signedTransaction === ''}
+            emit={emitConditional}
+          />
           <div className="bx--row row-padding">
             <div className="bx--col-xs-6">
               <TextInput
@@ -122,7 +114,10 @@ class Schedule extends React.Component<{}, ISentinelState> {
                 onChange={(e: any) =>
                   parseConditionalAssetAmount(e.target.value)
                 }
-                disabled={this.state.conditionAsset === '' || this.state.conditionAssetValidationError !== ''}
+                disabled={
+                  this.state.conditionAsset === '' ||
+                  this.state.conditionAssetValidationError !== ''
+                }
               />
             </div>
           </div>
@@ -157,45 +152,16 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
   private async parseConditionalAssetAmount(amount: string) {
     try {
-      const parsed = TokenAPI.withoutDecimals(amount, this.state.conditionAssetDecimals);
+      const parsed = TokenAPI.withoutDecimals(
+        amount,
+        this.state.conditionAssetDecimals
+      );
 
       if (parsed.gte(0)) {
-        this.setState({conditionAssetAmount: parsed.toString()})
-      } 
-    // tslint:disable-next-line:no-empty
-    } catch(e) {
-
-    }
-  }
-
-  private async resolveToken(asset: string) {
-    try {
-      ethers.utils.getAddress(asset);
-    } catch (e) {
-      this.setState({
-        conditionAsset: asset,
-        conditionAssetValidationError: 'Wrong asset address'
-      });
-      return;
-    }
-
-    try {
-      const { name, decimals } = await TokenAPI.tokenInfo(
-        asset,
-        this.state.signedChainId
-      );
-      this.setState({
-        conditionAsset: asset,
-        conditionAssetDecimals: decimals,
-        conditionAssetName: name,
-        conditionAssetValidationError: ''
-      });
-    } catch (e) {
-      this.setState({
-        conditionAsset: asset,
-        conditionAssetValidationError: 'Asset is not ERC-20 compatible'
-      });
-    }
+        this.setState({ conditionAssetAmount: parsed.toString() });
+      }
+      // tslint:disable-next-line:no-empty
+    } catch (e) {}
   }
 
   private async decode(signedTransaction: string) {
@@ -208,10 +174,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
     } else {
       const transaction = scheduledTransaction as IDecodedTransaction;
       this.setState({
-        // conditionAsset: transaction.signedAsset,
-        // conditionAssetAmount: transaction.signedAmount,
-        // conditionAssetDecimals: transaction.signedAssetDecimals,
-        // conditionAssetName: transaction.signedAssetName,
         signedAmount: transaction.signedAmount,
         signedAsset: transaction.signedAsset,
         signedAssetDecimals: transaction.signedAssetDecimals,
