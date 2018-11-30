@@ -31,6 +31,7 @@ export interface IDecodedTransaction {
   signedAssetDecimals: number;
   signedAssetName: string;
   signedSender: string;
+  signedChainId: number;
 }
 
 export class SentinelAPI {
@@ -94,6 +95,7 @@ export class SentinelAPI {
       signedAsset,
       signedAssetDecimals: decimals,
       signedAssetName: name,
+      signedChainId,
       signedRecipient,
       signedSender: decodedTransaction.from!
     };

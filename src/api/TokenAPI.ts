@@ -3,10 +3,16 @@ import { BigNumber } from 'ethers/utils';
 import { ERC20 } from './erc20';
 
 export class TokenAPI {
-  public static normalizeDecimals(amount: string, decimals: number) {
+  public static withDecimals(amount: string, decimals: number) {
     const dec = new BigNumber(10).pow(decimals);
     
     return new BigNumber(amount).div(dec);
+  }
+
+  public static withoutDecimals(amount: string, decimals: number) {
+    const dec = new BigNumber(10).pow(decimals);
+    
+    return new BigNumber(amount).mul(dec);
   }
 
   public static async tokenInfo(address: string, chainId: number) {

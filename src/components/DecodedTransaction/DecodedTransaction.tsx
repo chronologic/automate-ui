@@ -12,40 +12,46 @@ interface IDecodedTransactionView extends IDecodedTransaction {
 class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
   public render() {
     if (this.props.skeleton && !this.props.signedSender) {
-      return <Skeleton/>;
+      return <Skeleton />;
     }
 
-    const signedAmount = TokenAPI.normalizeDecimals(this.props.signedAmount, this.props.signedAssetDecimals);
+    const signedAmount = TokenAPI.withDecimals(
+      this.props.signedAmount,
+      this.props.signedAssetDecimals
+    );
     const signedAsset = `${this.props.signedAsset} [ERC-20: ${
       this.props.signedAssetName
     }]`;
-    
+
     return (
       <div>
         <div className="bx--row row-padding">
-          <TextInput
-            className="bx--col-xs-6"
-            labelText="Transaction asset"
-            disabled={true}
-            value={signedAsset}
-          />
+          <div className="bx--col-xs-6">
+            <TextInput
+              labelText="Transaction asset"
+              disabled={true}
+              value={signedAsset}
+            />
+          </div>
         </div>
         <div className="bx--row row-padding">
-          <TextInput
-            className="bx--col-xs-6"
-            labelText="Transaction receiver"
-            disabled={true}
-            value={this.props.signedRecipient}
-          />
+          <div className="bx--col-xs-6">
+            <TextInput
+              labelText="Transaction receiver"
+              disabled={true}
+              value={this.props.signedRecipient}
+            />
+          </div>
         </div>
         <div className="bx--row row-padding">
-          <TextInput
-            className="bx--col-xs-6"
-            invalidText="Wrong input"
-            labelText="Transaction amount"
-            disabled={true}
-            value={signedAmount}
-          />
+          <div className="bx--col-xs-6">
+            <TextInput
+              invalidText="Wrong input"
+              labelText="Transaction amount"
+              disabled={true}
+              value={signedAmount}
+            />
+          </div>
         </div>
       </div>
     );
