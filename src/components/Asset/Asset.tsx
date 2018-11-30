@@ -21,21 +21,21 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
   constructor(props: IAssetProps) {
     super(props);
     this.state = {
-      address: '',
+      address: props.address!,
       name: '',
       validationError: ''
     }
+    this.tryResolveTokenFromProps(props);
   }
 
   public componentWillReceiveProps(props: IAssetProps) {
     // not so nice hack to update name of the asset
-    if (props.address && props.address !== '') {
-      this.resolveToken(props.address!, props.chainId);
-    }
+    this.tryResolveTokenFromProps(props);
   }
 
   public render() {
     const resolveToken = this.resolveToken.bind(this);
+
     return (
       <div className="bx--row row-padding">
         <div className="bx--col-xs-6">
@@ -61,6 +61,12 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
         </div>
       </div>
     );
+  }
+
+  private tryResolveTokenFromProps(props: IAssetProps) {
+    if (props.address && props.address !== '') {
+      this.resolveToken(props.address!, props.chainId);
+    }
   }
 
   private async resolveToken(address: string, chainId?: number) {

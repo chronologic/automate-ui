@@ -43,7 +43,7 @@ export class SentinelAPI {
       return response.data as IScheduleAccessKey;
     } catch (e) {
       return {
-        errors: e.response.data.errors
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
       };
     }
   }
@@ -56,7 +56,7 @@ export class SentinelAPI {
       return response.data as IScheduledTransaction;
     } catch (e) {
       return {
-        errors: e.response.data.errors
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
       };
     }
   }

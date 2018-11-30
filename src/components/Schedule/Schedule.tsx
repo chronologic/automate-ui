@@ -141,10 +141,13 @@ class Schedule extends React.Component<{}, ISentinelState> {
       const link = `/view/${response.id}/${response.key}`;
       return (
         <Tile>
-          <Link to={link}>
-            ${window.location.href}
-            {link}
-          </Link>
+            You have successfully scheduled transaction ! <br/>
+            <br/>
+            Please save this link: <br/>
+            <Link to={link}>
+              {window.location.href}
+              {link}
+            </Link>
         </Tile>
       );
     }
