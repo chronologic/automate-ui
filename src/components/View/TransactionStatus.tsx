@@ -1,6 +1,6 @@
 import { TextInput } from 'carbon-components-react';
 import * as React from 'react';
-import { IScheduledTransaction } from 'src/api/SentinelAPI';
+import { IScheduledTransaction, Status } from 'src/api/SentinelAPI';
 import Skeleton from '../Skeleton/Skeleton';
 
 class TransactionStatus extends React.Component<any, IScheduledTransaction> {
@@ -23,7 +23,7 @@ class TransactionStatus extends React.Component<any, IScheduledTransaction> {
             className="bx--col-xs-6"
             labelText="Status"
             disabled={true}
-            value={this.props.completed ? 'Completed' : 'Pending'}
+            value={Status[this.props.status]}
           />
         </div>
         <div className="bx--row row-padding">

@@ -3,6 +3,10 @@ import { ethers } from 'ethers';
 import { Transaction } from 'ethers/utils';
 import { TokenAPI } from './TokenAPI';
 
+export enum Status {
+  Pending, Cancelled, Completed
+}
+
 export interface IScheduleRequest {
   conditionAmount: string;
   conditionAsset: string;
@@ -18,10 +22,14 @@ export interface IError {
   errors: string[];
 }
 
+export interface ICancelResponse {
+  status: Status;
+}
+
 export interface IScheduledTransaction extends IScheduleRequest {
   id: string;
-  completed: boolean;
   transactionHash: string;
+  status: Status;
 }
 
 export interface IDecodedTransaction {
@@ -99,6 +107,17 @@ export class SentinelAPI {
       signedRecipient,
       signedSender: decodedTransaction.from!
     };
+  }
+
+  public static async cancel(request: IScheduleAccessKey) : Promise<ICancelResponse | IError> {
+    try {
+      const response = await axios.delete(this.API_URL, { params: request });
+      return response.data as ICancelResponse;
+    } catch (e) {
+      return {
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
+      };
+    }
   }
 
   private static API_URL: string = process.env.REACT_APP_API_URL + '/scheduled';
