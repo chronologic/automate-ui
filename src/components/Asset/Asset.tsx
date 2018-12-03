@@ -73,11 +73,21 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
   }
 
   private async resolveToken(address: string, chainId?: number) {
+    if (address === '') {
+      this.setState({
+        address,
+        name: 'ETH',
+        validationError: ''
+      });
+      return;
+    }
+
     try {
       ethers.utils.getAddress(address);
     } catch (e) {
       this.setState({
-        name: address,
+        address,
+        name: '',
         validationError: 'Wrong asset address'
       });
       return;
@@ -99,6 +109,7 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
     } catch (e) {
       this.setState({
         address,
+        name: '',
         validationError: 'Asset is not ERC-20 compatible'
       });
     }

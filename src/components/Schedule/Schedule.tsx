@@ -5,7 +5,6 @@ import {
   TextInput,
   Tile
 } from 'carbon-components-react';
-import { BigNumber } from 'ethers/utils';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -36,13 +35,13 @@ class Schedule extends React.Component<{}, ISentinelState> {
     this.state = {
       conditionAsset: '',
       conditionAssetAmount: '',
-      conditionAssetDecimals: 1,
+      conditionAssetDecimals: 18,
       conditionAssetName: '',
       conditionAssetValidationError: '',
       sentinelResponse: undefined,
       signedAmount: '',
       signedAsset: '',
-      signedAssetDecimals: 1,
+      signedAssetDecimals: 0,
       signedAssetName: '',
       signedChainId: 0,
       signedETHAmount: '',
@@ -59,11 +58,13 @@ class Schedule extends React.Component<{}, ISentinelState> {
     const parseConditionalAssetAmount = this.parseConditionalAssetAmount.bind(
       this
     );
-
-    const conditionAssetAmount = TokenAPI.withDecimals(
-      this.state.conditionAssetAmount,
-      this.state.conditionAssetDecimals
-    ).toString();
+    let conditionAssetAmount = '';
+    if (this.state.conditionAssetAmount !== '') {
+      conditionAssetAmount = TokenAPI.withDecimals(
+        this.state.conditionAssetAmount,
+        this.state.conditionAssetDecimals
+      ).toString();
+    }
 
     const emitConditional = (args: any) => {
       const { address, decimals } = args;
@@ -117,7 +118,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
                   parseConditionalAssetAmount(e.target.value)
                 }
                 disabled={
-                  this.state.conditionAsset === '' ||
+                  this.state.signedTransaction === '' ||
                   this.state.conditionAssetValidationError !== ''
                 }
               />
@@ -157,6 +158,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
   private async parseConditionalAssetAmount(amount: string) {
     try {
+      // tslint:disable-next-line:no-debugger
+      debugger;
       const parsed = TokenAPI.withoutDecimals(
         amount,
         this.state.conditionAssetDecimals
@@ -187,11 +190,10 @@ class Schedule extends React.Component<{}, ISentinelState> {
   }
 
   private async send() {
-    const dec = new BigNumber(10).pow(this.state.conditionAssetDecimals);
     const conditionAmount =
       this.state.conditionAssetAmount !== ''
-        ? new BigNumber(this.state.conditionAssetAmount).mul(dec).toString()
-        : this.state.signedAmount;
+        ? this.state.conditionAssetAmount
+        : this.state.signedAmount || this.state.signedETHAmount;
 
     const payload = {
       conditionAmount,

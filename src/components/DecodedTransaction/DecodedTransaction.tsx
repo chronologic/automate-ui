@@ -17,14 +17,14 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
       return <Skeleton />;
     }
 
-    const signedAmount = TokenAPI.withDecimals(
+    const signedAmount = this.props.signedAmount !== '' ? TokenAPI.withDecimals(
       this.props.signedAmount,
       this.props.signedAssetDecimals
-    );
+    ) : '';
 
-    const signedETHAmount = ethers.utils.formatEther(
+    const signedETHAmount = this.props.signedETHAmount !== '' ? ethers.utils.formatEther(
       this.props.signedETHAmount
-    );
+    ) : '';
 
     return (
       <div>
