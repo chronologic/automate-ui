@@ -45,6 +45,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
       signedAssetDecimals: 1,
       signedAssetName: '',
       signedChainId: 0,
+      signedETHAmount: '',
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',
@@ -103,6 +104,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
             chainId={this.state.signedChainId}
             disabled={this.state.signedTransaction === ''}
             emit={emitConditional}
+            name={this.state.signedAssetName}
           />
           <div className="bx--row row-padding">
             <div className="bx--col-xs-6">
@@ -177,13 +179,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     } else {
       const transaction = scheduledTransaction as IDecodedTransaction;
       this.setState({
-        signedAmount: transaction.signedAmount,
-        signedAsset: transaction.signedAsset,
-        signedAssetDecimals: transaction.signedAssetDecimals,
-        signedAssetName: transaction.signedAssetName,
-        signedChainId: transaction.signedChainId,
-        signedRecipient: transaction.signedRecipient,
-        signedSender: transaction.signedSender,
+        ...transaction,
         signedTransaction,
         signedTransactionIsValid: true
       });

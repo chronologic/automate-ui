@@ -38,6 +38,7 @@ export interface IDecodedTransaction {
   signedAmount: string;
   signedAssetDecimals: number;
   signedAssetName: string;
+  signedETHAmount: string;
   signedSender: string;
   signedChainId: number;
 }
@@ -80,30 +81,44 @@ export class SentinelAPI {
     } catch (e) {
       return { errors: ['Unable to decode signed transaction'] } as IError;
     }
-
-    const signedAsset = decodedTransaction.to!;
+    
     const signedChainId = decodedTransaction.chainId;
+    let signedRecipient = decodedTransaction.to!;
+    const signedETHAmount = decodedTransaction.value.toString();
+    let signedAmount = '';
+    let signedAsset = '';
+    let signedAssetName = 'ETH';
+    let signedAssetDecimals = 0;
+    
+    try {
+      const { name, decimals } = await TokenAPI.tokenInfo(
+        signedRecipient,
+        signedChainId
+      );
 
-    const { name, decimals } = await TokenAPI.tokenInfo(
-      signedAsset,
-      signedChainId
-    );
+      const callDataParameters = '0x' + decodedTransaction.data.substring(10);
+      const params = ethers.utils.defaultAbiCoder.decode(
+        ['address', 'uint256'],
+        callDataParameters
+      );
 
-    const callDataParameters = '0x' + decodedTransaction.data.substring(10);
-    const params = ethers.utils.defaultAbiCoder.decode(
-      ['address', 'uint256'],
-      callDataParameters
-    );
+      signedAsset = decodedTransaction.to!;
+      signedAssetName = name;
+      signedAssetDecimals = decimals;
+      signedRecipient = params[0];
+      signedAmount = params[1];
+    // tslint:disable-next-line:no-empty
+    } catch(e) {
 
-    const signedRecipient = params[0];
-    const signedAmount = params[1];
+    }
 
     return {
       signedAmount,
       signedAsset,
-      signedAssetDecimals: decimals,
-      signedAssetName: name,
+      signedAssetDecimals,
+      signedAssetName,
       signedChainId,
+      signedETHAmount,
       signedRecipient,
       signedSender: decodedTransaction.from!
     };

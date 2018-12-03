@@ -9,6 +9,7 @@ interface IAssetProps {
   disabled: boolean;
   emit?: (args: any) => void;
   address?: string;
+  name?: string;
 }
 
 interface IAssetState {
@@ -22,9 +23,9 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
     super(props);
     this.state = {
       address: props.address!,
-      name: '',
+      name: props.name!,
       validationError: ''
-    }
+    };
     this.tryResolveTokenFromProps(props);
   }
 
@@ -66,6 +67,8 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
   private tryResolveTokenFromProps(props: IAssetProps) {
     if (props.address && props.address !== '') {
       this.resolveToken(props.address!, props.chainId);
+    } else if (props.name) {
+      this.setState({ name: props.name! });
     }
   }
 

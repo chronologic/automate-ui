@@ -1,4 +1,5 @@
 import { TextInput } from 'carbon-components-react';
+import { ethers } from 'ethers';
 import * as React from 'react';
 import { IDecodedTransaction } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
@@ -21,6 +22,10 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
       this.props.signedAssetDecimals
     );
 
+    const signedETHAmount = ethers.utils.formatEther(
+      this.props.signedETHAmount
+    );
+
     return (
       <div>
         <Asset
@@ -28,6 +33,7 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
           disabled={true}
           address={this.props.signedAsset}
           chainId={this.props.signedChainId}
+          name={this.props.signedAssetName}
         />
         <div className="bx--row row-padding">
           <div className="bx--col-xs-6">
@@ -45,6 +51,16 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
               labelText="Transaction amount"
               disabled={true}
               value={signedAmount}
+            />
+          </div>
+        </div>
+        <div className="bx--row row-padding">
+          <div className="bx--col-xs-6">
+            <TextInput
+              invalidText="Wrong input"
+              labelText="Transaction ETH amount"
+              disabled={true}
+              value={signedETHAmount}
             />
           </div>
         </div>
