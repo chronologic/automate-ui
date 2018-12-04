@@ -15,7 +15,7 @@ import {
 } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
 
-import Asset from '../Asset/Asset';
+import Asset, { IAssetState } from '../Asset/Asset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 
 interface ISentinelState extends IDecodedTransaction {
@@ -36,7 +36,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
       conditionAsset: '',
       conditionAssetAmount: '',
       conditionAssetDecimals: 18,
-      conditionAssetName: '',
+      conditionAssetName: 'ETH',
       conditionAssetValidationError: '',
       sentinelResponse: undefined,
       signedAmount: '',
@@ -66,11 +66,11 @@ class Schedule extends React.Component<{}, ISentinelState> {
       ).toString();
     }
 
-    const emitConditional = (args: any) => {
-      const { address, decimals } = args;
+    const emitConditional = (args: IAssetState) => {
       this.setState({
-        conditionAsset: address,
-        conditionAssetDecimals: decimals
+        conditionAsset: args.address,
+        conditionAssetDecimals: args.decimals,
+        conditionAssetName: args.name
       });
     };
 
@@ -104,8 +104,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
             label="Conditional asset"
             chainId={this.state.signedChainId}
             disabled={this.state.signedTransaction === ''}
-            emit={emitConditional}
-            name={this.state.signedAssetName}
+            onChange={emitConditional}
+            name={this.state.conditionAssetName}
           />
           <div className="bx--row row-padding">
             <div className="bx--col-xs-6">
@@ -158,8 +158,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
   private async parseConditionalAssetAmount(amount: string) {
     try {
-      // tslint:disable-next-line:no-debugger
-      debugger;
       const parsed = TokenAPI.withoutDecimals(
         amount,
         this.state.conditionAssetDecimals

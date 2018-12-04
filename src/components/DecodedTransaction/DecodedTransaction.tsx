@@ -1,5 +1,4 @@
 import { TextInput } from 'carbon-components-react';
-import { ethers } from 'ethers';
 import * as React from 'react';
 import { IDecodedTransaction } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
@@ -17,14 +16,14 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
       return <Skeleton />;
     }
 
-    const signedAmount = this.props.signedAmount !== '' ? TokenAPI.withDecimals(
+    const signedAmount = TokenAPI.withDecimals(
       this.props.signedAmount,
       this.props.signedAssetDecimals
-    ) : '';
+    );
 
-    const signedETHAmount = this.props.signedETHAmount !== '' ? ethers.utils.formatEther(
+    const signedETHAmount = TokenAPI.withDecimals(
       this.props.signedETHAmount
-    ) : '';
+    );
 
     return (
       <div>

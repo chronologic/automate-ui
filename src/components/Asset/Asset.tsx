@@ -7,14 +7,17 @@ interface IAssetProps {
   label: string;
   chainId: number;
   disabled: boolean;
-  emit?: (args: any) => void;
   address?: string;
   name?: string;
+
+  onChange?: (args: IAssetState) => void;
+  onValidationError?: (error: string) => void;
 }
 
-interface IAssetState {
+export interface IAssetState {
   address: string;
   name: string;
+  decimals: number;
   validationError: string;
 }
 
@@ -23,6 +26,7 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
     super(props);
     this.state = {
       address: props.address!,
+      decimals: 0,
       name: props.name!,
       validationError: ''
     };
@@ -73,45 +77,40 @@ class Asset extends React.Component<IAssetProps, IAssetState> {
   }
 
   private async resolveToken(address: string, chainId?: number) {
-    if (address === '') {
-      this.setState({
-        address,
-        name: 'ETH',
-        validationError: ''
-      });
-      return;
-    }
+    let validationError = '';
+    let name = address === '' ? 'ETH' : '';
+    let decimals = address === '' ? 18 : 0;
 
-    try {
-      ethers.utils.getAddress(address);
-    } catch (e) {
-      this.setState({
-        address,
-        name: '',
-        validationError: 'Wrong asset address'
-      });
-      return;
-    }
-
-    try {
-      const { name, decimals } = await TokenAPI.tokenInfo(
-        address,
-        chainId || this.props.chainId
-      );
-      if (this.props.emit) {
-        this.props.emit({ address, decimals });
+    if (address !== '') {
+      try {
+        ethers.utils.getAddress(address);
+      } catch (e) {
+        validationError = 'Wrong asset address';
       }
-      this.setState({
-        address,
-        name,
-        validationError: ''
-      });
-    } catch (e) {
-      this.setState({
-        address,
-        name: '',
-        validationError: 'Asset is not ERC-20 compatible'
-      });
+
+      try {
+        const tokenInfo = await TokenAPI.tokenInfo(
+          address,
+          chainId || this.props.chainId
+        );
+        decimals = tokenInfo.decimals;
+        name = tokenInfo.name;
+      } catch (e) {
+        validationError = 'Asset is not ERC-20 compatible';
+      }
+    }
+    const newState = {
+      address,
+      decimals,
+      name,
+      validationError
+    }
+    this.setState({...newState});
+    if (this.props.onChange) {
+      this.props.onChange({...newState});
+    }
+    if (this.props.onValidationError && validationError) {
+      this.props.onValidationError(validationError);
     }
   }
 }

@@ -1,18 +1,13 @@
 import { ethers } from 'ethers';
-import { BigNumber } from 'ethers/utils';
 import { ERC20 } from './erc20';
 
 export class TokenAPI {
-  public static withDecimals(amount: string, decimals: number) {
-    const dec = new BigNumber(10).pow(decimals);
-    
-    return new BigNumber(amount).div(dec);
+  public static withDecimals(amount: string, decimals: number = 18) {
+    return ethers.utils.formatUnits(amount, decimals);
   }
 
-  public static withoutDecimals(amount: string, decimals: number) {
-    const dec = new BigNumber(10).pow(decimals);
-    
-    return new BigNumber(amount).mul(dec);
+  public static withoutDecimals(amount: string, decimals: number = 18) {
+    return ethers.utils.parseUnits(amount, decimals);
   }
 
   public static async tokenInfo(address: string, chainId: number) {
