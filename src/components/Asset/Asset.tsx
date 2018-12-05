@@ -8,7 +8,8 @@ interface IAssetProps extends IAsset {
   
   disabled: boolean;
   validationError?: string;
-  onChange?: (args: any) => void;
+  onAddressChange?: (args: string) => void;
+  onAmountChange?: (args: string) => void;
   onValidationError?: (error: string) => void;
 }
 
@@ -24,8 +25,8 @@ class Asset extends React.Component<IAssetProps, any> {
               value={this.props.address}
               // tslint:disable-next-line:jsx-no-lambda
               onChange={(e: any) => {
-                if (this.props.onChange) {
-                  this.props.onChange(e.target.value);
+                if (this.props.onAddressChange) {
+                  this.props.onAddressChange(e.target.value);
                 }
               }}
               disabled={this.props.disabled}
@@ -50,9 +51,15 @@ class Asset extends React.Component<IAssetProps, any> {
               labelText={this.props.amountLabel}
               value={this.props.amount}
               // tslint:disable-next-line:jsx-no-lambda
+              onChange={(e: any) => {
+                if (this.props.onAmountChange) {
+                  this.props.onAmountChange(e.target.value);
+                }
+              }}
               disabled={
                 this.props.disabled
               }
+              
             />
           </div>
         </div>

@@ -2,18 +2,19 @@ import { Button, Form, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
+  IAsset,
   IDecodedTransaction,
   IError,
   IScheduleAccessKey,
   SentinelAPI
 } from 'src/api/SentinelAPI';
+import { TokenAPI } from 'src/api/TokenAPI';
 
-import Asset, { IAssetState } from '../Asset/AssetX';
+import ConditionalAsset from '../Asset/ConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 
 interface ISentinelState extends IDecodedTransaction {
-  conditionAssetAmount: string;
-  conditionAsset: string;
+  conditionalAsset?: IAsset;
   sentinelResponse: IScheduleAccessKey | IError | undefined;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -23,10 +24,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
   constructor(props: any) {
     super(props);
     this.state = {
-      conditionAsset: '',
-      conditionAssetAmount: '',
       sentinelResponse: undefined,
-      signedAsset: {address: '', decimals: 0, name: '', amount: ''},
+      signedAsset: { address: '', decimals: 0, name: '', amount: '' },
       signedChainId: 0,
       signedRecipient: '',
       signedSender: '',
@@ -39,12 +38,14 @@ class Schedule extends React.Component<{}, ISentinelState> {
     const send = this.send.bind(this);
     const decode = this.decode.bind(this);
 
-    const emitConditional = (args: IAssetState) => {
+    const emitConditional = (conditionalAsset: IAsset) => {
       this.setState({
-        conditionAsset: args.address,
-        conditionAssetAmount: args.amount
+        conditionalAsset
       });
     };
+
+    // tslint:disable-next-line:no-empty
+    const onValidationError = (error: string) => {};
 
     const response = this.renderResponse();
 
@@ -72,12 +73,11 @@ class Schedule extends React.Component<{}, ISentinelState> {
           <div className="bx--row row-padding bx--type-gamma">
             Conditional Parameters
           </div>
-          <Asset
-            label="Conditional asset"
-            amountLabel="Conditional asset amount (transfer when balance >= condition) [transaction amount when empty]"
+          <ConditionalAsset
             chainId={this.state.signedChainId}
             disabled={this.state.signedTransaction === ''}
             onChange={emitConditional}
+            onValidationError={onValidationError}
           />
           <div className="bx--row row-padding">
             <Button onClick={send}>Schedule</Button>
@@ -129,14 +129,19 @@ class Schedule extends React.Component<{}, ISentinelState> {
   }
 
   private async send() {
-    const conditionAmount =
-      this.state.conditionAssetAmount !== ''
-        ? this.state.conditionAssetAmount
-        : this.state.signedAsset.amount;
+    const conditionalAsset =
+      this.state.conditionalAsset && this.state.conditionalAsset.amount !== ''
+        ? this.state.conditionalAsset
+        : this.state.signedAsset;
+
+    const conditionAmount = TokenAPI.withoutDecimals(
+      conditionalAsset.amount,
+      conditionalAsset.decimals
+    ).toString();
 
     const payload = {
       conditionAmount,
-      conditionAsset: this.state.conditionAsset,
+      conditionAsset: conditionalAsset.address,
       signedTransaction: this.state.signedTransaction
     };
 

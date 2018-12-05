@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { ERC20 } from './erc20';
 
+export const ETH = { name: 'ETH', decimals: 18 };
+
 export class TokenAPI {
   public static withDecimals(amount: string, decimals: number = 18) {
     return ethers.utils.formatUnits(amount, decimals);
@@ -12,7 +14,7 @@ export class TokenAPI {
 
   public static async tokenInfo(address: string, chainId: number) {
     if (address === '') {
-      return { name: 'ETH', decimals: 18 };
+      return ETH;
     }
     const token = new ethers.Contract(
       address,
