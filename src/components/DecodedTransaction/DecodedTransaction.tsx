@@ -15,6 +15,11 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
       return <Skeleton />;
     }
 
+    const network = this.props.signedChain.chainId ? 
+    `${this.props.signedChain.chainName} [id: ${this.props.signedChain.chainId}]`
+    :
+    '';
+
     return (
       <div>
         <DecodedAsset {...this.props.signedAsset}/>
@@ -24,6 +29,15 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
               labelText="Transaction receiver"
               disabled={true}
               value={this.props.signedRecipient}
+            />
+          </div>
+        </div>
+        <div className="bx--row row-padding">
+          <div className="bx--col-xs-6">
+            <TextInput
+              labelText="Network"
+              disabled={true}
+              value={network}
             />
           </div>
         </div>

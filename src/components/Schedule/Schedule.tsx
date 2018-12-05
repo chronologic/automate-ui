@@ -26,7 +26,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     this.state = {
       sentinelResponse: undefined,
       signedAsset: { address: '', decimals: 0, name: '', amount: '' },
-      signedChainId: 0,
+      signedChain: {chainId: 0, chainName: ''},
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',
@@ -74,7 +74,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
             Conditional Parameters
           </div>
           <ConditionalAsset
-            chainId={this.state.signedChainId}
+            chainId={this.state.signedChain.chainId}
             disabled={this.state.signedTransaction === ''}
             onChange={emitConditional}
             onValidationError={onValidationError}
