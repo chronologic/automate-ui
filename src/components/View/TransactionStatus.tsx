@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IScheduledTransaction, Status } from 'src/api/SentinelAPI';
 import Skeleton from '../Skeleton/Skeleton';
 
-class TransactionStatus extends React.Component<any, IScheduledTransaction> {
+class TransactionStatus extends React.Component<IScheduledTransaction, any> {
   public render() {
     if (!this.props || !this.props.id) {
       return <Skeleton/>;

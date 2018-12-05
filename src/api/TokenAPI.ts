@@ -11,6 +11,9 @@ export class TokenAPI {
   }
 
   public static async tokenInfo(address: string, chainId: number) {
+    if (address === '') {
+      return { name: 'ETH', decimals: 18 };
+    }
     const token = new ethers.Contract(
       address,
       ERC20,

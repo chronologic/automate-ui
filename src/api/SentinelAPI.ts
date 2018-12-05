@@ -13,6 +13,12 @@ export interface IScheduleRequest {
   signedTransaction: string;
 }
 
+export interface IScheduleResponse extends IScheduleRequest {
+  id: string;
+  transactionHash: string;
+  status: Status;
+}
+
 export interface IScheduleAccessKey {
   id: string;
   key: string;
@@ -26,19 +32,24 @@ export interface ICancelResponse {
   status: Status;
 }
 
-export interface IScheduledTransaction extends IScheduleRequest {
+export interface IScheduledTransaction {
+  conditionalAsset: IAsset;
   id: string;
   transactionHash: string;
+  signedTransaction: string;
   status: Status;
 }
 
+export interface IAsset {
+  address: string;
+  amount: string;
+  decimals: number;
+  name: string;
+}
+
 export interface IDecodedTransaction {
-  signedAsset: string;
+  signedAsset: IAsset;
   signedRecipient: string;
-  signedAmount: string;
-  signedAssetDecimals: number;
-  signedAssetName: string;
-  signedETHAmount: string;
   signedSender: string;
   signedChainId: number;
 }
@@ -61,8 +72,17 @@ export class SentinelAPI {
     request: IScheduleAccessKey
   ): Promise<IScheduledTransaction | IError> {
     try {
-      const response = await axios.get(this.API_URL, { params: request });
-      return response.data as IScheduledTransaction;
+      const response = await axios.get<IScheduleResponse>(this.API_URL, { params: request });
+      const decodedTransaction = await this.decode(response.data.signedTransaction) as IDecodedTransaction;
+      const conditionalAssetInfo = await TokenAPI.tokenInfo(response.data.conditionAsset, decodedTransaction.signedChainId);
+      const amount = TokenAPI.withDecimals(response.data.conditionAmount, conditionalAssetInfo.decimals);
+      
+      const conditionalAsset = {...conditionalAssetInfo, address: response.data.conditionAsset, amount}
+
+      return {
+        ...response.data,
+        conditionalAsset
+      }
     } catch (e) {
       return {
         errors: e.response ? e.response.data.errors : ['API seems to be down :(']
@@ -84,11 +104,10 @@ export class SentinelAPI {
     
     const signedChainId = decodedTransaction.chainId;
     let signedRecipient = decodedTransaction.to!;
-    const signedETHAmount = decodedTransaction.value.toString();
-    let signedAmount = '';
-    let signedAsset = '';
+    let signedAmount = TokenAPI.withDecimals(decodedTransaction.value.toString());
+    let signedAddress = '';
     let signedAssetName = 'ETH';
-    let signedAssetDecimals = 0;
+    let signedAssetDecimals = 18;
     
     try {
       const { name, decimals } = await TokenAPI.tokenInfo(
@@ -102,23 +121,26 @@ export class SentinelAPI {
         callDataParameters
       );
 
-      signedAsset = decodedTransaction.to!;
+      signedAddress = decodedTransaction.to!;
       signedAssetName = name;
       signedAssetDecimals = decimals;
       signedRecipient = params[0];
-      signedAmount = params[1];
+      signedAmount = TokenAPI.withDecimals(params[1], decimals);
     // tslint:disable-next-line:no-empty
     } catch(e) {
 
     }
 
+    const signedAsset = {
+      address: signedAddress,
+      amount: signedAmount,
+      decimals: signedAssetDecimals,
+      name: signedAssetName
+    }
+
     return {
-      signedAmount,
       signedAsset,
-      signedAssetDecimals,
-      signedAssetName,
       signedChainId,
-      signedETHAmount,
       signedRecipient,
       signedSender: decodedTransaction.from!
     };

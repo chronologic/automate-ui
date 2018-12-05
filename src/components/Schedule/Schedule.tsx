@@ -1,10 +1,4 @@
-import {
-  Button,
-  Form,
-  TextArea,
-  TextInput,
-  Tile
-} from 'carbon-components-react';
+import { Button, Form, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -13,17 +7,13 @@ import {
   IScheduleAccessKey,
   SentinelAPI
 } from 'src/api/SentinelAPI';
-import { TokenAPI } from 'src/api/TokenAPI';
 
-import Asset, { IAssetState } from '../Asset/Asset';
+import Asset, { IAssetState } from '../Asset/AssetX';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 
 interface ISentinelState extends IDecodedTransaction {
   conditionAssetAmount: string;
   conditionAsset: string;
-  conditionAssetDecimals: number;
-  conditionAssetName: string;
-  conditionAssetValidationError: string;
   sentinelResponse: IScheduleAccessKey | IError | undefined;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -35,16 +25,9 @@ class Schedule extends React.Component<{}, ISentinelState> {
     this.state = {
       conditionAsset: '',
       conditionAssetAmount: '',
-      conditionAssetDecimals: 18,
-      conditionAssetName: 'ETH',
-      conditionAssetValidationError: '',
       sentinelResponse: undefined,
-      signedAmount: '',
-      signedAsset: '',
-      signedAssetDecimals: 0,
-      signedAssetName: '',
+      signedAsset: {address: '', decimals: 0, name: '', amount: ''},
       signedChainId: 0,
-      signedETHAmount: '',
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',
@@ -55,22 +38,11 @@ class Schedule extends React.Component<{}, ISentinelState> {
   public render() {
     const send = this.send.bind(this);
     const decode = this.decode.bind(this);
-    const parseConditionalAssetAmount = this.parseConditionalAssetAmount.bind(
-      this
-    );
-    let conditionAssetAmount = '';
-    if (this.state.conditionAssetAmount !== '') {
-      conditionAssetAmount = TokenAPI.withDecimals(
-        this.state.conditionAssetAmount,
-        this.state.conditionAssetDecimals
-      ).toString();
-    }
 
     const emitConditional = (args: IAssetState) => {
       this.setState({
         conditionAsset: args.address,
-        conditionAssetDecimals: args.decimals,
-        conditionAssetName: args.name
+        conditionAssetAmount: args.amount
       });
     };
 
@@ -102,28 +74,11 @@ class Schedule extends React.Component<{}, ISentinelState> {
           </div>
           <Asset
             label="Conditional asset"
+            amountLabel="Conditional asset amount (transfer when balance >= condition) [transaction amount when empty]"
             chainId={this.state.signedChainId}
             disabled={this.state.signedTransaction === ''}
             onChange={emitConditional}
-            name={this.state.conditionAssetName}
           />
-          <div className="bx--row row-padding">
-            <div className="bx--col-xs-6">
-              <TextInput
-                id="ConditionalAssetAmount"
-                labelText="Conditional asset amount (transfer when balance >= condition) [transaction amount when empty]"
-                value={conditionAssetAmount}
-                // tslint:disable-next-line:jsx-no-lambda
-                onChange={(e: any) =>
-                  parseConditionalAssetAmount(e.target.value)
-                }
-                disabled={
-                  this.state.signedTransaction === '' ||
-                  this.state.conditionAssetValidationError !== ''
-                }
-              />
-            </div>
-          </div>
           <div className="bx--row row-padding">
             <Button onClick={send}>Schedule</Button>
           </div>
@@ -144,30 +99,16 @@ class Schedule extends React.Component<{}, ISentinelState> {
       const link = `/view/${response.id}/${response.key}`;
       return (
         <Tile>
-            You have successfully scheduled transaction ! <br/>
-            <br/>
-            Please save this link: <br/>
-            <Link to={link}>
-              {window.location.href}
-              {link}
-            </Link>
+          You have successfully scheduled transaction ! <br />
+          <br />
+          Please save this link: <br />
+          <Link to={link}>
+            {window.location.href}
+            {link}
+          </Link>
         </Tile>
       );
     }
-  }
-
-  private async parseConditionalAssetAmount(amount: string) {
-    try {
-      const parsed = TokenAPI.withoutDecimals(
-        amount,
-        this.state.conditionAssetDecimals
-      );
-
-      if (parsed.gte(0)) {
-        this.setState({ conditionAssetAmount: parsed.toString() });
-      }
-      // tslint:disable-next-line:no-empty
-    } catch (e) {}
   }
 
   private async decode(signedTransaction: string) {
@@ -191,7 +132,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     const conditionAmount =
       this.state.conditionAssetAmount !== ''
         ? this.state.conditionAssetAmount
-        : this.state.signedAmount || this.state.signedETHAmount;
+        : this.state.signedAsset.amount;
 
     const payload = {
       conditionAmount,

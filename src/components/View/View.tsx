@@ -8,10 +8,13 @@ import {
   SentinelAPI
 } from 'src/api/SentinelAPI';
 
+import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import TransactionStatus from './TransactionStatus';
 
-interface IView extends IScheduledTransaction, IDecodedTransaction {
+interface IView {
+  decodedTransaction: IDecodedTransaction;
+  scheduledTransaction: IScheduledTransaction;
   errors: string[];
   cancelResponse?: ICancelResponse | IError;
 }
@@ -36,13 +39,18 @@ class View extends React.Component<any, IView> {
       } else {
         const decodedTransaction = decodeResponse as IDecodedTransaction;
 
-        this.setState({ ...decodedTransaction, ...scheduledTransaction });
+        this.setState({ decodedTransaction, scheduledTransaction });
       }
     }
   }
 
   public render() {
-    const executed = this.state && this.state.transactionHash;
+    if (!this.state) {
+      return <div />;
+    }
+
+    const executed =
+      this.state && this.state.scheduledTransaction.transactionHash;
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
 
@@ -51,9 +59,16 @@ class View extends React.Component<any, IView> {
     ) : (
       <div>
         <div className="bx--type-gamma">Transaction Status</div>
-        <TransactionStatus {...this.state} />
+        <TransactionStatus {...this.state.scheduledTransaction} />
         <div className="bx--type-gamma">Transaction Info</div>
-        <DecodedTransaction {...this.state} skeleton={true} />
+        <DecodedTransaction
+          {...this.state.decodedTransaction}
+          skeleton={true}
+        />
+        <div className="bx--type-gamma">Conditions</div>
+        <DecodedConditionalAsset
+          {...this.state.scheduledTransaction.conditionalAsset}
+        />
         <Button
           className="bx--btn--danger"
           disabled={executed}
@@ -74,7 +89,11 @@ class View extends React.Component<any, IView> {
       return <Tile>{error.errors.join('\n')}</Tile>;
     } else {
       const response = this.state.cancelResponse as ICancelResponse;
-      this.setState({ status: response.status });
+      const scheduledTransaction = ({
+        status: response.status
+      } = this.state.scheduledTransaction);
+
+      this.setState({ scheduledTransaction });
 
       return <Tile>You have successfully cancelled your transaction !</Tile>;
     }
