@@ -1,4 +1,4 @@
-import { Button, Tile } from 'carbon-components-react';
+import { Button, Loading, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import {
   ICancelResponse,
@@ -47,7 +47,7 @@ class View extends React.Component<any, IView> {
 
   public render() {
     if (!this.state) {
-      return <div />;
+      return <Loading />;
     }
 
     const executed =
