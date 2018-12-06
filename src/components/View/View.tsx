@@ -5,7 +5,8 @@ import {
   IDecodedTransaction,
   IError,
   IScheduledTransaction,
-  SentinelAPI
+  SentinelAPI,
+  Status
 } from 'src/api/SentinelAPI';
 
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
@@ -50,7 +51,7 @@ class View extends React.Component<any, IView> {
     }
 
     const executed =
-      this.state && this.state.scheduledTransaction.transactionHash;
+      this.state.scheduledTransaction && this.state.scheduledTransaction.status !== Status.Pending;
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
 
