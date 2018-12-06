@@ -6,8 +6,15 @@ import Skeleton from '../Skeleton/Skeleton';
 class TransactionStatus extends React.Component<IScheduledTransaction, any> {
   public render() {
     if (!this.props || !this.props.id) {
-      return <Skeleton/>;
+      return <Skeleton />;
     }
+
+    const status = Status[this.props.status];
+    const statusText =
+      this.props.status === Status.Error && this.props.error
+        ? `${status} - ${this.props.error}`
+        : status;
+
     return (
       <div>
         <div className="bx--row row-padding">
@@ -23,7 +30,7 @@ class TransactionStatus extends React.Component<IScheduledTransaction, any> {
             className="bx--col-xs-6"
             labelText="Status"
             disabled={true}
-            value={Status[this.props.status]}
+            value={statusText}
           />
         </div>
         <div className="bx--row row-padding">

@@ -2,28 +2,28 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 
 class Header extends React.Component {
-  private names = [
-    'Conditional',
-    'AutoWorkflow',
-    'AutoWorkflows',
-    'AutoTrigger',
-    'AutoScheduler',
-    'Conditional Scheduler',
-    'Automated Workflow',
-    'Automate',
-    'eththen',
-    'deIFTTT',
-    'deIF',
-    'IFTTEth',
-    'ifeth',
-    'eththen',
-    'Blockflow',
-    'EthPI',
-    'ETHAPI'
-  ]
+  // private names = [
+  //   'Conditional',
+  //   'AutoWorkflow',
+  //   'AutoWorkflows',
+  //   'AutoTrigger',
+  //   'AutoScheduler',
+  //   'Conditional Scheduler',
+  //   'Automated Workflow',
+  //   'Automate',
+  //   'eththen',
+  //   'deIFTTT',
+  //   'deIF',
+  //   'IFTTEth',
+  //   'ifeth',
+  //   'eththen',
+  //   'Blockflow',
+  //   'EthPI',
+  //   'ETHAPI'
+  // ]
 
   public render() {
-    const name = this.names[Math.floor((Math.random() * this.names.length))];
+    // const name = this.names[Math.floor((Math.random() * this.names.length))];
 
     const icon = (
       <svg width="45" height="45" viewBox="0 0 21 24">
@@ -31,7 +31,7 @@ class Header extends React.Component {
       </svg>
     );
 
-    return <Link to="/" style={{ textDecoration: 'none' }}><div className="bx--type-alpha bx--row">{name}{icon}</div></Link>
+    return <Link to="/" style={{ textDecoration: 'none' }}><div className="bx--type-alpha bx--row">Automate {icon}</div></Link>
   }
 };
 

@@ -6,7 +6,8 @@ import { TokenAPI } from './TokenAPI';
 export enum Status {
   Pending,
   Cancelled,
-  Completed
+  Completed,
+  Error
 }
 
 export interface IScheduleRequest {
@@ -15,10 +16,16 @@ export interface IScheduleRequest {
   signedTransaction: string;
 }
 
-export interface IScheduleResponse extends IScheduleRequest {
+interface IScheduledTransactionRaw {
   id: string;
-  transactionHash: string;
+  error: string;
+  signedTransaction: string;
   status: Status;
+  transactionHash: string;
+}
+
+export interface IScheduleResponse extends IScheduledTransactionRaw, IScheduleRequest {
+
 }
 
 export interface IScheduleAccessKey {
@@ -34,12 +41,8 @@ export interface ICancelResponse {
   status: Status;
 }
 
-export interface IScheduledTransaction {
+export interface IScheduledTransaction extends IScheduledTransactionRaw {
   conditionalAsset: IAsset;
-  id: string;
-  transactionHash: string;
-  signedTransaction: string;
-  status: Status;
 }
 
 export interface IAsset {
