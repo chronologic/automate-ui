@@ -29,6 +29,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
       sentinelResponse: undefined,
       signedAsset: { address: '', decimals: 0, name: '', amount: '' },
       signedChain: { chainId: 0, chainName: '' },
+      signedNonce: 0,
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',

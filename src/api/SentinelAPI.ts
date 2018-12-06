@@ -62,6 +62,7 @@ export interface IDecodedTransaction {
   signedRecipient: string;
   signedSender: string;
   signedChain: INetwork;
+  signedNonce: number;
 }
 
 export class SentinelAPI {
@@ -140,6 +141,7 @@ export class SentinelAPI {
     let signedAddress = '';
     let signedAssetName = 'ETH';
     let signedAssetDecimals = 18;
+    const signedNonce = decodedTransaction.nonce;
 
     try {
       const { name, decimals } = await TokenAPI.tokenInfo(
@@ -176,6 +178,7 @@ export class SentinelAPI {
     return {
       signedAsset,
       signedChain,
+      signedNonce,
       signedRecipient,
       signedSender: decodedTransaction.from!
     };
