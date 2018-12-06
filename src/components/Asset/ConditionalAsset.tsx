@@ -22,24 +22,22 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
     super(props);
     this.state = {
       ...ETH,
-      address:'',
-      amount:'',
+      address: '',
+      amount: '',
       validationError: ''
-    }
+    };
   }
 
   public render() {
     const resolveToken = this.resolveToken.bind(this);
-    const parseAmount = this.parseAmount.bind(
-      this
-    );
+    const parseAmount = this.parseAmount.bind(this);
 
     return (
       <Asset
         {...this.state}
-        amountLabel="Transaction asset amount"
+        amountLabel="Condition asset amount [empty = same as transaction amount]"
         disabled={this.props.disabled}
-        label="Transaction asset"
+        label="Condition asset"
         onAddressChange={resolveToken}
         onAmountChange={parseAmount}
       />
@@ -49,7 +47,11 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
   private async parseAmount(amount: string) {
     const parsed = Number.parseFloat(amount);
 
-    if (!amount || (amount.length >= 2 && amount[amount.length -1] === '.') || (parsed && parsed > 0)) {
+    if (
+      !amount ||
+      (amount.length >= 2 && amount[amount.length - 1] === '.') ||
+      (parsed && parsed > 0)
+    ) {
       this.setState({ amount });
       if (this.props.onChange) {
         const newState = {
@@ -63,23 +65,27 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
 
   private async resolveToken(address: string, chainId?: number) {
     let validationError = '';
-    let {name, decimals} = ETH;
+    let { name, decimals } = ETH;
 
-    try {
-      ethers.utils.getAddress(address);
-    } catch (e) {
-      validationError = 'Wrong asset address';
+    if (address) {
+      try {
+        ethers.utils.getAddress(address);
+      } catch (e) {
+        validationError = 'Wrong asset address';
+      }
     }
 
-    try {
-      const tokenInfo = await TokenAPI.tokenInfo(
-        address,
-        chainId || this.props.chainId
-      );
-      decimals = tokenInfo.decimals;
-      name = tokenInfo.name;
-    } catch (e) {
-      validationError = 'Asset is not ERC-20 compatible';
+    if (!validationError) {
+      try {
+        const tokenInfo = await TokenAPI.tokenInfo(
+          address,
+          chainId || this.props.chainId
+        );
+        decimals = tokenInfo.decimals;
+        name = tokenInfo.name;
+      } catch (e) {
+        validationError = 'Asset is not ERC-20 compatible';
+      }
     }
 
     const newState = {
@@ -91,10 +97,11 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
     };
 
     this.setState(newState);
+
     if (this.props.onChange) {
       this.props.onChange(newState);
     }
-    if (this.props.onValidationError && validationError) {
+    if (this.props.onValidationError) {
       this.props.onValidationError(validationError);
     }
   }

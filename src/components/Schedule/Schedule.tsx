@@ -15,6 +15,7 @@ import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset?: IAsset;
+  conditionalAssetIsValid: boolean;
   sentinelResponse: IScheduleAccessKey | IError | undefined;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -24,9 +25,10 @@ class Schedule extends React.Component<{}, ISentinelState> {
   constructor(props: any) {
     super(props);
     this.state = {
+      conditionalAssetIsValid: true,
       sentinelResponse: undefined,
       signedAsset: { address: '', decimals: 0, name: '', amount: '' },
-      signedChain: {chainId: 0, chainName: ''},
+      signedChain: { chainId: 0, chainName: '' },
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',
@@ -44,8 +46,9 @@ class Schedule extends React.Component<{}, ISentinelState> {
       });
     };
 
-    // tslint:disable-next-line:no-empty
-    const onValidationError = (error: string) => {};
+    const onValidationError = (error: string) => {
+      this.setState({conditionalAssetIsValid: !error})
+    };
 
     const response = this.renderResponse();
 
@@ -80,7 +83,16 @@ class Schedule extends React.Component<{}, ISentinelState> {
             onValidationError={onValidationError}
           />
           <div className="bx--row row-padding">
-            <Button onClick={send}>Schedule</Button>
+            <Button
+              onClick={send}
+              disabled={
+                !this.state.conditionalAssetIsValid ||
+                !this.state.signedTransactionIsValid ||
+                !this.state.signedTransaction
+              }
+            >
+              Schedule
+            </Button>
           </div>
         </Form>
         {response}
