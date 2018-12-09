@@ -6,11 +6,12 @@ import {
   IError,
   IScheduledTransaction,
   SentinelAPI,
-  Status
+  Status,
 } from 'src/api/SentinelAPI';
 
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
+import SenderInformation from '../Sender/SenderInformation';
 import TransactionStatus from './TransactionStatus';
 
 interface IView {
@@ -61,6 +62,8 @@ class View extends React.Component<any, IView> {
       <div>
         <div className="bx--type-gamma">Transaction Status</div>
         <TransactionStatus {...this.state.scheduledTransaction} />
+        <div className="bx--type-gamma">Transaction Information</div>
+        <SenderInformation skeleton={true} {...this.state.decodedTransaction}/>
         <div className="bx--type-gamma">Transaction Info</div>
         <DecodedTransaction
           {...this.state.decodedTransaction}
