@@ -12,6 +12,7 @@ import { TokenAPI } from 'src/api/TokenAPI';
 
 import ConditionalAsset from '../Asset/ConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
+import SenderInformation from '../Sender/SenderInformation';
 
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset?: IAsset;
@@ -26,6 +27,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     super(props);
     this.state = {
       conditionalAssetIsValid: true,
+      senderNonce: 0,
       sentinelResponse: undefined,
       signedAsset: { address: '', decimals: 0, name: '', amount: '' },
       signedChain: { chainId: 0, chainName: '' },
@@ -33,7 +35,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
       signedRecipient: '',
       signedSender: '',
       signedTransaction: '',
-      signedTransactionIsValid: true
+      signedTransactionIsValid: true,
     };
   }
 
@@ -70,6 +72,10 @@ class Schedule extends React.Component<{}, ISentinelState> {
               />
             </div>
           </div>
+          <div className="bx--row row-padding bx--type-gamma">
+            Sender
+          </div>
+          <SenderInformation {...this.state} skeleton={false} />
           <div className="bx--row row-padding bx--type-gamma">
             Decoded Transaction
           </div>

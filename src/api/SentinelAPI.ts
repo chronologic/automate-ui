@@ -24,9 +24,9 @@ interface IScheduledTransactionRaw {
   transactionHash: string;
 }
 
-export interface IScheduleResponse extends IScheduledTransactionRaw, IScheduleRequest {
-
-}
+export interface IScheduleResponse
+  extends IScheduledTransactionRaw,
+    IScheduleRequest {}
 
 export interface IScheduleAccessKey {
   id: string;
@@ -63,6 +63,7 @@ export interface IDecodedTransaction {
   signedSender: string;
   signedChain: INetwork;
   signedNonce: number;
+  senderNonce: number;
 }
 
 export class SentinelAPI {
@@ -175,12 +176,19 @@ export class SentinelAPI {
       name: signedAssetName
     };
 
+    const signedSender = decodedTransaction.from!;
+
+    const senderNonce = await this.getProvider(chainId).getTransactionCount(
+      signedSender
+    );
+
     return {
+      senderNonce,
       signedAsset,
       signedChain,
       signedNonce,
       signedRecipient,
-      signedSender: decodedTransaction.from!
+      signedSender
     };
   }
 
@@ -200,4 +208,8 @@ export class SentinelAPI {
   }
 
   private static API_URL: string = process.env.REACT_APP_API_URL + '/scheduled';
+
+  private static getProvider(chainId: number) {
+    return ethers.getDefaultProvider(ethers.utils.getNetwork(chainId));
+  }
 }

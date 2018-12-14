@@ -36,9 +36,9 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
         <div className="bx--row row-padding">
           <div className="bx--col-xs-6">
             <TextInput
-              labelText="Nonce"
+              labelText="Transaction Nonce"
               disabled={true}
-              value={this.props.signedNonce}
+              value={this.props.signedNonce || ""}
             />
           </div>
         </div>
