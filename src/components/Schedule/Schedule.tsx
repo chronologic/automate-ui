@@ -1,4 +1,4 @@
-import { Button, Form, TextArea, Tile } from 'carbon-components-react';
+import { Button, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -57,7 +57,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
     return (
       <div>
-        <Form>
           <div className="bx--row row-padding">
             <div className="bx--col-xs-6">
               <TextArea
@@ -101,7 +100,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
               Schedule
             </Button>
           </div>
-        </Form>
         {response}
       </div>
     );
