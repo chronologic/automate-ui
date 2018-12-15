@@ -61,7 +61,7 @@ class View extends React.Component<any, IView> {
     ) : (
       <div>
         <div className="bx--type-gamma">Transaction Status</div>
-        <TransactionStatus {...this.state.scheduledTransaction} />
+        <TransactionStatus {...{...this.state.scheduledTransaction, ...this.state.decodedTransaction}} />
         <div className="bx--type-gamma">Transaction Information</div>
         <SenderInformation skeleton={true} {...this.state.decodedTransaction}/>
         <div className="bx--type-gamma">Transaction Info</div>
