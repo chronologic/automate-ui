@@ -44,23 +44,26 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
     );
   }
 
-  private async parseAmount(amount: string) {
-    const parsed = Number.parseFloat(amount);
-
-    if (
-      !amount ||
-      (amount.length >= 2 && amount[amount.length - 1] === '.') ||
-      (parsed && parsed > 0)
-    ) {
-      this.setState({ amount });
-      if (this.props.onChange) {
-        const newState = {
-          ...this.state,
-          amount
-        };
-        this.props.onChange(newState);
+  private async parseAmount(newAmount: string) {
+    const parsed = Number.parseFloat(newAmount);
+    let amount = "";
+    if (!Number.isNaN(parsed)) {
+      amount = parsed.toString();
+      
+      if (newAmount[newAmount.length - 1 ] === ".") {
+        amount += ".";
       }
+    } 
+    
+    this.setState({ amount });
+    if (this.props.onChange) {
+      const newState = {
+        ...this.state,
+        amount
+      };
+      this.props.onChange(newState);
     }
+
   }
 
   private async resolveToken(address: string, chainId?: number) {

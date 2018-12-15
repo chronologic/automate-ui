@@ -1,4 +1,4 @@
-import { Button, Form, TextArea, Tile } from 'carbon-components-react';
+import { Button, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -17,26 +17,28 @@ import SenderInformation from '../Sender/SenderInformation';
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset?: IAsset;
   conditionalAssetIsValid: boolean;
-  sentinelResponse: IScheduleAccessKey | IError | undefined;
+  sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
 }
 
+const defaultState = {
+  conditionalAssetIsValid: true,
+  senderNonce: 0,
+  sentinelResponse: undefined,
+  signedAsset: { address: '', decimals: 0, name: '', amount: '' },
+  signedChain: { chainId: 0, chainName: '' },
+  signedNonce: 0,
+  signedRecipient: '',
+  signedSender: '',
+  signedTransaction: '',
+  signedTransactionIsValid: true,
+};
+
 class Schedule extends React.Component<{}, ISentinelState> {
   constructor(props: any) {
     super(props);
-    this.state = {
-      conditionalAssetIsValid: true,
-      senderNonce: 0,
-      sentinelResponse: undefined,
-      signedAsset: { address: '', decimals: 0, name: '', amount: '' },
-      signedChain: { chainId: 0, chainName: '' },
-      signedNonce: 0,
-      signedRecipient: '',
-      signedSender: '',
-      signedTransaction: '',
-      signedTransactionIsValid: true,
-    };
+    this.state = defaultState;
   }
 
   public render() {
@@ -50,62 +52,61 @@ class Schedule extends React.Component<{}, ISentinelState> {
     };
 
     const onValidationError = (error: string) => {
-      this.setState({conditionalAssetIsValid: !error})
+      this.setState({ conditionalAssetIsValid: !error });
     };
 
     const response = this.renderResponse();
+    const success = this.state.sentinelResponse && (this.state.sentinelResponse as IScheduleAccessKey).id;
 
     return (
       <div>
-        <Form>
-          <div className="bx--row row-padding">
-            <div className="bx--col-xs-6">
-              <TextArea
-                id="SignedTx"
-                labelText="Signed transaction"
-                rows={7}
-                value={this.state.signedTransaction}
-                // tslint:disable-next-line:jsx-no-lambda
-                onChange={(e: any) => decode(e.target.value)}
-                invalid={!this.state.signedTransactionIsValid}
-                invalidText="Signed transaction is invalid"
-              />
-            </div>
+        <div className="bx--row row-padding">
+          <div className="bx--col-xs-6">
+            <TextArea
+              id="SignedTx"
+              labelText="Signed transaction"
+              rows={7}
+              value={this.state.signedTransaction}
+              // tslint:disable-next-line:jsx-no-lambda
+              onChange={(e: any) => decode(e.target.value)}
+              invalid={!this.state.signedTransactionIsValid}
+              invalidText="Signed transaction is invalid"
+            />
           </div>
-          <div className="bx--row row-padding bx--type-gamma">
-            Sender
-          </div>
-          <SenderInformation {...this.state} skeleton={false} />
-          <div className="bx--row row-padding bx--type-gamma">
-            Decoded Transaction
-          </div>
-          <DecodedTransaction {...this.state} skeleton={false} />
-          <div className="bx--row row-padding bx--type-gamma">
-            Conditional Parameters
-          </div>
-          <ConditionalAsset
-            chainId={this.state.signedChain.chainId}
-            disabled={this.state.signedTransaction === ''}
-            onChange={emitConditional}
-            onValidationError={onValidationError}
-          />
-          <div className="bx--row row-padding">
-            <Button
-              onClick={send}
-              disabled={
-                !this.state.conditionalAssetIsValid ||
-                !this.state.signedTransactionIsValid ||
-                !this.state.signedTransaction
-              }
-            >
-              Schedule
-            </Button>
-          </div>
-        </Form>
+        </div>
+        <div className="bx--row row-padding bx--type-gamma">Sender</div>
+        <SenderInformation {...this.state} skeleton={false} />
+        <div className="bx--row row-padding bx--type-gamma">
+          Decoded Transaction
+        </div>
+        <DecodedTransaction {...this.state} skeleton={false} />
+        <div className="bx--row row-padding bx--type-gamma">
+          Conditional Parameters
+        </div>
+        <ConditionalAsset
+          chainId={this.state.signedChain.chainId}
+          disabled={this.state.signedTransaction === ''}
+          onChange={emitConditional}
+          onValidationError={onValidationError}
+        />
+        <div className="bx--row row-padding">
+          <Button
+            onClick={send}
+            disabled={
+              !this.state.conditionalAssetIsValid ||
+              !this.state.signedTransactionIsValid ||
+              !this.state.signedTransaction ||
+              success
+            }
+          >
+            Schedule
+          </Button>
+        </div>
         {response}
       </div>
     );
   }
+
 
   private renderResponse() {
     if (!this.state.sentinelResponse) {
@@ -114,6 +115,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
       const error = this.state.sentinelResponse as IError;
       return <Tile>{error.errors.join('\n')}</Tile>;
     } else {
+      const reset = () => this.setState(defaultState);
       const response = this.state.sentinelResponse as IScheduleAccessKey;
       const link = `/view/${response.id}/${response.key}`;
       return (
@@ -125,6 +127,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
             {window.location.href}
             {link}
           </Link>
+          <br/><br/>
+          <Button onClick={reset}>Schedule another one</Button>
         </Tile>
       );
     }

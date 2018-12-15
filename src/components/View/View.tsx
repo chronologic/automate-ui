@@ -61,7 +61,7 @@ class View extends React.Component<any, IView> {
     ) : (
       <div>
         <div className="bx--type-gamma">Transaction Status</div>
-        <TransactionStatus {...this.state.scheduledTransaction} />
+        <TransactionStatus {...{...this.state.scheduledTransaction, ...this.state.decodedTransaction}} />
         <div className="bx--type-gamma">Transaction Information</div>
         <SenderInformation skeleton={true} {...this.state.decodedTransaction}/>
         <div className="bx--type-gamma">Transaction Info</div>
@@ -92,19 +92,17 @@ class View extends React.Component<any, IView> {
       const error = this.state.cancelResponse as IError;
       return <Tile>{error.errors.join('\n')}</Tile>;
     } else {
-      const response = this.state.cancelResponse as ICancelResponse;
-      const scheduledTransaction = ({
-        status: response.status
-      } = this.state.scheduledTransaction);
-
-      this.setState({ scheduledTransaction });
-
       return <Tile>You have successfully cancelled your transaction !</Tile>;
     }
   }
 
   private async cancel() {
     const cancelResponse = await SentinelAPI.cancel(this.props.match.params);
+    if ((cancelResponse as ICancelResponse).status === Status.Cancelled){
+      const scheduledTransaction = { ...this.state.scheduledTransaction, status: Status.Cancelled };
+      this.setState( {scheduledTransaction})
+    }
+
     this.setState({ cancelResponse });
   }
 }
