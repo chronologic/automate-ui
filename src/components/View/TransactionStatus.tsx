@@ -57,15 +57,15 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
   }
 
   private renderTransactionHash() {
-    if (this.props.transactionHash) {
-      const url = this.getExplorerUrl(
-        this.props.signedChain.chainId,
-        this.props.transactionHash
-      );
+    const explorerUrl = this.getExplorerUrl(
+      this.props.signedChain.chainId,
+      this.props.transactionHash
+    );
+    if (explorerUrl) {
       return (
         <FormItem>
           <label className="bx--label">Transaction hash</label>
-          <Link href={url} className="bx--text-input bx--col-xs-6">
+          <Link href={explorerUrl} className="bx--text-input bx--col-xs-6">
             {this.props.transactionHash}
           </Link>
         </FormItem>
@@ -76,7 +76,7 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
           className="bx--col-xs-6"
           labelText="Transaction hash"
           disabled={true}
-          value="Pending"
+          value={this.props.transactionHash || "Pending"}
         />
       );
     }
@@ -84,12 +84,12 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
 
   private getExplorerUrl(chainId: number, hash: string) {
     if (!hash) {
-      return Status[Status.Pending];
+      return "";
     }
 
     const explorer = this.explorers.get(chainId);
 
-    return explorer ? explorer + hash : hash;
+    return explorer ? explorer + hash : "";
   }
 }
 
