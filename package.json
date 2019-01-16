@@ -39,6 +39,9 @@
     "tslint-config-prettier": "^1.16.0",
     "typescript": "^3.1.6"
   },
+  "resolutions": {
+    "@types/react": "^16.7.7"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"

@@ -8,7 +8,7 @@ class DecodedConditionalAsset extends React.Component<IAsset, any> {
     return (
       <Asset
         {...this.props}
-        amountLabel="Condition asset amount"
+        amountLabel="Minimum balance of the Sender for conditional asset"
         disabled={true}
         label="Condition asset"
       />
