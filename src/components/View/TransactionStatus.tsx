@@ -14,7 +14,7 @@ interface ITransactionStatusProps
 
 class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
   private explorers = new Map<number, string>([
-    [1, 'https://kovan.etherscan.io/tx/'],
+    [1, 'https://etherscan.io/tx/'],
     [3, 'https://ropsten.etherscan.io/tx/'],
     [4, 'https://rinkeby.etherscan.io/tx/'],
     [42, 'https://kovan.etherscan.io/tx/']
