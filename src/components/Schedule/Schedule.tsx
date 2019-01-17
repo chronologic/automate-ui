@@ -24,11 +24,11 @@ interface ISentinelState extends IDecodedTransaction {
 
 const defaultState = {
   conditionalAssetIsValid: true,
-  senderNonce: 0,
+  senderNonce: NaN,
   sentinelResponse: undefined,
   signedAsset: { address: '', decimals: 0, name: '', amount: '' },
   signedChain: { chainId: 0, chainName: '' },
-  signedNonce: 0,
+  signedNonce: NaN,
   signedRecipient: '',
   signedSender: '',
   signedTransaction: '',
@@ -65,6 +65,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
             <TextArea
               id="SignedTx"
               labelText="Signed transaction"
+              helperText="Standard Ethereum signed transaction. Please use https://www.myetherwallet.com/#offline-transaction to create and sign. Tutorial coming soon."
               rows={7}
               value={this.state.signedTransaction}
               // tslint:disable-next-line:jsx-no-lambda

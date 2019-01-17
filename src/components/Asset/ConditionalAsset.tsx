@@ -35,9 +35,11 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
     return (
       <Asset
         {...this.state}
-        amountLabel="Minimum balance of the Sender for conditional asset [leave empty for the same as transaction asset and amount]"
+        amountLabel="Minimum balance of the Sender for conditional asset"
+        amountHelperLabel="When empty the same asset and amount as for signed transaction will be used"
         disabled={this.props.disabled}
-        label="Condition asset address [ERC20 token address or empty for ETH]"
+        label="Condition asset address"
+        helperLabel="ERC20 token address or empty for ETH"
         onAddressChange={resolveToken}
         onAmountChange={parseAmount}
       />

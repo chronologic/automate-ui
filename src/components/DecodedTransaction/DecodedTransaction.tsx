@@ -28,6 +28,7 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
           <div className="bx--col-xs-6">
             <TextInput
               labelText="Transaction receiver"
+              helperText="Recipient of the transaction or token recipient in case of ERC20 token transfer"
               disabled={true}
               value={this.props.signedRecipient}
             />
@@ -36,15 +37,21 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
         <div className="bx--row row-padding">
           <div className="bx--col-xs-6">
             <TextInput
-              labelText="Transaction Nonce"
+              labelText="Transaction nonce"
+              helperText="Transaction will be executed only when Transaction nonce equals Sender nonce"
               disabled={true}
-              value={this.props.signedNonce || ""}
+              value={isNaN(this.props.signedNonce) ? "" : this.props.signedNonce}
             />
           </div>
         </div>
         <div className="bx--row row-padding">
           <div className="bx--col-xs-6">
-            <TextInput labelText="Network" disabled={true} value={network} />
+            <TextInput
+              labelText="Network"
+              disabled={true}
+              value={network}
+              helperText="Name and id of the network from Signed Transaction"
+            />
           </div>
         </div>
       </div>

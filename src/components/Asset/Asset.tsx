@@ -4,7 +4,9 @@ import { IAsset } from 'src/api/SentinelAPI';
 
 interface IAssetProps extends IAsset {
   label: string;
+  helperLabel?: string;
   amountLabel: string;
+  amountHelperLabel?: string;
   
   disabled: boolean;
   validationError?: string;
@@ -22,6 +24,7 @@ class Asset extends React.Component<IAssetProps, any> {
             <TextInput
               id="Address"
               labelText={this.props.label}
+              helperText={this.props.helperLabel}
               value={this.props.address}
               // tslint:disable-next-line:jsx-no-lambda
               onChange={(e: any) => {
@@ -49,6 +52,7 @@ class Asset extends React.Component<IAssetProps, any> {
             <TextInput
               id="Amount"
               labelText={this.props.amountLabel}
+              helperText={this.props.amountHelperLabel}
               value={this.props.amount}
               // tslint:disable-next-line:jsx-no-lambda
               onChange={(e: any) => {

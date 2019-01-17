@@ -20,6 +20,7 @@ class SenderInformation extends React.Component<IScheduledTransactionProps, any>
           <div className="bx--col-xs-6">
             <TextInput
               labelText="Sender address"
+              helperText="Sender address decoded from Signed Transaction"
               disabled={true}
               value={this.props.signedSender}
             />
@@ -29,8 +30,9 @@ class SenderInformation extends React.Component<IScheduledTransactionProps, any>
           <div className="bx--col-xs-6">
             <TextInput
               labelText="Sender nonce"
+              helperText="Current sender nonce for the network signed in the transaction"
               disabled={true}
-              value={this.props.senderNonce || ""}
+              value={isNaN(this.props.senderNonce) ? "" : this.props.senderNonce}
             />
           </div>
         </div>
