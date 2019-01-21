@@ -113,7 +113,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
         </div>
         <Checkbox
           id="timeScheduling"
-          labelText="Enable"
+          labelText="Execute transaction on"
           // tslint:disable-next-line:jsx-no-lambda
           onChange={(checked: any) =>
             this.setState({ timeScheduling: checked })

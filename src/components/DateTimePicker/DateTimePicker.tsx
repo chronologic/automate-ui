@@ -44,7 +44,8 @@ class DateTimePicker extends React.Component<
     const onTimeChange = this.onTimeChange.bind(this);
 
     return (
-      <div>
+      <div className="bx--row row-padding">
+      <div className="bx--col-xs-2">
         <DatePicker
           id="date-picker"
           datePickerType="single"
@@ -53,7 +54,7 @@ class DateTimePicker extends React.Component<
         >
           <DatePickerInput
             id="date-picker-input"
-            labelText="Execute on"
+            labelText="Date"
             iconDescription="description"
             placeholder="dd/mm/yyyy"
             invalid={this.state.dateInvalid}
@@ -61,8 +62,11 @@ class DateTimePicker extends React.Component<
             disabled={this.props.disabled}
           />
         </DatePicker>
+        </div>
+        <div className="bx--col-xs-3">
         <TimePicker
           id="time-picker"
+          labelText="Time"
           maxLength={5}
           placeholder="hh:mm"
           pattern=""
@@ -74,6 +78,7 @@ class DateTimePicker extends React.Component<
         >
           {this.renderTimezonePicker()}
         </TimePicker>
+        </div>
       </div>
     );
   }
