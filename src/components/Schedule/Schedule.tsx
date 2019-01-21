@@ -1,4 +1,4 @@
-import { Button, TextArea, Tile } from 'carbon-components-react';
+import { Button, Checkbox, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -11,6 +11,7 @@ import {
 import { TokenAPI } from 'src/api/TokenAPI';
 
 import ConditionalAsset from '../Asset/ConditionalAsset';
+import DateTimePicker from '../DateTimePicker/DateTimePicker';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';
 
@@ -20,6 +21,11 @@ interface ISentinelState extends IDecodedTransaction {
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
+
+  timeScheduling: boolean;
+  timeCondition?: number;
+  timeConditionIsValid: boolean;
+  timeConditionTZ?: string;
 }
 
 const defaultState = {
@@ -33,6 +39,8 @@ const defaultState = {
   signedSender: '',
   signedTransaction: '',
   signedTransactionIsValid: true,
+  timeConditionIsValid: false,
+  timeScheduling: false
 };
 
 class Schedule extends React.Component<{}, ISentinelState> {
@@ -51,12 +59,22 @@ class Schedule extends React.Component<{}, ISentinelState> {
       });
     };
 
+    const emitDateTime = (timeCondition: number, tz: string) => {
+      this.setState({ timeConditionIsValid: true, timeCondition, timeConditionTZ: tz });
+    };
+
+    const onTimeConditionValidatorError = (error: string) => {
+      this.setState({ timeConditionIsValid: !error });
+    };
+
     const onValidationError = (error: string) => {
       this.setState({ conditionalAssetIsValid: !error });
     };
 
     const response = this.renderResponse();
-    const success = this.state.sentinelResponse && (this.state.sentinelResponse as IScheduleAccessKey).id;
+    const success =
+      this.state.sentinelResponse &&
+      (this.state.sentinelResponse as IScheduleAccessKey).id;
 
     return (
       <div>
@@ -90,6 +108,22 @@ class Schedule extends React.Component<{}, ISentinelState> {
           onChange={emitConditional}
           onValidationError={onValidationError}
         />
+        <div className="bx--row row-padding bx--type-gamma">
+          Time scheduling
+        </div>
+        <Checkbox
+          id="timeScheduling"
+          labelText="Enable"
+          // tslint:disable-next-line:jsx-no-lambda
+          onChange={(checked: any) =>
+            this.setState({ timeScheduling: checked })
+          }
+        />
+        <DateTimePicker
+          onChange={emitDateTime}
+          onValidationError={onTimeConditionValidatorError}
+          disabled={!this.state.timeScheduling}
+        />
         <div className="bx--row row-padding">
           <Button
             onClick={send}
@@ -97,6 +131,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
               !this.state.conditionalAssetIsValid ||
               !this.state.signedTransactionIsValid ||
               !this.state.signedTransaction ||
+              (this.state.timeScheduling && !this.state.timeConditionIsValid) ||
               success
             }
           >
@@ -107,7 +142,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
       </div>
     );
   }
-
 
   private renderResponse() {
     if (!this.state.sentinelResponse) {
@@ -128,7 +162,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
             {window.location.href}
             {link}
           </Link>
-          <br/><br/>
+          <br />
+          <br />
           <Button onClick={reset}>Schedule another one</Button>
         </Tile>
       );
@@ -163,10 +198,15 @@ class Schedule extends React.Component<{}, ISentinelState> {
       conditionalAsset.decimals
     ).toString();
 
+    const timeCondition = this.state.timeCondition || 0;
+    const timeConditionTZ = timeCondition ? this.state.timeConditionTZ! : "";
+
     const payload = {
       conditionAmount,
       conditionAsset: conditionalAsset.address,
-      signedTransaction: this.state.signedTransaction
+      signedTransaction: this.state.signedTransaction,
+      timeCondition,
+      timeConditionTZ
     };
 
     const sentinelResponse = await SentinelAPI.schedule(payload);

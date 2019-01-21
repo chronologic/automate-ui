@@ -14,6 +14,8 @@ export interface IScheduleRequest {
   conditionAmount: string;
   conditionAsset: string;
   signedTransaction: string;
+  timeCondition: number;
+  timeConditionTZ: string;
 }
 
 interface IScheduledTransactionRaw {
@@ -43,6 +45,8 @@ export interface ICancelResponse {
 
 export interface IScheduledTransaction extends IScheduledTransactionRaw {
   conditionalAsset: IAsset;
+  timeCondition: number;
+  timeConditionTZ: string;
 }
 
 export interface IAsset {
