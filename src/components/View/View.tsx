@@ -6,12 +6,13 @@ import {
   IError,
   IScheduledTransaction,
   SentinelAPI,
-  Status,
+  Status
 } from 'src/api/SentinelAPI';
 
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';
+import TimeCondition from './TimeCondition';
 import TransactionStatus from './TransactionStatus';
 
 interface IView {
@@ -52,7 +53,8 @@ class View extends React.Component<any, IView> {
     }
 
     const executed =
-      this.state.scheduledTransaction && this.state.scheduledTransaction.status !== Status.Pending;
+      this.state.scheduledTransaction &&
+      this.state.scheduledTransaction.status !== Status.Pending;
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
 
@@ -61,9 +63,14 @@ class View extends React.Component<any, IView> {
     ) : (
       <div>
         <div className="bx--type-gamma">Transaction Status</div>
-        <TransactionStatus {...{...this.state.scheduledTransaction, ...this.state.decodedTransaction}} />
+        <TransactionStatus
+          {...{
+            ...this.state.scheduledTransaction,
+            ...this.state.decodedTransaction
+          }}
+        />
         <div className="bx--type-gamma">Transaction Information</div>
-        <SenderInformation skeleton={true} {...this.state.decodedTransaction}/>
+        <SenderInformation skeleton={true} {...this.state.decodedTransaction} />
         <div className="bx--type-gamma">Transaction Info</div>
         <DecodedTransaction
           {...this.state.decodedTransaction}
@@ -73,6 +80,7 @@ class View extends React.Component<any, IView> {
         <DecodedConditionalAsset
           {...this.state.scheduledTransaction.conditionalAsset}
         />
+        <TimeCondition {...this.state.scheduledTransaction} />
         <Button
           className="bx--btn--danger"
           disabled={executed}
@@ -98,9 +106,12 @@ class View extends React.Component<any, IView> {
 
   private async cancel() {
     const cancelResponse = await SentinelAPI.cancel(this.props.match.params);
-    if ((cancelResponse as ICancelResponse).status === Status.Cancelled){
-      const scheduledTransaction = { ...this.state.scheduledTransaction, status: Status.Cancelled };
-      this.setState( {scheduledTransaction})
+    if ((cancelResponse as ICancelResponse).status === Status.Cancelled) {
+      const scheduledTransaction = {
+        ...this.state.scheduledTransaction,
+        status: Status.Cancelled
+      };
+      this.setState({ scheduledTransaction });
     }
 
     this.setState({ cancelResponse });
