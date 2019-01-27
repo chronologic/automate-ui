@@ -28,7 +28,7 @@ class DateTimePicker extends React.Component<
   IDateTimePickerView,
   IDateTimePickerState
 > {
-  private timePattern = new RegExp('([01]?[0-9]|2[0-3]):[0-5][0-9]');
+  private timePattern = new RegExp('^(([0-1]{0,1}[0-9])|(2[0-3])):[0-5]{0,1}[0-9]$');
 
   constructor(props: any) {
     super(props);
@@ -125,18 +125,17 @@ class DateTimePicker extends React.Component<
   }
 
   private onDateChange(dates: Date[]) {
-    const date = dates[0];
-    const isAfter = moment().isAfter(date);
-    const ts = date.getTime();
-
-    this.setState({ dateInvalid: isAfter, date: ts });
-
+    const ts = dates[0].getTime();
+        
     const combined = this.combine(
       ts,
       this.state.hours!,
       this.state.minutes!,
       this.state.tz
-    );
+      );
+      
+    const isAfter = moment().isAfter(combined);
+    this.setState({ dateInvalid: isAfter, date: ts });
 
     this.tryEmitResult(combined, this.state.tz);
   }
@@ -151,15 +150,16 @@ class DateTimePicker extends React.Component<
 
     const hours = parsed.hours();
     const minutes = parsed.minutes();
-
-    this.setState({ timeInvalid: !isValid, hours, minutes });
-
+  
     const combined = this.combine(
       this.state.date!,
       hours,
       minutes,
       this.state.tz
     );
+
+    const isAfter = moment().isAfter(combined);
+    this.setState({ dateInvalid: isAfter, timeInvalid: !isValid, hours, minutes });
 
     this.tryEmitResult(combined, this.state.tz);
   }
