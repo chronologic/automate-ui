@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { IAssetState } from 'src/components/Asset/ConditionalAsset';
 import { ERC20 } from './erc20';
 
 export const ETH = { name: 'ETH', decimals: 18 };
@@ -25,5 +26,39 @@ export class TokenAPI {
     const decimals = await token.decimals();
 
     return { name, decimals };
+  }
+
+  public static async resolveToken(
+    address: string,
+    chainId: number
+  ): Promise<IAssetState> {
+    let validationError = '';
+    let { name, decimals } = ETH;
+
+    if (address) {
+      try {
+        ethers.utils.getAddress(address);
+      } catch (e) {
+        validationError = 'Wrong asset address';
+      }
+    }
+
+    if (!validationError) {
+      try {
+        const tokenInfo = await TokenAPI.tokenInfo(address, chainId);
+        decimals = tokenInfo.decimals;
+        name = tokenInfo.name;
+      } catch (e) {
+        validationError = 'Asset is not ERC-20 compatible';
+      }
+    }
+
+    return {
+      address,
+      amount: '',
+      decimals,
+      name,
+      validationError
+    };
   }
 }

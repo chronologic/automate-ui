@@ -82,7 +82,7 @@ class View extends React.Component<any, IView> {
         />
         <TimeCondition {...this.state.scheduledTransaction} />
         <Button
-          className="bx--btn--danger"
+          kind="danger"
           disabled={executed}
           onClick={cancel}
         >

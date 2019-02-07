@@ -1,4 +1,4 @@
-import { Button, Checkbox, TextArea, Tile } from 'carbon-components-react';
+import { Button, TextArea, Tile } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -10,10 +10,8 @@ import {
 } from 'src/api/SentinelAPI';
 import { TokenAPI } from 'src/api/TokenAPI';
 
-import ConditionalAsset from '../Asset/ConditionalAsset';
-import DateTimePicker from '../DateTimePicker/DateTimePicker';
-import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
-import SenderInformation from '../Sender/SenderInformation';
+import ConditionSection from './ConditionSection';
+import SummarySection from './SummarySection';
 
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset?: IAsset;
@@ -53,39 +51,23 @@ class Schedule extends React.Component<{}, ISentinelState> {
     const send = this.send.bind(this);
     const decode = this.decode.bind(this);
 
-    const emitConditional = (conditionalAsset: IAsset) => {
-      this.setState({
-        conditionalAsset
-      });
-    };
-
-    const emitDateTime = (timeCondition: number, tz: string) => {
-      this.setState({ timeConditionIsValid: true, timeCondition, timeConditionTZ: tz });
-    };
-
-    const onTimeConditionValidatorError = (error: string) => {
-      this.setState({ timeConditionIsValid: !error });
-    };
-
-    const onValidationError = (error: string) => {
-      this.setState({ conditionalAssetIsValid: !error });
-    };
-
     const response = this.renderResponse();
     const success =
       this.state.sentinelResponse &&
       (this.state.sentinelResponse as IScheduleAccessKey).id;
 
+    const conditionSectionActive = Boolean(this.state.signedTransaction && this.state.signedTransactionIsValid);
+
     return (
       <div>
-        <div className="bx--row row-padding">
-          <div className="bx--col-xs-6">
+        <div className="bx--row">
+          <div className={`bx--col-xs-6 main-section${conditionSectionActive ? '' : ' main-section-blue'}`}>
             <TextArea
               id="SignedTx"
-              labelText="Signed transaction"
-              helperText="Standard Ethereum signed transaction. Please use https://www.myetherwallet.com/#offline-transaction to create and sign. Tutorial coming soon."
-              rows={7}
+              labelText="EXECUTE"
+              rows={5}
               value={this.state.signedTransaction}
+              placeholder="Paste the signed transaction here"
               // tslint:disable-next-line:jsx-no-lambda
               onChange={(e: any) => decode(e.target.value)}
               invalid={!this.state.signedTransactionIsValid}
@@ -93,38 +75,27 @@ class Schedule extends React.Component<{}, ISentinelState> {
             />
           </div>
         </div>
-        <div className="bx--row row-padding bx--type-gamma">Sender</div>
-        <SenderInformation {...this.state} skeleton={false} />
-        <div className="bx--row row-padding bx--type-gamma">
-          Decoded Transaction
-        </div>
-        <DecodedTransaction {...this.state} skeleton={false} />
-        <div className="bx--row row-padding bx--type-gamma">
-          Conditional Parameters
-        </div>
-        <ConditionalAsset
-          chainId={this.state.signedChain.chainId}
-          disabled={this.state.signedTransaction === ''}
-          onChange={emitConditional}
-          onValidationError={onValidationError}
-        />
-        <div className="bx--row row-padding bx--type-gamma">
-          Time scheduling
-        </div>
-        <Checkbox
-          id="timeScheduling"
-          labelText="Execute transaction on"
-          // tslint:disable-next-line:jsx-no-lambda
-          onChange={(checked: any) =>
-            this.setState({ timeScheduling: checked })
-          }
-        />
-        <DateTimePicker
-          onChange={emitDateTime}
-          onValidationError={onTimeConditionValidatorError}
-          disabled={!this.state.timeScheduling}
-        />
-        <div className="bx--row row-padding">
+        {true &&
+        <>
+          <ConditionSection
+            active={conditionSectionActive}
+            chainId={this.state.signedChain.chainId}
+            conditionalAsset={this.conditionalAsset}
+            signedAsset={this.state.signedAsset}
+            signedSender={this.state.signedSender}
+            onConditionalAssetChange={this.emitConditional}
+            onTimeConditionChange={this.emitDateTime}
+            onTimeConditionValidatorError={this.onTimeConditionValidatorError}
+            setTimeScheduling={this.setTimeScheduling}
+            timeScheduling={this.state.timeScheduling}
+          />
+          <SummarySection
+            conditionalAsset={this.conditionalAsset}
+            signedAsset={this.state.signedAsset}
+            signedRecipient={this.state.signedRecipient}
+            signedSender={this.state.signedSender}
+          />
+                  <div className="bx--row row-padding carbon--center">
           <Button
             onClick={send}
             disabled={
@@ -135,12 +106,32 @@ class Schedule extends React.Component<{}, ISentinelState> {
               success
             }
           >
-            Schedule
+            SCHEDULE
           </Button>
         </div>
+        </>
+        }
         {response}
       </div>
     );
+  }
+
+  private emitConditional = (conditionalAsset: IAsset) => {
+    this.setState({
+      conditionalAsset
+    });
+  };
+
+  private emitDateTime = (timeCondition: number, tz: string) => {
+    this.setState({ timeConditionIsValid: true, timeCondition, timeConditionTZ: tz });
+  };
+
+  private onTimeConditionValidatorError = (error: string) => {
+    this.setState({ timeConditionIsValid: !error });
+  };
+
+  private setTimeScheduling = (checked : any) => {
+    this.setState({ timeScheduling: checked })
   }
 
   private renderResponse() {
@@ -187,11 +178,14 @@ class Schedule extends React.Component<{}, ISentinelState> {
     }
   }
 
+  get conditionalAsset() {
+    return this.state.conditionalAsset && this.state.conditionalAsset.amount !== ''
+    ? this.state.conditionalAsset
+    : this.state.signedAsset;
+  }
+
   private async send() {
-    const conditionalAsset =
-      this.state.conditionalAsset && this.state.conditionalAsset.amount !== ''
-        ? this.state.conditionalAsset
-        : this.state.signedAsset;
+    const conditionalAsset = this.conditionalAsset;
 
     const conditionAmount = TokenAPI.withoutDecimals(
       conditionalAsset.amount,

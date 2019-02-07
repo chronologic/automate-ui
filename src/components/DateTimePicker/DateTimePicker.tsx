@@ -9,6 +9,7 @@ import * as moment from 'moment-timezone';
 import * as React from 'react';
 
 interface IDateTimePickerView {
+  light: boolean;
   disabled: boolean;
 
   onChange: (timestamp: number, tz: string) => void;
@@ -30,7 +31,7 @@ class DateTimePicker extends React.Component<
 > {
   private timePattern = new RegExp('^(([0-1]{0,1}[0-9])|(2[0-3])):[0-5]{0,1}[0-9]$');
 
-  constructor(props: any) {
+  constructor(props: IDateTimePickerView) {
     super(props);
     this.state = {
       dateInvalid: false,
@@ -43,18 +44,18 @@ class DateTimePicker extends React.Component<
     const onDateChange = this.onDateChange.bind(this);
     const onTimeChange = this.onTimeChange.bind(this);
 
-    return (
-      <div className="bx--row row-padding">
-      <div className="bx--col-xs-2">
+    return <>
+        <div className="datetimepicker">
         <DatePicker
           id="date-picker"
           datePickerType="single"
           dateFormat="d/m/Y"
           onChange={onDateChange}
+          light={this.props.light}
         >
           <DatePickerInput
             id="date-picker-input"
-            labelText="Date"
+            labelText=""
             iconDescription="description"
             placeholder="dd/mm/yyyy"
             invalid={this.state.dateInvalid}
@@ -62,11 +63,9 @@ class DateTimePicker extends React.Component<
             disabled={this.props.disabled}
           />
         </DatePicker>
-        </div>
-        <div className="bx--col-xs-3">
         <TimePicker
           id="time-picker"
-          labelText="Time"
+          labelText=""
           maxLength={5}
           placeholder="hh:mm"
           pattern=""
@@ -75,12 +74,12 @@ class DateTimePicker extends React.Component<
           invalid={this.state.timeInvalid}
           invalidText="Incorrect time"
           disabled={this.props.disabled}
+          light={this.props.light}
         >
           {this.renderTimezonePicker()}
         </TimePicker>
         </div>
-      </div>
-    );
+      </>;
   }
 
   private renderTimezonePicker() {
@@ -88,7 +87,7 @@ class DateTimePicker extends React.Component<
     const names = moment.tz.names();
     const userTimezone = moment.tz.guess();
     // prettier-ignore
-    const timeZones = names.map(tz => (<SelectItem value={tz} text={tz} />));
+    const timeZones = names.map((tz, index) => (<SelectItem key={index} value={tz} text={tz} />));
 
     return (
       <TimePickerSelect
@@ -97,6 +96,8 @@ class DateTimePicker extends React.Component<
         // tslint:disable-next-line:jsx-no-lambda
         onChange={(e: any) => onTimezoneChange(e.target.value)}
         disabled={this.props.disabled}
+        className="timepicker-light"
+        labelText=''
       >
         {timeZones}
       </TimePickerSelect>

@@ -5,8 +5,8 @@ import logo from './logo.svg';
 class Header extends React.Component {
   public render() {
     return (
-      <div className="bx--row">
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex' }}>
+      <div className="bx--row carbon--center">
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', width: '300px' }}>
           <img src={logo}/>
         </Link>
       </div>

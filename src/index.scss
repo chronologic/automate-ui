@@ -1,7 +1,8 @@
 @import 'carbon-components/scss/globals/scss/styles.scss';
 
 body {
-  margin: $spacing-3xl
+  margin: 0;
+  background: white;
 }
 
 .space {
@@ -10,4 +11,221 @@ body {
 
 .row-padding {
   padding: $spacing-sm
+}
+
+.main-section {
+  flex-grow: 1;
+  min-height: 320px;
+  max-width: 100%;
+  padding: 75px 68px 103px 68px;
+
+  .bx--label {
+    color: #a3a3a3;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    line-height: 36px;
+  }
+
+  &-blue {
+    color: white;
+    background: rgb(47, 79, 253);
+
+    .bx--label {
+      color: white;
+    }
+  }
+
+  .bx--text-area {
+    margin-top: 5px;
+  }
+}
+
+.bx--btn--primary {
+  background: #2f4ffd;
+  color: white;
+  font-weight: 100;
+  font-family: Helvetica;
+  font-size: 14px;
+  letter-spacing: 1px;
+  line-height: 18px;
+}
+
+.carbon--center {
+  justify-content: center;
+}
+
+.schedule-summary {
+  display: flex;
+  margin-top: 50px;
+
+  &_party {
+    width: 260px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &_label {
+      margin-top: 6px;
+      color: #9B9B9B;
+      font-family: Helvetica;
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    &_address {
+      font-size: 10px;
+      margin-top: 6px;
+      color: #5a5a5a;
+    }
+
+    svg {
+      margin: 30px auto 0 auto;
+    }
+  }
+
+  &_details {
+    flex-grow: 1;
+    text-align: center;
+    position: relative;
+    flex-direction: column;
+    height: 110px;
+    display: flex;
+
+    &_amount {
+      color: #2F4FFD;
+      font-size: 32px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      line-height: 36px;
+      text-align: center;
+      height: 56px;
+    }
+
+    &_arrow {
+      position: relative;
+
+      &::before {
+        content: '';
+        display: inline-block;
+        height: 1px;
+        background: #9b9b9b;
+        width: calc(100% + 171px);
+        position: absolute;
+        left: -91px;
+      }
+
+      &::after {
+        content: '';
+        display: inline-block;
+        border-top: 5px solid transparent;
+        border-left: 8px solid #9b9b9b;
+        border-bottom: 5px solid transparent;
+        position: absolute;
+        right: -85px;
+        top: -4px;
+      }
+    }
+
+    &_condition {
+      color: #4A4A4A;
+      font-family: Helvetica;
+      font-size: 14px;
+      line-height: 21px;
+      text-align: center;
+      margin-top: 12px;
+    }
+  }
+}
+
+.schedule-condition {
+  min-height: 260px;
+  padding: 0 68px;
+  font-family: Helvetica;
+  font-size: 18px;
+  line-height: 21px;
+
+  &:not(.main-section-blue) {
+    background: #F4F7FB;
+    color: #9B9B9B;
+  }
+
+  &_content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+
+    > div {
+      flex-grow: 1;
+      flex-basis: 1px;
+    }
+
+    &_asset {
+      position: relative;
+      
+      &_custom {
+        font-size: 14px;
+        position: absolute;
+        right: 0;
+        top: 51px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+    }
+
+    &_sender {
+      flex-grow: 2;
+      text-align: left;
+
+      &_address {
+        font-weight: 100;
+      }
+    }
+
+    &_asset-amount {
+      .bx--number {
+        width: calc(100% - 0.75rem);
+      }
+    }
+  }
+
+  > .bx--label {
+    margin-top: 50px;
+  }
+
+  .bx--row:last-of-type {
+    margin-top: 20px;
+  }
+}
+
+.timepicker-light {
+  select {
+    background: white !important;
+    border-bottom: 1px solid #5a6872 !important;
+    height: 41px;
+  }
+}
+
+.datetimepicker {
+  display: inline;
+
+  .bx--form-item {
+    display: inline-flex;
+
+    &:last-of-type {
+      max-width: 288px;
+      max-height: 40px;
+    }
+  }
+}
+
+.timescheduling-wrapper {
+  text-align: right;
+
+  .bx--checkbox-wrapper {
+    display: inline-flex;
+    padding-right: 10px;
+  }
 }

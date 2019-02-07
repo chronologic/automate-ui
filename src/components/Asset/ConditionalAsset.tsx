@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import * as React from 'react';
 import { IAsset } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
@@ -68,30 +67,8 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
 
   }
 
-  private async resolveToken(address: string, chainId?: number) {
-    let validationError = '';
-    let { name, decimals } = ETH;
-
-    if (address) {
-      try {
-        ethers.utils.getAddress(address);
-      } catch (e) {
-        validationError = 'Wrong asset address';
-      }
-    }
-
-    if (!validationError) {
-      try {
-        const tokenInfo = await TokenAPI.tokenInfo(
-          address,
-          chainId || this.props.chainId
-        );
-        decimals = tokenInfo.decimals;
-        name = tokenInfo.name;
-      } catch (e) {
-        validationError = 'Asset is not ERC-20 compatible';
-      }
-    }
+  private async resolveToken(address: string, chainId?: number) : Promise<void> {
+    const { name, decimals, validationError } = await TokenAPI.resolveToken(address, chainId || this.props.chainId);
 
     const newState = {
       ...this.state,
