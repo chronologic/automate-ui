@@ -8,13 +8,13 @@ import {
   IScheduleAccessKey,
   SentinelAPI
 } from 'src/api/SentinelAPI';
-import { TokenAPI } from 'src/api/TokenAPI';
+import { ETH, TokenAPI } from 'src/api/TokenAPI';
 
 import ConditionSection from './ConditionSection';
 import SummarySection from './SummarySection';
 
 interface ISentinelState extends IDecodedTransaction {
-  conditionalAsset?: IAsset;
+  conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
@@ -27,6 +27,11 @@ interface ISentinelState extends IDecodedTransaction {
 }
 
 const defaultState = {
+  conditionalAsset: {
+    ...ETH,
+    address: '',
+    amount: ''
+  },
   conditionalAssetIsValid: true,
   senderNonce: NaN,
   sentinelResponse: undefined,
@@ -80,7 +85,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
           <ConditionSection
             active={conditionSectionActive}
             chainId={this.state.signedChain.chainId}
-            conditionalAsset={this.conditionalAsset}
+            conditionalAsset={this.state.conditionalAsset}
             signedAsset={this.state.signedAsset}
             signedSender={this.state.signedSender}
             onConditionalAssetChange={this.emitConditional}
@@ -90,7 +95,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
             timeScheduling={this.state.timeScheduling}
           />
           <SummarySection
-            conditionalAsset={this.conditionalAsset}
+            conditionalAsset={this.state.conditionalAsset}
             signedAsset={this.state.signedAsset}
             signedRecipient={this.state.signedRecipient}
             signedSender={this.state.signedSender}
@@ -172,6 +177,9 @@ class Schedule extends React.Component<{}, ISentinelState> {
       const transaction = scheduledTransaction as IDecodedTransaction;
       this.setState({
         ...transaction,
+        conditionalAsset: {
+          ...transaction.signedAsset
+        },
         signedTransaction,
         signedTransactionIsValid: true
       });
