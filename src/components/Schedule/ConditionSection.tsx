@@ -213,10 +213,21 @@ export default class ConditionSection extends React.Component<IConditionSectionP
 
     private onAmountChange = (event : React.FormEvent<HTMLInputElement>) => {
       const target = event.target as HTMLInputElement;
+      const newAmount = target.value;
+
+      const parsed = Number.parseFloat(newAmount);
+      let amount = "";
+      if (!Number.isNaN(parsed)) {
+        amount = parsed.toString();
+        
+        if (newAmount[newAmount.length - 1 ] === ".") {
+          amount += ".";
+        }
+      }
 
       this.props.onConditionalAssetChange({
         ...this.props.conditionalAsset,
-        amount: target.value
+        amount
       });
     }
 }
