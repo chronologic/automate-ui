@@ -81,7 +81,7 @@ body {
     }
 
     svg {
-      margin: 30px auto 0 auto;
+      margin: 58px auto 0 auto;
     }
   }
 
@@ -90,7 +90,7 @@ body {
     text-align: center;
     position: relative;
     flex-direction: column;
-    height: 110px;
+    height: 127px;
     display: flex;
 
     &_amount {
@@ -101,6 +101,15 @@ body {
       line-height: 36px;
       text-align: center;
       height: 56px;
+    }
+
+    &_network {
+      color: #4A4A4A;
+      font-family: Helvetica;
+      font-size: 14px;
+      line-height: 21px;
+      padding-bottom: 11px;
+      margin-top: 5px;
     }
 
     &_arrow {

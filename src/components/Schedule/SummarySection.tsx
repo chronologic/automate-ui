@@ -5,7 +5,10 @@ import { IAsset } from 'src/api/SentinelAPI';
 import HighlightedDisplay from './HighlightedDisplay';
 
 interface ISummarySectionProps {
+  chainId: number;
   conditionalAsset: IAsset;
+  isNetworkSupported: boolean;
+  networkName: string | undefined;
   signedAsset: IAsset;
   signedRecipient: string;
   signedSender: string;
@@ -13,7 +16,11 @@ interface ISummarySectionProps {
 
 export default class SummarySection extends React.Component<ISummarySectionProps> {
     public render() {
-        const { conditionalAsset, signedAsset, signedRecipient, signedSender } = this.props;
+        const { chainId, conditionalAsset, signedAsset, signedRecipient,
+          signedSender,
+          networkName,
+          isNetworkSupported
+        } = this.props;
 
         return <div className="bx--row">
         <div className="bx--col-xs-6 main-section">
@@ -35,6 +42,9 @@ export default class SummarySection extends React.Component<ISummarySectionProps
             <div className="schedule-summary_details">
               <div className="schedule-summary_details_amount">
                 {signedAsset.amount} {signedAsset.name}
+              </div>
+              <div className="schedule-summary_details_network">
+                {signedSender ? `Network: ${chainId} (${networkName} - supported ${isNetworkSupported ? '✔' : '✖'})` : ''}
               </div>
               <div className="schedule-summary_details_arrow" />
               <div className="schedule-summary_details_condition">

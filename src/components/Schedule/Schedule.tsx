@@ -13,6 +13,13 @@ import { ETH, TokenAPI } from 'src/api/TokenAPI';
 import ConditionSection from './ConditionSection';
 import SummarySection from './SummarySection';
 
+const SUPPORTED_NETWORKS = {
+  1: 'Mainnet',
+  3: 'Ropsten',
+  4: 'Rinkeby',
+  42: 'Kovan'
+}
+
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
@@ -54,7 +61,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
   public render() {
     const send = this.send.bind(this);
-    const decode = this.decode.bind(this);
 
     const response = this.renderResponse();
     const success =
@@ -74,7 +80,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
               value={this.state.signedTransaction}
               placeholder="Paste the signed transaction here"
               // tslint:disable-next-line:jsx-no-lambda
-              onChange={(e: any) => decode(e.target.value)}
+              onChange={(e: any) => this.decode(e.target.value.trim())}
               invalid={!this.state.signedTransactionIsValid}
               invalidText="Signed transaction is invalid"
             />
@@ -95,6 +101,9 @@ class Schedule extends React.Component<{}, ISentinelState> {
             timeScheduling={this.state.timeScheduling}
           />
           <SummarySection
+            chainId={this.state.signedChain.chainId}
+            isNetworkSupported={this.isNetworkSupported(this.state.signedChain.chainId)}
+            networkName={this.getNetworkName(this.state.signedChain.chainId)}
             conditionalAsset={this.state.conditionalAsset}
             signedAsset={this.state.signedAsset}
             signedRecipient={this.state.signedRecipient}
@@ -119,6 +128,14 @@ class Schedule extends React.Component<{}, ISentinelState> {
         {response}
       </div>
     );
+  }
+
+  private isNetworkSupported(networkId : number) : boolean {
+    return Boolean(this.getNetworkName(networkId));
+  }
+
+  private getNetworkName(networkId : number) : string | undefined {
+    return SUPPORTED_NETWORKS[this.state.signedChain.chainId];
   }
 
   private emitConditional = (conditionalAsset: IAsset) => {
