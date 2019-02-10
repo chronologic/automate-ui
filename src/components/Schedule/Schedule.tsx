@@ -152,8 +152,8 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
   private emitDateTime = (timeCondition: number, tz: string) => {
     this.setState({
-      timeConditionIsValid: true,
       timeCondition,
+      timeConditionIsValid: true,
       timeConditionTZ: tz
     });
   };
