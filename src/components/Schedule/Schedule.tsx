@@ -18,7 +18,7 @@ const SUPPORTED_NETWORKS = {
   3: 'Ropsten',
   4: 'Rinkeby',
   42: 'Kovan'
-}
+};
 
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset: IAsset;
@@ -67,12 +67,18 @@ class Schedule extends React.Component<{}, ISentinelState> {
       this.state.sentinelResponse &&
       (this.state.sentinelResponse as IScheduleAccessKey).id;
 
-    const conditionSectionActive = Boolean(this.state.signedTransaction && this.state.signedTransactionIsValid);
+    const conditionSectionActive = Boolean(
+      this.state.signedTransaction && this.state.signedTransactionIsValid
+    );
 
     return (
       <div>
         <div className="bx--row">
-          <div className={`bx--col-xs-6 main-section${conditionSectionActive ? '' : ' main-section-blue'}`}>
+          <div
+            className={`bx--col-xs-6 main-section${
+              conditionSectionActive ? '' : ' main-section-blue'
+            }`}
+          >
             <TextArea
               id="SignedTx"
               labelText="EXECUTE"
@@ -86,30 +92,32 @@ class Schedule extends React.Component<{}, ISentinelState> {
             />
           </div>
         </div>
-        {true &&
-        <>
-          <ConditionSection
-            active={conditionSectionActive}
-            chainId={this.state.signedChain.chainId}
-            conditionalAsset={this.state.conditionalAsset}
-            signedAsset={this.state.signedAsset}
-            signedSender={this.state.signedSender}
-            onConditionalAssetChange={this.emitConditional}
-            onTimeConditionChange={this.emitDateTime}
-            onTimeConditionValidatorError={this.onTimeConditionValidatorError}
-            setTimeScheduling={this.setTimeScheduling}
-            timeScheduling={this.state.timeScheduling}
-          />
-          <SummarySection
-            chainId={this.state.signedChain.chainId}
-            isNetworkSupported={this.isNetworkSupported(this.state.signedChain.chainId)}
-            networkName={this.getNetworkName(this.state.signedChain.chainId)}
-            conditionalAsset={this.state.conditionalAsset}
-            signedAsset={this.state.signedAsset}
-            signedRecipient={this.state.signedRecipient}
-            signedSender={this.state.signedSender}
-          />
-                  <div className="bx--row row-padding carbon--center">
+        <ConditionSection
+          active={conditionSectionActive}
+          chainId={this.state.signedChain.chainId}
+          conditionalAsset={this.state.conditionalAsset}
+          signedAsset={this.state.signedAsset}
+          signedSender={this.state.signedSender}
+          onConditionalAssetChange={this.emitConditional}
+          onTimeConditionChange={this.emitDateTime}
+          onTimeConditionValidatorError={this.onTimeConditionValidatorError}
+          setTimeScheduling={this.setTimeScheduling}
+          timeScheduling={this.state.timeScheduling}
+        />
+        <SummarySection
+          chainId={this.state.signedChain.chainId}
+          isNetworkSupported={this.isNetworkSupported(
+            this.state.signedChain.chainId
+          )}
+          networkName={this.getNetworkName(this.state.signedChain.chainId)}
+          conditionalAsset={this.state.conditionalAsset}
+          senderNonce={this.state.senderNonce}
+          signedAsset={this.state.signedAsset}
+          signedNonce={this.state.signedNonce}
+          signedRecipient={this.state.signedRecipient}
+          signedSender={this.state.signedSender}
+        />
+        <div className="bx--row row-padding carbon--center">
           <Button
             onClick={send}
             disabled={
@@ -123,18 +131,16 @@ class Schedule extends React.Component<{}, ISentinelState> {
             SCHEDULE
           </Button>
         </div>
-        </>
-        }
         {response}
       </div>
     );
   }
 
-  private isNetworkSupported(networkId : number) : boolean {
+  private isNetworkSupported(networkId: number): boolean {
     return Boolean(this.getNetworkName(networkId));
   }
 
-  private getNetworkName(networkId : number) : string | undefined {
+  private getNetworkName(networkId: number): string | undefined {
     return SUPPORTED_NETWORKS[this.state.signedChain.chainId];
   }
 
@@ -145,16 +151,20 @@ class Schedule extends React.Component<{}, ISentinelState> {
   };
 
   private emitDateTime = (timeCondition: number, tz: string) => {
-    this.setState({ timeConditionIsValid: true, timeCondition, timeConditionTZ: tz });
+    this.setState({
+      timeConditionIsValid: true,
+      timeCondition,
+      timeConditionTZ: tz
+    });
   };
 
   private onTimeConditionValidatorError = (error: string) => {
     this.setState({ timeConditionIsValid: !error });
   };
 
-  private setTimeScheduling = (checked : any) => {
-    this.setState({ timeScheduling: checked })
-  }
+  private setTimeScheduling = (checked: any) => {
+    this.setState({ timeScheduling: checked });
+  };
 
   private renderResponse() {
     if (!this.state.sentinelResponse) {
@@ -204,9 +214,10 @@ class Schedule extends React.Component<{}, ISentinelState> {
   }
 
   get conditionalAsset() {
-    return this.state.conditionalAsset && this.state.conditionalAsset.amount !== ''
-    ? this.state.conditionalAsset
-    : this.state.signedAsset;
+    return this.state.conditionalAsset &&
+      this.state.conditionalAsset.amount !== ''
+      ? this.state.conditionalAsset
+      : this.state.signedAsset;
   }
 
   private async send() {
@@ -218,7 +229,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     ).toString();
 
     const timeCondition = this.state.timeCondition || 0;
-    const timeConditionTZ = timeCondition ? this.state.timeConditionTZ! : "";
+    const timeConditionTZ = timeCondition ? this.state.timeConditionTZ! : '';
 
     const payload = {
       conditionAmount,
