@@ -190,7 +190,7 @@ class DateTimePicker extends React.Component<
   }
 
   private combine(year: number, month: number, day: number, hours: number, minutes: number, tz: string) {
-    if (!year || !month || !day || isNaN(hours) || isNaN(minutes)) {
+    if (isNaN(day) || isNaN(day) || isNaN(day) || isNaN(hours) || isNaN(minutes)) {
       return NaN;
     }
 
