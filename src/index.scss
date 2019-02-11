@@ -17,7 +17,7 @@ body {
   flex-grow: 1;
   min-height: 320px;
   max-width: 100%;
-  padding: 75px 68px 103px 68px;
+  padding: 0 10px;
 
   .bx--label {
     color: #a3a3a3;
@@ -39,6 +39,10 @@ body {
   .bx--text-area {
     margin-top: 5px;
   }
+
+  @include breakpoint('bp--xs--major') {
+    padding: 75px 68px 103px 68px;
+  }
 }
 
 .bx--btn--primary {
@@ -58,9 +62,9 @@ body {
 .schedule-summary {
   display: flex;
   margin-top: 50px;
+  flex-direction: column;
 
   &_party {
-    width: 260px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -112,23 +116,25 @@ body {
     &_network {
       color: #4A4A4A;
       font-family: Helvetica;
-      font-size: 14px;
       line-height: 21px;
       padding-bottom: 11px;
       margin-top: 5px;
+      font-size: 12px;
     }
 
     &_arrow {
       position: relative;
+      width: 80%;
+      margin-left: 10%;
 
       &::before {
         content: '';
         display: inline-block;
         height: 1px;
         background: #9b9b9b;
-        width: calc(100% + 171px);
         position: absolute;
-        left: -91px;
+        width: calc(100%);
+        left: 0;
       }
 
       &::after {
@@ -138,8 +144,8 @@ body {
         border-left: 8px solid #9b9b9b;
         border-bottom: 5px solid transparent;
         position: absolute;
-        right: -85px;
         top: -4px;
+        right: 0;
       }
     }
 
@@ -151,15 +157,53 @@ body {
       text-align: center;
       margin-top: 12px;
     }
+
+    @include breakpoint('bp--md--major') {
+      &_network {
+        font-size: 14px;
+      }
+    }
+  }
+
+  @include breakpoint('bp--xs--major') {
+    flex-direction: row;
+
+    &_party {
+      width: 260px;
+    }
+
+    &_arrow {
+      width: auto;
+      margin-left: initial;
+
+      &::before {
+        left: -91px;
+        width: calc(100% + 171px);
+      }
+
+      &::after {
+        right: -85px;
+      }
+    }
   }
 }
 
 .schedule-condition {
   min-height: 260px;
-  padding: 0 68px;
   font-family: Helvetica;
-  font-size: 18px;
   line-height: 21px;
+  padding: 0 15px;
+  font-size: 13px;
+
+  @include breakpoint('bp--md--major') {
+    padding: 0 45px;
+    font-size: 16px;
+  }
+
+  @include breakpoint('1200px') {
+    padding: 0 68px;
+    font-size: 18px;
+  }
 
   &:not(.main-section-blue) {
     background: #F4F7FB;
@@ -171,6 +215,7 @@ body {
     justify-content: space-between;
     align-items: center;
     text-align: center;
+    flex-direction: column;
 
     > div {
       flex-grow: 1;
@@ -203,6 +248,10 @@ body {
       .bx--number {
         width: calc(100% - 0.75rem);
       }
+
+      .bx--text-input {
+        min-width: 1px;
+      }
     }
   }
 
@@ -212,6 +261,12 @@ body {
 
   .bx--row:last-of-type {
     margin-top: 20px;
+  }
+
+  @include breakpoint('bp--xs--major') {
+    &_content {
+      flex-direction: row;
+    }
   }
 }
 
