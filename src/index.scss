@@ -41,7 +41,7 @@ body {
   }
 
   @include breakpoint('bp--xs--major') {
-    padding: 75px 68px 103px 68px;
+    padding: 68px;
   }
 }
 
@@ -61,33 +61,35 @@ body {
 
 .schedule-summary {
   display: flex;
-  margin-top: 50px;
+  min-height: 160px;
   flex-direction: column;
 
   &_party {
     text-align: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
 
-    &_label {
-      margin-top: 6px;
-      color: #9B9B9B;
-      font-family: Helvetica;
+    &_address {
+      font-size: 10px;
+      margin-top: 17px;
+      color: #9B9B9B;	
       font-size: 14px;
       line-height: 21px;
     }
 
-    &_address {
-      font-size: 10px;
-      margin-top: 6px;
-      color: #5a5a5a;
+    &_blockie {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      margin: 0 auto;
+      margin-top: 30px;
     }
 
     &_nonce {
-      font-size: 12px;
       margin-top: 6px;
-      color: #5a5a5a;
+      color: #4A4A4A;
+      font-family: Helvetica;
+      font-size: 14px;
     }
 
     svg {
@@ -100,7 +102,6 @@ body {
     text-align: center;
     position: relative;
     flex-direction: column;
-    height: 127px;
     display: flex;
 
     &_amount {
@@ -110,7 +111,6 @@ body {
       letter-spacing: 3px;
       line-height: 36px;
       text-align: center;
-      height: 56px;
     }
 
     &_network {
@@ -150,12 +150,16 @@ body {
     }
 
     &_condition {
-      color: #4A4A4A;
+      color: #000000;
       font-family: Helvetica;
       font-size: 14px;
       line-height: 21px;
       text-align: center;
       margin-top: 12px;
+
+      &_highlighted-asset {
+        font-weight: 600;
+      }
     }
 
     @include breakpoint('bp--md--major') {
@@ -170,19 +174,25 @@ body {
 
     &_party {
       width: 260px;
+
+      &_blockie {
+        margin-top: 50px;
+      }
     }
 
-    &_arrow {
-      width: auto;
-      margin-left: initial;
-
-      &::before {
-        left: -91px;
-        width: calc(100% + 171px);
-      }
-
-      &::after {
-        right: -85px;
+    &_details {
+      &_arrow {
+        width: auto;
+        margin-left: initial;
+  
+        &::before {
+          left: -82px;
+          width: calc(100% + 162px);
+        }
+  
+        &::after {
+          right: -80px;
+        }
       }
     }
   }
@@ -298,4 +308,8 @@ body {
     display: inline-flex;
     padding-right: 10px;
   }
+}
+
+.font-weight-600 {
+  font-weight: 600;
 }

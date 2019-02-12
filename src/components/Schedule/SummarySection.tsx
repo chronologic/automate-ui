@@ -1,8 +1,7 @@
-import { Icon } from 'carbon-components-react';
-import { iconUser } from 'carbon-icons';
 import * as React from 'react';
 import { IAsset } from 'src/api/SentinelAPI';
-import HighlightedDisplay from './HighlightedDisplay';
+import { toDataUrl } from '../../lib/blockies';
+import SelectiveDisplay from './SelectiveDisplay';
 
 interface ISummarySectionProps {
   chainId: number;
@@ -37,19 +36,23 @@ export default class SummarySection extends React.Component<
           <div className="bx--label">SUMMARY</div>
           <div className="schedule-summary">
             <div className="schedule-summary_party">
-              <Icon icon={iconUser} width="32px" height="32px" fill="#9B9B9B" />
-              <div className="schedule-summary_party_label">Sender</div>
-              <div className="schedule-summary_party_address">
-                <HighlightedDisplay
-                  first={6}
-                  last={4}
-                  color="#2f4ffd"
-                  text={signedSender}
-                  fontWeight={600}
+              {signedSender && (
+                <img
+                  src={toDataUrl(signedSender)}
+                  className="schedule-summary_party_blockie"
                 />
+              )}
+              <div className="schedule-summary_party_address">
+                <SelectiveDisplay first={6} last={4} text={signedSender} />
               </div>
               <div className="schedule-summary_party_nonce">
-                {senderNonce ? `Nonce: ${senderNonce}` : ''}
+                {senderNonce ? (
+                  <>
+                    Nonce: <b className="font-weight-600">{senderNonce}</b>
+                  </>
+                ) : (
+                  ''
+                )}
               </div>
             </div>
             <div className="schedule-summary_details">
@@ -58,8 +61,8 @@ export default class SummarySection extends React.Component<
               </div>
               <div className="schedule-summary_details_network">
                 {signedSender
-                  ? `Network: ${chainId} (${networkName} - supported ${
-                      isNetworkSupported ? '✔' : '✖'
+                  ? `Network: ${chainId} (${networkName} ${
+                      isNetworkSupported ? '✔' : '- not supported ✖'
                     })`
                   : ''}
               </div>
@@ -68,22 +71,22 @@ export default class SummarySection extends React.Component<
                 when
                 <br />
                 SENDER balance of {conditionalAsset.name} is >={' '}
-                {`${conditionalAsset.amount} ${conditionalAsset.name}`}
+                <b className="schedule-summary_details_condition_highlighted-asset">{`${
+                  conditionalAsset.amount
+                } ${conditionalAsset.name}`}</b>
                 <br />
                 {this.getNonceInfo()}
               </div>
             </div>
             <div className="schedule-summary_party">
-              <Icon icon={iconUser} width="32px" height="32px" fill="#9B9B9B" />
-              <div className="schedule-summary_party_label">Receiver</div>
-              <div className="schedule-summary_party_address">
-                <HighlightedDisplay
-                  first={6}
-                  last={4}
-                  color="#2f4ffd"
-                  text={signedRecipient}
-                  fontWeight={600}
+              {signedRecipient && (
+                <img
+                  src={toDataUrl(signedRecipient)}
+                  className="schedule-summary_party_blockie"
                 />
+              )}
+              <div className="schedule-summary_party_address">
+                <SelectiveDisplay first={6} last={4} text={signedRecipient} />
               </div>
             </div>
           </div>
@@ -92,11 +95,11 @@ export default class SummarySection extends React.Component<
     );
   }
 
-  private getNonceInfo(): string {
+  private getNonceInfo(): JSX.Element {
     const { signedNonce, senderNonce } = this.props;
 
     if (!signedNonce || !senderNonce) {
-      return '';
+      return <></>;
     }
 
     let status = `✖ - nonce lower than account nonce`;
@@ -107,6 +110,11 @@ export default class SummarySection extends React.Component<
       status = `! - There's a gap between nonces`;
     }
 
-    return `Transaction nonce: ${signedNonce} (${status})`;
+    return (
+      <>
+        Transaction nonce: <b className="font-weight-600">{signedNonce}</b> (
+        {status})
+      </>
+    );
   }
 }

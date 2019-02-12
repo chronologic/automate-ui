@@ -54,7 +54,7 @@ const defaultState = {
 };
 
 class Schedule extends React.Component<{}, ISentinelState> {
-  constructor(props: any) {
+  constructor(props: {}) {
     super(props);
     this.state = defaultState;
   }
@@ -104,19 +104,21 @@ class Schedule extends React.Component<{}, ISentinelState> {
           setTimeScheduling={this.setTimeScheduling}
           timeScheduling={this.state.timeScheduling}
         />
-        <SummarySection
-          chainId={this.state.signedChain.chainId}
-          isNetworkSupported={this.isNetworkSupported(
-            this.state.signedChain.chainId
-          )}
-          networkName={this.getNetworkName(this.state.signedChain.chainId)}
-          conditionalAsset={this.state.conditionalAsset}
-          senderNonce={this.state.senderNonce}
-          signedAsset={this.state.signedAsset}
-          signedNonce={this.state.signedNonce}
-          signedRecipient={this.state.signedRecipient}
-          signedSender={this.state.signedSender}
-        />
+        {this.state.signedSender && (
+          <SummarySection
+            chainId={this.state.signedChain.chainId}
+            isNetworkSupported={this.isNetworkSupported(
+              this.state.signedChain.chainId
+            )}
+            networkName={this.getNetworkName(this.state.signedChain.chainId)}
+            conditionalAsset={this.state.conditionalAsset}
+            senderNonce={this.state.senderNonce}
+            signedAsset={this.state.signedAsset}
+            signedNonce={this.state.signedNonce}
+            signedRecipient={this.state.signedRecipient}
+            signedSender={this.state.signedSender}
+          />
+        )}
         <div className="bx--row row-padding carbon--center">
           <Button
             onClick={send}
