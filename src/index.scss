@@ -297,6 +297,10 @@ body {
   max-width: 490px;
   flex-wrap: wrap;
 
+  input {
+    background: white !important;
+  }
+
   .bx--form-item {
     display: inline-flex;
 
@@ -316,9 +320,14 @@ body {
     }
   }
 
+  .bx--time-picker {
+    align-items: flex-start;
+  }
+
   &_local-time {
-    margin-left: 320px;
     margin-top: 10px;
+    font-size: 16px;
+    width: 100%;
   }
 }
 

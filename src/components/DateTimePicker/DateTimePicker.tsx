@@ -35,9 +35,7 @@ class DateTimePicker extends React.Component<
   IDateTimePickerView,
   IDateTimePickerState
 > {
-  private timePattern = new RegExp(
-    '^(([0-1]{0,1}[0-9])|(2[0-3])):[0-5]{0,1}[0-9]$'
-  );
+  private timePattern = new RegExp('^(1[0-2]|0?[1-9]):[0-5][0-9]$');
 
   constructor(props: IDateTimePickerView) {
     super(props);
@@ -90,7 +88,7 @@ class DateTimePicker extends React.Component<
           <div className="datetimepicker_local-time">
             {this.state.combined ? (
               <>
-                Local time: <br />
+                Local time:{' '}
                 {moment(this.state.combined).format('DD/MM/YYYY HH:mm')}
               </>
             ) : (
@@ -200,7 +198,7 @@ class DateTimePicker extends React.Component<
   }
 
   private onTimeChange(time: string) {
-    if (time.length < 5) {
+    if (time.length < 4) {
       return;
     }
 
