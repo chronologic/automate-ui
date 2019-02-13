@@ -289,20 +289,39 @@ body {
 }
 
 .datetimepicker {
-  display: inline;
+  display: inline-flex;
+  max-width: 410px;
+  flex-wrap: wrap;
 
   .bx--form-item {
     display: inline-flex;
+
+    &:first-of-type {
+      width: 150px;
+      max-width: 150px;
+
+      .bx--date-picker__input {
+        width: 150px;
+        max-width: 150px;
+      }
+    }
 
     &:last-of-type {
       max-width: 288px;
       max-height: 40px;
     }
   }
+
+  &_local-time {
+    margin-left: 250px;
+    margin-top: 10px;
+  }
 }
 
 .timescheduling-wrapper {
   text-align: right;
+  padding: 0;
+  margin-top: 10px;
 
   .bx--checkbox-wrapper {
     display: inline-flex;
