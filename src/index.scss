@@ -288,9 +288,13 @@ body {
   }
 }
 
+.timepicker-am-pm {
+  width: 104px;
+}
+
 .datetimepicker {
   display: inline-flex;
-  max-width: 410px;
+  max-width: 490px;
   flex-wrap: wrap;
 
   .bx--form-item {
@@ -313,7 +317,7 @@ body {
   }
 
   &_local-time {
-    margin-left: 250px;
+    margin-left: 320px;
     margin-top: 10px;
   }
 }

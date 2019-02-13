@@ -16,6 +16,8 @@ interface IDateTimePickerView {
   onValidationError: (error: string) => void;
 }
 
+type Meridiem = 'AM' | 'PM';
+
 interface IDateTimePickerState {
   combined?: number;
   day?: number;
@@ -26,6 +28,7 @@ interface IDateTimePickerState {
   timeInvalid: boolean;
   tz: string;
   year?: number;
+  meridiem: Meridiem;
 }
 
 class DateTimePicker extends React.Component<
@@ -40,6 +43,7 @@ class DateTimePicker extends React.Component<
     super(props);
     this.state = {
       dateInvalid: false,
+      meridiem: 'AM',
       timeInvalid: false,
       tz: moment.tz.guess()
     };
@@ -106,17 +110,30 @@ class DateTimePicker extends React.Component<
     const timeZones = names.map((tz, index) => (<SelectItem key={index} value={tz} text={tz} />));
 
     return (
-      <TimePickerSelect
-        id="time-picker-tz"
-        defaultValue={userTimezone}
-        // tslint:disable-next-line:jsx-no-lambda
-        onChange={(e: any) => onTimezoneChange(e.target.value)}
-        disabled={this.props.disabled}
-        className="timepicker-light"
-        labelText=""
-      >
-        {timeZones}
-      </TimePickerSelect>
+      <>
+        <TimePickerSelect
+          labelText=""
+          id="time-picker-am-pm"
+          disabled={this.props.disabled}
+          className="timepicker-light timepicker-am-pm"
+          // tslint:disable-next-line:jsx-no-lambda
+          onChange={(event: any) => this.onMeridiemChange(event.target.value)}
+        >
+          <SelectItem value="AM" text="AM" />
+          <SelectItem value="PM" text="PM" />
+        </TimePickerSelect>
+        <TimePickerSelect
+          id="time-picker-tz"
+          defaultValue={userTimezone}
+          // tslint:disable-next-line:jsx-no-lambda
+          onChange={(e: any) => onTimezoneChange(e.target.value)}
+          disabled={this.props.disabled}
+          className="timepicker-light"
+          labelText=""
+        >
+          {timeZones}
+        </TimePickerSelect>
+      </>
     );
   }
 
@@ -128,6 +145,22 @@ class DateTimePicker extends React.Component<
     }
   }
 
+  private onMeridiemChange(value: Meridiem) {
+    const combined = this.combine(
+      this.state.year!,
+      this.state.month!,
+      this.state.day!,
+      this.state.hours!,
+      this.state.minutes!,
+      this.state.tz,
+      value
+    );
+
+    this.setState({ combined, meridiem: value });
+
+    this.tryEmitResult(combined, this.state.tz);
+  }
+
   private onTimezoneChange(tz: string) {
     const combined = this.combine(
       this.state.year!,
@@ -135,7 +168,8 @@ class DateTimePicker extends React.Component<
       this.state.day!,
       this.state.hours!,
       this.state.minutes!,
-      tz
+      tz,
+      this.state.meridiem
     );
 
     this.setState({ combined, tz });
@@ -155,7 +189,8 @@ class DateTimePicker extends React.Component<
       day,
       this.state.hours!,
       this.state.minutes!,
-      this.state.tz
+      this.state.tz,
+      this.state.meridiem
     );
 
     const isAfter = moment().isAfter(combined);
@@ -181,7 +216,8 @@ class DateTimePicker extends React.Component<
       this.state.day!,
       hours,
       minutes,
-      this.state.tz
+      this.state.tz,
+      this.state.meridiem
     );
 
     const isAfter = moment().isAfter(combined);
@@ -202,16 +238,26 @@ class DateTimePicker extends React.Component<
     day: number,
     hours: number,
     minutes: number,
-    tz: string
+    tz: string,
+    meridiem: string
   ) {
     if (
       isNaN(day) ||
       isNaN(day) ||
       isNaN(day) ||
       isNaN(hours) ||
-      isNaN(minutes)
+      isNaN(minutes) ||
+      !meridiem ||
+      hours < 1 ||
+      hours > 12
     ) {
       return NaN;
+    }
+
+    if (meridiem === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (meridiem === 'AM' && hours === 12) {
+      hours = 0;
     }
 
     const result = moment.tz({ year, month, day, hours, minutes }, tz);
