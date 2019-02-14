@@ -1,4 +1,10 @@
-import { Button, TextArea, Tile, Tooltip } from 'carbon-components-react';
+import {
+  Button,
+  InlineLoading,
+  TextArea,
+  Tile,
+  Tooltip
+} from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -25,6 +31,7 @@ const SUPPORTED_NETWORKS = {
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
+  loadingSignedTransaction: boolean;
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -42,6 +49,7 @@ const defaultState = {
     amount: ''
   },
   conditionalAssetIsValid: true,
+  loadingSignedTransaction: false,
   senderNonce: NaN,
   sentinelResponse: undefined,
   signedAsset: { address: '', decimals: 0, name: '', amount: '' },
@@ -75,12 +83,12 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
     return (
       <div>
-        <div className="bx--row">
-          <div
-            className={`bx--col-xs-6 main-section${
-              conditionSectionActive ? '' : ' main-section-blue'
-            }`}
-          >
+        <div
+          className={`bx--row${
+            conditionSectionActive ? '' : ' main-section-blue'
+          }`}
+        >
+          <div className={`bx--col-xs-6 main-section`}>
             <div className="bx--label">
               EXECUTE{' '}
               <Tooltip
@@ -116,7 +124,15 @@ class Schedule extends React.Component<{}, ISentinelState> {
               onChange={(e: any) => this.decode(e.target.value.trim())}
               invalid={!this.state.signedTransactionIsValid}
               invalidText="Signed transaction is invalid"
+              disabled={this.state.loadingSignedTransaction}
             />
+
+            {this.state.loadingSignedTransaction && (
+              <InlineLoading
+                description="Loading data..."
+                className="white-loading"
+              />
+            )}
           </div>
         </div>
         <ConditionSection
@@ -223,9 +239,13 @@ class Schedule extends React.Component<{}, ISentinelState> {
   }
 
   private async decode(signedTransaction: string) {
+    this.setState({
+      loadingSignedTransaction: true
+    });
     const scheduledTransaction = await SentinelAPI.decode(signedTransaction);
     if ((scheduledTransaction as any).errors) {
       this.setState({
+        loadingSignedTransaction: false,
         signedTransaction,
         signedTransactionIsValid: false
       });
@@ -236,6 +256,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
         conditionalAsset: {
           ...transaction.signedAsset
         },
+        loadingSignedTransaction: false,
         signedTransaction,
         signedTransactionIsValid: true
       });

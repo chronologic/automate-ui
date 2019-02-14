@@ -15,9 +15,10 @@ body {
 
 .main-section {
   flex-grow: 1;
-  min-height: 320px;
   max-width: 100%;
   padding: 0 10px;
+  margin: 0 auto;
+  max-width: 1280px;
 
   .bx--label {
     color: #a3a3a3;
@@ -28,11 +29,14 @@ body {
   }
 
   &-blue {
-    color: white;
     background: rgb(47, 79, 253);
 
-    .bx--label {
+    .main-section {
       color: white;
+  
+      .bx--label {
+        color: white;
+      }
     }
   }
 
@@ -75,6 +79,8 @@ body {
       color: #9B9B9B;	
       font-size: 14px;
       line-height: 21px;
+      margin-top: -50px;
+      display: block;
     }
 
     &_blockie {
@@ -202,18 +208,6 @@ body {
   min-height: 260px;
   font-family: Helvetica;
   line-height: 21px;
-  padding: 0 15px;
-  font-size: 13px;
-
-  @include breakpoint('bp--md--major') {
-    padding: 0 45px;
-    font-size: 16px;
-  }
-
-  @include breakpoint('1200px') {
-    padding: 0 68px;
-    font-size: 18px;
-  }
 
   &:not(.main-section-blue) {
     background: #F4F7FB;
@@ -347,11 +341,23 @@ body {
 }
 
 .schedule-execute-tooltip-trigger {
-  path {
-    fill: white;
-
-    &:hover {
-      fill: darken($color: white, $amount: 30%) !important;
+  .main-section-blue & {
+    path {
+      fill: white;
+  
+      &:hover {
+        fill: darken($color: white, $amount: 30%) !important;
+      }
     }
+  }
+  
+  path {
+    fill: #aca3a3;
+  }
+}
+
+.white-loading {
+  circle {
+    stroke: white;
   }
 }
