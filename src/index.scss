@@ -30,6 +30,7 @@ body {
 
   &-blue {
     background: rgb(47, 79, 253);
+    transition: background 0.6s ease;
 
     .main-section {
       color: white;

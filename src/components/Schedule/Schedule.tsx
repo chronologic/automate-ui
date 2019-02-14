@@ -1,8 +1,11 @@
 import {
   Button,
+  ComposedModal,
   InlineLoading,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   TextArea,
-  Tile,
   Tooltip
 } from 'carbon-components-react';
 import * as React from 'react';
@@ -31,6 +34,7 @@ const SUPPORTED_NETWORKS = {
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
+  loadingSentinelResponse: boolean;
   loadingSignedTransaction: boolean;
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
@@ -42,13 +46,14 @@ interface ISentinelState extends IDecodedTransaction {
   timeConditionTZ?: string;
 }
 
-const defaultState = {
+const defaultState: ISentinelState = {
   conditionalAsset: {
     ...ETH,
     address: '',
     amount: ''
   },
   conditionalAssetIsValid: true,
+  loadingSentinelResponse: false,
   loadingSignedTransaction: false,
   senderNonce: NaN,
   sentinelResponse: undefined,
@@ -166,6 +171,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
           <Button
             onClick={send}
             disabled={
+              this.state.loadingSentinelResponse ||
               !this.state.conditionalAssetIsValid ||
               !this.state.signedTransactionIsValid ||
               !this.state.signedTransaction ||
@@ -173,7 +179,14 @@ class Schedule extends React.Component<{}, ISentinelState> {
               success
             }
           >
-            SCHEDULE
+            {this.state.loadingSentinelResponse ? (
+              <InlineLoading
+                className="white-loading"
+                description="Loading data..."
+              />
+            ) : (
+              `SCHEDULE`
+            )}
           </Button>
         </div>
         {response}
@@ -212,30 +225,64 @@ class Schedule extends React.Component<{}, ISentinelState> {
   };
 
   private renderResponse() {
+    let modalBody = <></>;
+    const reset = () => this.setState(defaultState);
+    const closeAndDoNothing = () =>
+      this.setState({ sentinelResponse: undefined });
+
     if (!this.state.sentinelResponse) {
-      return <div />;
+      modalBody = <></>;
     } else if ((this.state.sentinelResponse as any).errors) {
       const error = this.state.sentinelResponse as IError;
-      return <Tile>{error.errors.join('\n')}</Tile>;
+      modalBody = (
+        <>
+          <ModalHeader title="Error" />
+          <ModalBody>{error.errors.join('\n')}</ModalBody>
+          <ModalFooter
+            primaryButtonText="Close"
+            primaryButtonDisabled={false}
+            secondaryButtonText=""
+            onRequestClose={closeAndDoNothing}
+            onRequestSubmit={closeAndDoNothing}
+          />
+        </>
+      );
     } else {
-      const reset = () => this.setState(defaultState);
       const response = this.state.sentinelResponse as IScheduleAccessKey;
       const link = `/view/${response.id}/${response.key}`;
-      return (
-        <Tile>
-          You have successfully scheduled transaction ! <br />
-          <br />
-          Please save this link: <br />
-          <Link to={link}>
-            {window.location.href}
-            {link}
-          </Link>
-          <br />
-          <br />
-          <Button onClick={reset}>Schedule another one</Button>
-        </Tile>
+      modalBody = (
+        <>
+          <ModalHeader title="Success" />
+          <ModalBody>
+            You have successfully scheduled a transaction! <br />
+            <br />
+            Please save this link: <br />
+            <Link to={link}>
+              {window.location.href}
+              {link}
+            </Link>
+            <br />
+            <br />
+          </ModalBody>
+          <ModalFooter
+            primaryButtonText="Schedule another one"
+            primaryButtonDisabled={false}
+            secondaryButtonText=""
+            onRequestClose={reset}
+            onRequestSubmit={reset}
+          />
+        </>
       );
     }
+
+    return (
+      <ComposedModal
+        open={Boolean(this.state.sentinelResponse)}
+        onClose={closeAndDoNothing}
+      >
+        {modalBody}
+      </ComposedModal>
+    );
   }
 
   private async decode(signedTransaction: string) {
@@ -271,6 +318,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
   }
 
   private async send() {
+    this.setState({ loadingSentinelResponse: true });
     const conditionalAsset = this.conditionalAsset;
 
     const conditionAmount = TokenAPI.withoutDecimals(
@@ -290,7 +338,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
     };
 
     const sentinelResponse = await SentinelAPI.schedule(payload);
-    this.setState({ sentinelResponse });
+    this.setState({ loadingSentinelResponse: false, sentinelResponse });
   }
 }
 
