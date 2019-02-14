@@ -1,4 +1,4 @@
-import { Button, TextArea, Tile } from 'carbon-components-react';
+import { Button, TextArea, Tile, Tooltip } from 'carbon-components-react';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -12,6 +12,8 @@ import { ETH, TokenAPI } from 'src/api/TokenAPI';
 
 import ConditionSection from './ConditionSection';
 import SummarySection from './SummarySection';
+
+import { iconHelpSolid } from 'carbon-icons';
 
 const SUPPORTED_NETWORKS = {
   1: 'Mainnet',
@@ -79,9 +81,34 @@ class Schedule extends React.Component<{}, ISentinelState> {
               conditionSectionActive ? '' : ' main-section-blue'
             }`}
           >
+            <div className="bx--label">
+              EXECUTE{' '}
+              <Tooltip
+                showIcon={true}
+                triggerText={''}
+                icon={iconHelpSolid}
+                triggerClassName="schedule-execute-tooltip-trigger"
+              >
+                <p>
+                  Please follow a step-by-step tutorial on how to sign Tx using
+                  MyEtherWallet for later use in Automate.
+                </p>
+                <div className={`bx--tooltip__footer`}>
+                  <a
+                    href="https://youtu.be/qsG2UdOL8j4"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`bx--link`}
+                  >
+                    Watch Tutorial
+                  </a>
+                </div>
+              </Tooltip>
+            </div>
+
             <TextArea
               id="SignedTx"
-              labelText="EXECUTE"
+              labelText=""
               rows={5}
               value={this.state.signedTransaction}
               placeholder="Paste the signed transaction here"

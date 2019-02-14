@@ -345,3 +345,13 @@ body {
 .font-weight-600 {
   font-weight: 600;
 }
+
+.schedule-execute-tooltip-trigger {
+  path {
+    fill: white;
+
+    &:hover {
+      fill: darken($color: white, $amount: 30%) !important;
+    }
+  }
+}
