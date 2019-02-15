@@ -9,11 +9,14 @@ import * as moment from 'moment-timezone';
 import * as React from 'react';
 
 interface IDateTimePickerView {
+  light: boolean;
   disabled: boolean;
 
   onChange: (timestamp: number, tz: string) => void;
   onValidationError: (error: string) => void;
 }
+
+type Meridiem = 'AM' | 'PM';
 
 interface IDateTimePickerState {
   combined?: number;
@@ -25,20 +28,20 @@ interface IDateTimePickerState {
   timeInvalid: boolean;
   tz: string;
   year?: number;
+  meridiem: Meridiem;
 }
 
 class DateTimePicker extends React.Component<
   IDateTimePickerView,
   IDateTimePickerState
 > {
-  private timePattern = new RegExp(
-    '^(([0-1]{0,1}[0-9])|(2[0-3])):[0-5]{0,1}[0-9]$'
-  );
+  private timePattern = new RegExp('^(1[0-2]|0?[1-9]):[0-5][0-9]$');
 
-  constructor(props: any) {
+  constructor(props: IDateTimePickerView) {
     super(props);
     this.state = {
       dateInvalid: false,
+      meridiem: 'AM',
       timeInvalid: false,
       tz: moment.tz.guess()
     };
@@ -49,8 +52,8 @@ class DateTimePicker extends React.Component<
     const onTimeChange = this.onTimeChange.bind(this);
 
     return (
-      <div className="bx--row row-padding">
-        <div className="bx--col-xs-2">
+      <>
+        <div className="datetimepicker">
           <DatePicker
             id="date-picker"
             datePickerType="single"
@@ -59,7 +62,7 @@ class DateTimePicker extends React.Component<
           >
             <DatePickerInput
               id="date-picker-input"
-              labelText="Date"
+              labelText=""
               iconDescription="description"
               placeholder="dd/mm/yyyy"
               invalid={this.state.dateInvalid}
@@ -67,11 +70,10 @@ class DateTimePicker extends React.Component<
               disabled={this.props.disabled}
             />
           </DatePicker>
-        </div>
-        <div className="bx--col-xs-3">
+
           <TimePicker
             id="time-picker"
-            labelText="Time"
+            labelText=""
             maxLength={5}
             placeholder="hh:mm"
             pattern=""
@@ -83,12 +85,18 @@ class DateTimePicker extends React.Component<
           >
             {this.renderTimezonePicker()}
           </TimePicker>
+          <div className="datetimepicker_local-time">
+            {this.state.combined ? (
+              <>
+                Local time:{' '}
+                {moment(this.state.combined).format('DD/MM/YYYY HH:mm')}
+              </>
+            ) : (
+              ''
+            )}
+          </div>
         </div>
-        <div className="bx--col-xs-3">
-          Local time: <br/>
-          {this.state.combined ? moment(this.state.combined).format('DD/MM/YYYY HH:mm') : ""}
-        </div>
-      </div>
+      </>
     );
   }
 
@@ -97,18 +105,33 @@ class DateTimePicker extends React.Component<
     const names = moment.tz.names();
     const userTimezone = moment.tz.guess();
     // prettier-ignore
-    const timeZones = names.map(tz => (<SelectItem value={tz} text={tz} />));
+    const timeZones = names.map((tz, index) => (<SelectItem key={index} value={tz} text={tz} />));
 
     return (
-      <TimePickerSelect
-        id="time-picker-tz"
-        defaultValue={userTimezone}
-        // tslint:disable-next-line:jsx-no-lambda
-        onChange={(e: any) => onTimezoneChange(e.target.value)}
-        disabled={this.props.disabled}
-      >
-        {timeZones}
-      </TimePickerSelect>
+      <>
+        <TimePickerSelect
+          labelText=""
+          id="time-picker-am-pm"
+          disabled={this.props.disabled}
+          className="timepicker-light timepicker-am-pm"
+          // tslint:disable-next-line:jsx-no-lambda
+          onChange={(event: any) => this.onMeridiemChange(event.target.value)}
+        >
+          <SelectItem value="AM" text="AM" />
+          <SelectItem value="PM" text="PM" />
+        </TimePickerSelect>
+        <TimePickerSelect
+          id="time-picker-tz"
+          defaultValue={userTimezone}
+          // tslint:disable-next-line:jsx-no-lambda
+          onChange={(e: any) => onTimezoneChange(e.target.value)}
+          disabled={this.props.disabled}
+          className="timepicker-light"
+          labelText=""
+        >
+          {timeZones}
+        </TimePickerSelect>
+      </>
     );
   }
 
@@ -120,6 +143,22 @@ class DateTimePicker extends React.Component<
     }
   }
 
+  private onMeridiemChange(value: Meridiem) {
+    const combined = this.combine(
+      this.state.year!,
+      this.state.month!,
+      this.state.day!,
+      this.state.hours!,
+      this.state.minutes!,
+      this.state.tz,
+      value
+    );
+
+    this.setState({ combined, meridiem: value });
+
+    this.tryEmitResult(combined, this.state.tz);
+  }
+
   private onTimezoneChange(tz: string) {
     const combined = this.combine(
       this.state.year!,
@@ -127,12 +166,12 @@ class DateTimePicker extends React.Component<
       this.state.day!,
       this.state.hours!,
       this.state.minutes!,
-      tz
-      );
-      
-    
+      tz,
+      this.state.meridiem
+    );
+
     this.setState({ combined, tz });
-    
+
     this.tryEmitResult(combined, tz);
   }
 
@@ -148,7 +187,8 @@ class DateTimePicker extends React.Component<
       day,
       this.state.hours!,
       this.state.minutes!,
-      this.state.tz
+      this.state.tz,
+      this.state.meridiem
     );
 
     const isAfter = moment().isAfter(combined);
@@ -158,7 +198,7 @@ class DateTimePicker extends React.Component<
   }
 
   private onTimeChange(time: string) {
-    if (time.length < 5) {
+    if (time.length < 4) {
       return;
     }
 
@@ -174,7 +214,8 @@ class DateTimePicker extends React.Component<
       this.state.day!,
       hours,
       minutes,
-      this.state.tz
+      this.state.tz,
+      this.state.meridiem
     );
 
     const isAfter = moment().isAfter(combined);
@@ -189,12 +230,35 @@ class DateTimePicker extends React.Component<
     this.tryEmitResult(combined, this.state.tz);
   }
 
-  private combine(year: number, month: number, day: number, hours: number, minutes: number, tz: string) {
-    if (isNaN(day) || isNaN(day) || isNaN(day) || isNaN(hours) || isNaN(minutes)) {
+  private combine(
+    year: number,
+    month: number,
+    day: number,
+    hours: number,
+    minutes: number,
+    tz: string,
+    meridiem: string
+  ) {
+    if (
+      isNaN(day) ||
+      isNaN(day) ||
+      isNaN(day) ||
+      isNaN(hours) ||
+      isNaN(minutes) ||
+      !meridiem ||
+      hours < 1 ||
+      hours > 12
+    ) {
       return NaN;
     }
 
-    const result = moment.tz({year, month, day, hours, minutes}, tz)
+    if (meridiem === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (meridiem === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    const result = moment.tz({ year, month, day, hours, minutes }, tz);
 
     return result.unix() * 1000;
   }
