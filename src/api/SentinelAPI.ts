@@ -182,9 +182,13 @@ export class SentinelAPI {
 
     const signedSender = decodedTransaction.from!;
 
-    const senderNonce = await this.getProvider(chainId).getTransactionCount(
-      signedSender
-    );
+    let senderNonce = NaN;
+    try {
+      senderNonce = await this.getProvider(chainId).getTransactionCount(
+        signedSender
+      );
+      // tslint:disable-next-line:no-empty
+    } catch (e) {}
 
     return {
       senderNonce,

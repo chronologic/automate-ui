@@ -61,9 +61,9 @@ export default class SummarySection extends React.Component<
               </div>
               <div className="schedule-summary_details_network">
                 {signedSender
-                  ? `Network: ${chainId} (${networkName} ${
-                      isNetworkSupported ? '✔' : '- not supported ✖'
-                    })`
+                  ? isNetworkSupported
+                    ? `${networkName} ✔`
+                    : `Network with id ${chainId} is not supported ✖`
                   : ''}
               </div>
               <div className="schedule-summary_details_arrow" />
