@@ -103,12 +103,26 @@ class Schedule extends React.Component<{}, ISentinelState> {
                 triggerClassName="schedule-execute-tooltip-trigger"
               >
                 <p>
+                  Sign your transaction using{' '}
+                  <a
+                    href="https://vintage.myetherwallet.com/#offline-transaction"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`bx--link`}
+                  >
+                    MyEtherWallet
+                  </a>{' '}
+                  now.
+                  <br />
+                  <br />
+                  Need help?
+                  <br />
                   Please follow a step-by-step tutorial on how to sign Tx using
                   MyEtherWallet for later use in Automate.
                 </p>
                 <div className={`bx--tooltip__footer`}>
                   <a
-                    href="https://youtu.be/qsG2UdOL8j4"
+                    href="https://youtu.be/7qdF0LHeLTc"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`bx--link`}
