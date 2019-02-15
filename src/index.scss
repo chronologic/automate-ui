@@ -366,6 +366,8 @@ body {
 }
 
 .footer {
+  color: #444444;
+  
   ul {
     float: right;
 
@@ -375,13 +377,14 @@ body {
 
       a {
         text-decoration: none;
+        color: #444444;
       }
     }
   }
 
   .icon-link {
     svg {
-      fill: #2f4ffd;
+      fill: #444444;
       vertical-align: middle;
     }
   }
