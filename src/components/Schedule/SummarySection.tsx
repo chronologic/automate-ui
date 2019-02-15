@@ -110,18 +110,26 @@ export default class SummarySection extends React.Component<
       return <></>;
     }
 
-    let status = `✖ - nonce lower than account nonce`;
+    let status = (
+      <span className="bx--tag bx--tag--experimental">
+        ✖ - nonce lower than account nonce
+      </span>
+    );
 
     if (signedNonce === senderNonce) {
-      status = `✔`;
+      status = <span className="bx--tag bx--tag--community">✔</span>;
     } else if (signedNonce > senderNonce) {
-      status = `! - There's a gap between nonces`;
+      status = (
+        <span className="bx--tag bx--tag--private">
+          ! - There's a gap between nonces
+        </span>
+      );
     }
 
     return (
       <>
-        Transaction nonce: <b className="font-weight-600">{signedNonce}</b> (
-        {status})
+        Transaction nonce: <b className="font-weight-600">{signedNonce}</b>
+        {status}
       </>
     );
   }
