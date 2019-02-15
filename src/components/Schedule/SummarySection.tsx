@@ -30,6 +30,13 @@ export default class SummarySection extends React.Component<
       senderNonce
     } = this.props;
 
+    const notSupportedNetwork = (
+      <span className="bx--tag bx--tag--experimental">{`Network with id ${chainId} is not supported ✖`}</span>
+    );
+    const supportedNetwork = (
+      <span className="bx--tag bx--tag--community">{`${networkName} ✔`}</span>
+    );
+
     return (
       <div className="bx--row">
         <div className="bx--col-xs-6 main-section">
@@ -62,8 +69,8 @@ export default class SummarySection extends React.Component<
               <div className="schedule-summary_details_network">
                 {signedSender
                   ? isNetworkSupported
-                    ? `${networkName} ✔`
-                    : `Network with id ${chainId} is not supported ✖`
+                    ? supportedNetwork
+                    : notSupportedNetwork
                   : ''}
               </div>
               <div className="schedule-summary_details_arrow" />
