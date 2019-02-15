@@ -1,3 +1,5 @@
+$color__blue-51: #2f4ffd;
+
 @import 'carbon-components/scss/globals/scss/styles.scss';
 
 body {
@@ -360,5 +362,27 @@ body {
 .white-loading {
   circle {
     stroke: white;
+  }
+}
+
+.footer {
+  ul {
+    float: right;
+
+    li {
+      display: inline-block;
+      padding: 0 5px;
+
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+
+  .icon-link {
+    svg {
+      fill: #2f4ffd;
+      vertical-align: middle;
+    }
   }
 }
