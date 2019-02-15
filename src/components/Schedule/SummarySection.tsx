@@ -70,7 +70,8 @@ export default class SummarySection extends React.Component<
               <div className="schedule-summary_details_condition">
                 when
                 <br />
-                SENDER balance of {conditionalAsset.name} is >={' '}
+                <SelectiveDisplay first={6} last={4} text={signedSender} />{' '}
+                balance of {conditionalAsset.name} is >={' '}
                 <b className="schedule-summary_details_condition_highlighted-asset">{`${
                   conditionalAsset.amount
                 } ${conditionalAsset.name}`}</b>
