@@ -78,9 +78,6 @@ class Schedule extends React.Component<{}, ISentinelState> {
     const send = this.send.bind(this);
 
     const response = this.renderResponse();
-    const success =
-      this.state.sentinelResponse &&
-      (this.state.sentinelResponse as IScheduleAccessKey).id;
 
     const conditionSectionActive = Boolean(
       this.state.signedTransaction && this.state.signedTransactionIsValid
@@ -182,17 +179,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
           />
         )}
         <div className="bx--row row-padding carbon--center">
-          <Button
-            onClick={send}
-            disabled={
-              this.state.loadingSentinelResponse ||
-              !this.state.conditionalAssetIsValid ||
-              !this.state.signedTransactionIsValid ||
-              !this.state.signedTransaction ||
-              (this.state.timeScheduling && !this.state.timeConditionIsValid) ||
-              success
-            }
-          >
+          <Button onClick={send} disabled={this.scheduleButtonDisabled}>
             {this.state.loadingSentinelResponse ? (
               <InlineLoading
                 className="white-loading"
@@ -351,10 +338,25 @@ class Schedule extends React.Component<{}, ISentinelState> {
     });
     const scheduledTransaction = await SentinelAPI.decode(signedTransaction);
     if ((scheduledTransaction as any).errors) {
+      const emptyTransaction: IDecodedTransaction = {
+        senderNonce: defaultState.senderNonce,
+        signedAsset: defaultState.signedAsset,
+        signedChain: defaultState.signedChain,
+        signedNonce: defaultState.signedNonce,
+        signedRecipient: defaultState.signedRecipient,
+        signedSender: defaultState.signedSender
+      };
+
       this.setState({
+        ...emptyTransaction,
+        conditionalAsset: {
+          ...emptyTransaction.signedAsset
+        },
         loadingSignedTransaction: false,
         signedTransaction,
-        signedTransactionIsValid: false
+        signedTransactionIsValid: false,
+        timeCondition: defaultState.timeCondition,
+        timeScheduling: defaultState.timeScheduling
       });
     } else {
       const transaction = scheduledTransaction as IDecodedTransaction;
@@ -365,16 +367,36 @@ class Schedule extends React.Component<{}, ISentinelState> {
         },
         loadingSignedTransaction: false,
         signedTransaction,
-        signedTransactionIsValid: true
+        signedTransactionIsValid: true,
+        timeCondition: defaultState.timeCondition,
+        timeScheduling: defaultState.timeScheduling
       });
     }
   }
 
-  get conditionalAsset() {
+  private get conditionalAsset() {
     return this.state.conditionalAsset &&
       this.state.conditionalAsset.amount !== ''
       ? this.state.conditionalAsset
       : this.state.signedAsset;
+  }
+
+  private get scheduleButtonDisabled() {
+    const success =
+      this.state.sentinelResponse &&
+      (this.state.sentinelResponse as IScheduleAccessKey).id;
+
+    const nonceTooLow = this.state.signedNonce < this.state.senderNonce;
+
+    return (
+      this.state.loadingSentinelResponse ||
+      !this.state.conditionalAssetIsValid ||
+      !this.state.signedTransactionIsValid ||
+      !this.state.signedTransaction ||
+      (this.state.timeScheduling && !this.state.timeConditionIsValid) ||
+      nonceTooLow ||
+      success
+    );
   }
 
   private async send() {
