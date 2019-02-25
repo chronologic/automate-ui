@@ -136,7 +136,7 @@ class DateTimePicker extends React.Component<
   }
 
   private tryEmitResult(timeStamp: number, tz: string) {
-    if (!isNaN(timeStamp)) {
+    if (!isNaN(timeStamp) && !this.state.dateInvalid) {
       this.props.onChange(timeStamp, tz);
     } else {
       this.props.onValidationError('Wrong date');
@@ -154,9 +154,11 @@ class DateTimePicker extends React.Component<
       value
     );
 
-    this.setState({ combined, meridiem: value });
+    const isAfter = moment().isAfter(combined);
 
-    this.tryEmitResult(combined, this.state.tz);
+    this.setState({ combined, dateInvalid: isAfter, meridiem: value }, () => {
+      this.tryEmitResult(combined, this.state.tz);
+    });
   }
 
   private onTimezoneChange(tz: string) {
@@ -170,7 +172,9 @@ class DateTimePicker extends React.Component<
       this.state.meridiem
     );
 
-    this.setState({ combined, tz });
+    const isAfter = moment().isAfter(combined);
+
+    this.setState({ combined, tz, dateInvalid: isAfter });
 
     this.tryEmitResult(combined, tz);
   }

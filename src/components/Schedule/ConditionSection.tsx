@@ -153,6 +153,7 @@ export default class ConditionSection extends React.Component<
                       : `Use Time Scheduling`
                   }
                   onChange={setTimeScheduling}
+                  checked={timeScheduling}
                 />
                 {timeScheduling && (
                   <DateTimePicker
