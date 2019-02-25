@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import * as React from 'react';
 import { IAsset } from 'src/api/SentinelAPI';
 import { toDataUrl } from '../../lib/blockies';
@@ -13,6 +14,9 @@ interface ISummarySectionProps {
   signedRecipient: string;
   signedSender: string;
   signedNonce: number;
+  timeScheduling: boolean;
+  timeCondition?: number;
+  timeConditionTZ?: string;
 }
 
 export default class SummarySection extends React.Component<
@@ -27,8 +31,20 @@ export default class SummarySection extends React.Component<
       signedSender,
       networkName,
       isNetworkSupported,
-      senderNonce
+      senderNonce,
+      timeScheduling,
+      timeCondition,
+      timeConditionTZ
     } = this.props;
+
+    let formattedDate = '';
+
+    if (timeCondition && timeConditionTZ) {
+      formattedDate =
+        moment.tz(timeCondition, timeConditionTZ).format('DD/MM/YYYY h:mma') +
+        ' ' +
+        timeConditionTZ;
+    }
 
     const notSupportedNetwork = (
       <span className="bx--tag bx--tag--experimental">{`Network with id ${chainId} is not supported ✖`}</span>
@@ -83,6 +99,14 @@ export default class SummarySection extends React.Component<
                   conditionalAsset.amount
                 } ${conditionalAsset.name}`}</b>
                 <br />
+                {timeScheduling && timeCondition && formattedDate && (
+                  <>
+                    and
+                    <br />
+                    Not before {`{${formattedDate}}`}
+                    <br />
+                  </>
+                )}
                 {this.getNonceInfo()}
               </div>
             </div>

@@ -176,6 +176,9 @@ class Schedule extends React.Component<{}, ISentinelState> {
             signedNonce={this.state.signedNonce}
             signedRecipient={this.state.signedRecipient}
             signedSender={this.state.signedSender}
+            timeScheduling={this.state.timeScheduling}
+            timeCondition={this.state.timeCondition}
+            timeConditionTZ={this.state.timeConditionTZ}
           />
         )}
         <div className="bx--row row-padding carbon--center">
