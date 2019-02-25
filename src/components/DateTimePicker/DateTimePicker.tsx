@@ -85,16 +85,6 @@ class DateTimePicker extends React.Component<
           >
             {this.renderTimezonePicker()}
           </TimePicker>
-          <div className="datetimepicker_local-time">
-            {this.state.combined ? (
-              <>
-                Local time:{' '}
-                {moment(this.state.combined).format('DD/MM/YYYY HH:mm')}
-              </>
-            ) : (
-              ''
-            )}
-          </div>
         </div>
       </>
     );
