@@ -291,7 +291,7 @@ body {
 
 .datetimepicker {
   display: inline-flex;
-  max-width: 490px;
+  width: 490px;
   flex-wrap: wrap;
 
   input {
@@ -312,19 +312,13 @@ body {
     }
 
     &:last-of-type {
-      max-width: 288px;
+      max-width: 340px;
       max-height: 40px;
     }
   }
 
   .bx--time-picker {
     align-items: flex-start;
-  }
-
-  &_local-time {
-    margin-top: 10px;
-    font-size: 16px;
-    width: 100%;
   }
 }
 

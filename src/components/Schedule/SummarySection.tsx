@@ -1,3 +1,5 @@
+import { Tooltip } from 'carbon-components-react';
+import { iconHelpSolid } from 'carbon-icons';
 import * as moment from 'moment';
 import * as React from 'react';
 import { IAsset } from 'src/api/SentinelAPI';
@@ -104,6 +106,16 @@ export default class SummarySection extends React.Component<
                     and
                     <br />
                     Not before {`{${formattedDate}}`}
+                    &nbsp;
+                    <Tooltip
+                      showIcon={true}
+                      triggerText={''}
+                      icon={iconHelpSolid}
+                      triggerClassName="schedule-execute-tooltip-trigger"
+                    >
+                      {moment(timeCondition).format('DD/MM/YYYY h:mma')}{' '}
+                      {moment.tz.guess()}
+                    </Tooltip>
                     <br />
                   </>
                 )}
