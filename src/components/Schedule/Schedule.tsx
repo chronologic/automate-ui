@@ -102,7 +102,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
                 <p>
                   Sign your transaction using{' '}
                   <a
-                    href="https://vintage.myetherwallet.com/#offline-transaction"
+                    href="https://www.myetherwallet.com/interface/send-offline"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`bx--link`}
@@ -119,7 +119,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
                 </p>
                 <div className={`bx--tooltip__footer`}>
                   <a
-                    href="https://youtu.be/7qdF0LHeLTc"
+                    href="https://www.youtube.com/watch?v=KBsY_iuOB-E"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`bx--link`}
