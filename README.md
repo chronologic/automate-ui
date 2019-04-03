@@ -1,10 +1,16 @@
 [<img src="https://s3.amazonaws.com/chronologic.network/ChronoLogic_logo.svg" width="128px">](https://github.com/chronologic)
 
-# Sentinel UI
+# Automate UI
 
-This contains UI project for Sentinel.
+This contains UI project for Automate project.
 
-API project here [https://github.com/chronologic/sentinel-api](https://github.com/chronologic/sentinel-api)
+API project here https://github.com/chronologic/automate-api
+
+__LIVE version available here__ [https://automate.chronologic.network/](https://automate.chronologic.network/)
+
+__ProductHunt:__[here](https://www.producthunt.com/posts/automate-1)
+
+__Tutorials and help:__ [here](https://blog.chronologic.network/automate/home)
 
 ## How to start
 
@@ -21,12 +27,6 @@ To create a production build
 ## Development
 
 UI uses `.env.development` to set `REACT_APP_API_URL=http://localhost:3001` which is expected URL of API project.
-
-## Deployment
-
-Instructions https://dashboard.heroku.com/apps/cl-sentinel/deploy/heroku-git
-
-UI uses `.env.production` to set `REACT_APP_API_URL=https://cl-sentinel-api.herokuapp.com` which is expected URL of API project.
 
 ## Stack
 
