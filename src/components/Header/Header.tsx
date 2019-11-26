@@ -13,13 +13,17 @@ interface IStatsSummary {
   value: number;
 }
 
+interface IHeaderProps {
+  updateCounter: number;
+}
+
 interface IHeaderState {
   completed: IStatsSummary;
   pending: IStatsSummary;
   statsLoaded: boolean;
 }
 
-class Header extends React.Component<{}, IHeaderState> {
+class Header extends React.Component<IHeaderProps, IHeaderState> {
   public state = {
     completed: {
       assets: 0,
@@ -35,6 +39,10 @@ class Header extends React.Component<{}, IHeaderState> {
   };
 
   public componentDidMount() {
+    this.updateStats();
+  }
+
+  public componentWillReceiveProps() {
     this.updateStats();
   }
 

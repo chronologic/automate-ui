@@ -31,6 +31,10 @@ const SUPPORTED_NETWORKS = {
   42: 'Kovan'
 };
 
+interface ISentinelProps {
+  onChange: () => void;
+}
+
 interface ISentinelState extends IDecodedTransaction {
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
@@ -68,8 +72,8 @@ const defaultState: ISentinelState = {
   timeScheduling: false
 };
 
-class Schedule extends React.Component<{}, ISentinelState> {
-  constructor(props: {}) {
+class Schedule extends React.Component<ISentinelProps, ISentinelState> {
+  constructor(props: ISentinelProps) {
     super(props);
     this.state = defaultState;
   }
@@ -424,6 +428,7 @@ class Schedule extends React.Component<{}, ISentinelState> {
 
     const sentinelResponse = await SentinelAPI.schedule(payload);
     this.setState({ loadingSentinelResponse: false, sentinelResponse });
+    this.props.onChange();
   }
 }
 
