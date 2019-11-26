@@ -18,14 +18,30 @@ body {
 .header.header {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: nowrap;
+  position: relative;
+  height: 100px;
+
+  a {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .header-stats-container {
-  flex-grow: 1;
+  flex-grow: 0;
   text-align: center;
+
+  &:first-child {
+    margin-right: 150px;
+  }
+  &:last-child {
+    margin-left: 150px;
+  }
 }
 
 .header-countup {
