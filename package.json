@@ -3,6 +3,10 @@
   "author": "Piotr Kosinski <piort@chronologic.network",
   "version": "0.9.0",
   "private": true,
+  "engines": {
+    "node": ">=8.0.0",
+    "npm": ">=6.0.0"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "carbon-components": "^9.54.1",
