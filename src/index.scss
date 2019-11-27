@@ -8,11 +8,45 @@ body {
 }
 
 .space {
-  padding-top: $spacing-md
+  padding-top: $spacing-md;
 }
 
 .row-padding {
-  padding: $spacing-sm
+  padding: $spacing-sm;
+}
+
+.header.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: nowrap;
+  position: relative;
+  height: 100px;
+
+  a {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+.header-stats-container {
+  flex-grow: 0;
+  text-align: center;
+
+  &:first-child {
+    margin-right: 150px;
+  }
+  &:last-child {
+    margin-left: 150px;
+  }
+}
+
+.header-countup {
+  color: #2f4ffd;
+  font-size: 20px;
 }
 
 .main-section {
@@ -36,7 +70,7 @@ body {
 
     .main-section {
       color: white;
-  
+
       .bx--label {
         color: white;
       }
@@ -79,7 +113,7 @@ body {
     &_address {
       font-size: 10px;
       margin-top: 17px;
-      color: #9B9B9B;	
+      color: #9b9b9b;
       font-size: 14px;
       line-height: 21px;
       margin-top: -50px;
@@ -96,7 +130,7 @@ body {
 
     &_nonce {
       margin-top: 6px;
-      color: #4A4A4A;
+      color: #4a4a4a;
       font-family: Helvetica;
       font-size: 14px;
     }
@@ -114,7 +148,7 @@ body {
     display: flex;
 
     &_amount {
-      color: #2F4FFD;
+      color: #2f4ffd;
       font-size: 32px;
       font-weight: 500;
       letter-spacing: 3px;
@@ -123,7 +157,7 @@ body {
     }
 
     &_network {
-      color: #4A4A4A;
+      color: #4a4a4a;
       font-family: Helvetica;
       line-height: 21px;
       padding-bottom: 11px;
@@ -193,12 +227,12 @@ body {
       &_arrow {
         width: auto;
         margin-left: initial;
-  
+
         &::before {
           left: -82px;
           width: calc(100% + 162px);
         }
-  
+
         &::after {
           right: -80px;
         }
@@ -213,8 +247,8 @@ body {
   line-height: 21px;
 
   &:not(.main-section-blue) {
-    background: #F4F7FB;
-    color: #9B9B9B;
+    background: #f4f7fb;
+    color: #9b9b9b;
   }
 
   &_content {
@@ -231,7 +265,7 @@ body {
 
     &_asset {
       position: relative;
-      
+
       &_custom {
         font-size: 14px;
         position: absolute;
@@ -341,13 +375,13 @@ body {
   .main-section-blue & {
     path {
       fill: white;
-  
+
       &:hover {
         fill: darken($color: white, $amount: 30%) !important;
       }
     }
   }
-  
+
   path {
     fill: #aca3a3;
   }
@@ -361,7 +395,7 @@ body {
 
 .footer {
   color: #444444;
-  
+
   ul {
     float: right;
 
