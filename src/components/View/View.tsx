@@ -4,6 +4,7 @@ import {
   ICancelResponse,
   IDecodedTransaction,
   IError,
+  IScheduleAccessKey,
   IScheduledTransaction,
   SentinelAPI,
   Status
@@ -15,6 +16,13 @@ import SenderInformation from '../Sender/SenderInformation';
 import TimeCondition from './TimeCondition';
 import TransactionStatus from './TransactionStatus';
 
+interface IViewProps {
+  match: {
+    params: IScheduleAccessKey;
+  };
+  onChange: () => void;
+}
+
 interface IView {
   decodedTransaction: IDecodedTransaction;
   scheduledTransaction: IScheduledTransaction;
@@ -22,7 +30,7 @@ interface IView {
   cancelResponse?: ICancelResponse | IError;
 }
 
-class View extends React.Component<any, IView> {
+class View extends React.Component<IViewProps, IView> {
   public async componentDidMount() {
     const response = await SentinelAPI.get(this.props.match.params);
 
@@ -81,11 +89,7 @@ class View extends React.Component<any, IView> {
           {...this.state.scheduledTransaction.conditionalAsset}
         />
         <TimeCondition {...this.state.scheduledTransaction} />
-        <Button
-          kind="danger"
-          disabled={executed}
-          onClick={cancel}
-        >
+        <Button kind="danger" disabled={executed} onClick={cancel}>
           Cancel watching
         </Button>
         {cancelStatus}
@@ -112,6 +116,7 @@ class View extends React.Component<any, IView> {
         status: Status.Cancelled
       };
       this.setState({ scheduledTransaction });
+      this.props.onChange();
     }
 
     this.setState({ cancelResponse });

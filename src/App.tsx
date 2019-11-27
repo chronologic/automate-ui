@@ -5,15 +5,39 @@ import Header from './components/Header/Header';
 import Schedule from './components/Schedule/Schedule';
 import View from './components/View/View';
 
-class App extends React.Component {
+interface IAppState {
+  updateCounter: number;
+}
+
+class App extends React.Component<{}, IAppState> {
+  public state = {
+    updateCounter: 0
+  };
+
+  constructor(props: {}) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  public handleChange() {
+    this.setState(state => ({
+      updateCounter: state.updateCounter + 1
+    }));
+  }
+
   public render() {
+    const { updateCounter } = this.state;
+    const renderScheduleRoute = () => <Schedule onChange={this.handleChange} />;
+    const renderViewRoute = (props: any) => (
+      <View {...props} onChange={this.handleChange} />
+    );
     return (
       <Router>
         <div className="bx--grid">
-          <Header />
+          <Header updateCounter={updateCounter} />
           <div className="bx--row space" />
-          <Route exact={true} path="/" component={Schedule} />
-          <Route path="/view/:id/:key" component={View} />
+          <Route exact={true} path="/" render={renderScheduleRoute} />
+          <Route path="/view/:id/:key" render={renderViewRoute} />
         </div>
       </Router>
     );
