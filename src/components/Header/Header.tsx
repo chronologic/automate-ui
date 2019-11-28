@@ -2,37 +2,31 @@ import * as React from 'react';
 import * as ReactCountUp from 'react-countup';
 import { Link } from 'react-router-dom';
 
-import { IStatsDict, StatsAPI } from '../../api/StatsAPI';
+import { IStatsItem, StatsAPI } from '../../api/StatsAPI';
 import logo from './logo.svg';
 
 const CountUp = (ReactCountUp as any).default;
-
-interface IStatsSummary {
-  assets: number;
-  count: number;
-  value: number;
-}
 
 interface IHeaderProps {
   updateCounter: number;
 }
 
 interface IHeaderState {
-  completed: IStatsSummary;
-  pending: IStatsSummary;
+  completed: IStatsItem;
+  pending: IStatsItem;
   statsLoaded: boolean;
 }
 
 class Header extends React.Component<IHeaderProps, IHeaderState> {
   public state = {
     completed: {
-      assets: 0,
-      count: 0,
+      assetCount: 0,
+      txCount: 0,
       value: 0
     },
     pending: {
-      assets: 0,
-      count: 0,
+      assetCount: 0,
+      txCount: 0,
       value: 0
     },
     statsLoaded: false
@@ -47,29 +41,13 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
   }
 
   public async updateStats() {
-    const stats = await StatsAPI.getStats();
-    const completed = this.summarizeStats(stats.completed);
-    const pending = this.summarizeStats(stats.pending);
+    const { completed, pending } = await StatsAPI.getStats();
 
     this.setState({
       completed,
       pending,
       statsLoaded: true
     });
-  }
-
-  public summarizeStats(statsDict: IStatsDict): IStatsSummary {
-    let count = 0;
-    let value = 0;
-    let assets = 0;
-    Object.keys(statsDict).forEach(key => {
-      const item = statsDict[key];
-      count += item.count;
-      value += item.value;
-      assets++;
-    });
-
-    return { assets, count, value };
   }
 
   public render() {
@@ -88,13 +66,13 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
             />{' '}
             in{' '}
             <CountUp
-              end={completed.count}
+              end={completed.txCount}
               preserveValue={true}
               className="header-countup"
             />{' '}
             transactions across{' '}
             <CountUp
-              end={completed.assets}
+              end={completed.assetCount}
               preserveValue={true}
               className="header-countup"
             />{' '}
@@ -124,13 +102,13 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
             />{' '}
             of transfers in{' '}
             <CountUp
-              end={pending.count}
+              end={pending.txCount}
               preserveValue={true}
               className="header-countup"
             />{' '}
             transactions across{' '}
             <CountUp
-              end={pending.assets}
+              end={pending.assetCount}
               preserveValue={true}
               className="header-countup"
             />{' '}

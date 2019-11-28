@@ -1,18 +1,14 @@
 import axios from 'axios';
 
-interface IStatsItem {
-  count: number;
-  amount: number;
+export interface IStatsItem {
+  assetCount: number;
+  txCount: number;
   value: number;
 }
 
-export interface IStatsDict {
-  [key: string]: IStatsItem;
-}
-
-interface IStats {
-  pending: IStatsDict;
-  completed: IStatsDict;
+export interface IStats {
+  completed: IStatsItem;
+  pending: IStatsItem;
 }
 
 export class StatsAPI {
