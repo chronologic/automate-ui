@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="45px" height="45px" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 26</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M22.5,0 C10.0735875,0 0,10.0735875 0,22.5 C0,34.9264125 10.0735875,45 22.5,45 C34.9264125,45 45,34.9264125 45,22.5 C45,10.0735875 34.9264125,0 22.5,0 Z" id="path-1"></path>
+        <linearGradient x1="85.355339%" y1="14.644661%" x2="14.644661%" y2="85.355339%" id="linearGradient-3">
+            <stop stop-color="#FF2D54" offset="0%"></stop>
+            <stop stop-color="#FFBC5B" offset="100%"></stop>
+        </linearGradient>
+        <polygon id="path-4" points="0.0788625 16.875 14.1413625 16.875 0.0788625 0"></polygon>
+        <linearGradient x1="49.9991975%" y1="0%" x2="49.9991975%" y2="100%" id="linearGradient-6">
+            <stop stop-color="#A523B3" offset="0%"></stop>
+            <stop stop-color="#FF2D54" offset="100%"></stop>
+        </linearGradient>
+        <polygon id="path-7" points="0.03375 12.375 10.35 12.375 0.03375 0"></polygon>
+        <linearGradient x1="49.9999933%" y1="0%" x2="49.9999933%" y2="100%" id="linearGradient-9">
+            <stop stop-color="#A523B3" offset="0%"></stop>
+            <stop stop-color="#FF2D54" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Automate_Execute" transform="translate(-938.000000, -195.000000)">
+            <g id="Group-7" transform="translate(135.000000, 120.000000)">
+                <g id="Group-2-Copy-7" transform="translate(798.000000, 70.000000)">
+                    <g id="Group-26" transform="translate(5.000000, 5.000000)">
+                        <g id="Group-3">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <g id="Clip-2"></g>
+                            <path d="M22.5,0 C10.0735875,0 0,10.0735875 0,22.5 C0,34.9264125 10.0735875,45 22.5,45 C34.9264125,45 45,34.9264125 45,22.5 C45,10.0735875 34.9264125,0 22.5,0 Z" id="Fill-1" fill="url(#linearGradient-3)" mask="url(#mask-2)"></path>
+                        </g>
+                        <g id="Group-6" transform="translate(15.862500, 14.625000)">
+                            <mask id="mask-5" fill="white">
+                                <use xlink:href="#path-4"></use>
+                            </mask>
+                            <g id="Clip-5"></g>
+                            <polygon id="Fill-4" fill="url(#linearGradient-6)" mask="url(#mask-5)" points="0.0788625 16.875 14.1413625 16.875 0.0788625 0"></polygon>
+                        </g>
+                        <g id="Group-13" transform="translate(1.800000, 14.625000)">
+                            <polygon id="Fill-7" fill="#FFFFFF" points="0.0787725 16.875 14.1412725 16.875 14.1412725 0"></polygon>
+                            <path d="M2.7,21.375 C3.9825,23.07375 5.50125,24.5925 7.2,25.875 L34.2,25.875 C35.89875,24.5925 37.4175,23.07375 38.7,21.375 L2.7,21.375 Z" id="Fill-9" fill="#FC9965"></path>
+                            <path d="M7.2,25.875 C10.9575,28.69875 15.6375,30.375 20.7,30.375 C25.7625,30.375 30.4425,28.69875 34.2,25.875 L7.2,25.875 Z" id="Fill-11" fill="#FF2D55"></path>
+                        </g>
+                        <g id="Group-16" transform="translate(30.150000, 23.625000)">
+                            <mask id="mask-8" fill="white">
+                                <use xlink:href="#path-7"></use>
+                            </mask>
+                            <g id="Clip-15"></g>
+                            <polygon id="Fill-14" fill="url(#linearGradient-9)" mask="url(#mask-8)" points="0.03375 12.375 10.35 12.375 0.03375 0"></polygon>
+                        </g>
+                        <g id="Group-25" transform="translate(1.800000, 5.625000)">
+                            <path d="M28.3837275,25.875 L0.0787275,25.875 C0.7762275,27.48375 1.6649775,28.99125 2.6999775,30.375 L28.39509,30.375 L28.39509,25.875 L28.3837275,25.875 Z" id="Fill-17" fill="#FFBC5B"></path>
+                            <polygon id="Fill-19" fill="#FFFFFF" points="18.0787725 30.375 28.3837725 30.375 28.3837725 18"></polygon>
+                            <path d="M28.3837275,3.375 C31.4903025,3.375 34.0087275,5.893425 34.0087275,9 C34.0087275,12.106575 31.4903025,14.625 28.3837275,14.625 C25.2771525,14.625 22.7587275,12.106575 22.7587275,9 C22.7587275,5.893425 25.2771525,3.375 28.3837275,3.375" id="Fill-21" fill="#FFC95B"></path>
+                            <path d="M14.1412725,0 C15.69456,0 16.9537725,1.2592125 16.9537725,2.8125 C16.9537725,4.3657875 15.69456,5.625 14.1412725,5.625 C12.587985,5.625 11.3287725,4.3657875 11.3287725,2.8125 C11.3287725,1.2592125 12.587985,0 14.1412725,0" id="Fill-23" fill="#FFC95B"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
