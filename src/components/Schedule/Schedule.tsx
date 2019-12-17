@@ -94,7 +94,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
             conditionSectionActive ? '' : ' main-section-blue'
           }`}
         >
-          <div className={`bx--col-xs-6 main-section`}>
+          <div className="bx--col-xs-6 main-section">
             <div className="grid-layout">
               <div className="grid-item span-1 grid-item-1">
                 <input
@@ -931,7 +931,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
                 </a>
               </li>
             </ul>
-            ChronoLogic 2020
+            ChronoLogic {new Date().getFullYear()}
           </div>
         </div>
       </div>
