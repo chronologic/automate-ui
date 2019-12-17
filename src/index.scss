@@ -26,7 +26,6 @@ body {
 
   a {
     position: absolute;
-    top: 5px;
     left: 50%;
     transform: translateX(-50%);
   }
@@ -82,7 +81,7 @@ body {
   }
 
   @include breakpoint('bp--xs--major') {
-    padding: 68px;
+    padding: 50px;
   }
 }
 
@@ -97,7 +96,7 @@ body {
 }
 
 .carbon--center {
-  justify-content: center;
+  text-align: center;
 }
 
 .schedule-summary {
@@ -397,23 +396,81 @@ body {
   color: #444444;
 
   ul {
-    float: right;
 
     li {
       display: inline-block;
-      padding: 0 5px;
+      padding: 12px 24px;
 
       a {
         text-decoration: none;
-        color: #444444;
       }
     }
   }
 
   .icon-link {
     svg {
-      fill: #444444;
+      fill: #2f4ffd;
       vertical-align: middle;
     }
   }
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(53px, 1fr));
+  grid-gap: 10px;
+  grid-auto-rows: minmax(53px, auto);
+}
+
+.span-1 {
+  grid-column-end: span 3;
+  grid-row-end: span 3;
+}
+
+.span-2 {
+  grid-column-end: span 3;
+  grid-row-end: span 1;
+}
+
+.bx--tile {
+  background-color: #fff;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 0;
+}
+.asset-center{
+  display: inline-block;
+  text-align: center;
+  padding: 24px 30px;
+  text-decoration: none;
+  pointer-events: none;
+}
+.asset-left{
+  display: inline-flex;
+  padding: 5px 5px;
+  align-items: center;
+  text-decoration: none;
+  pointer-events: none;
+}
+.icon-label{
+  color: #000;
+  padding: 0 10px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.bx--tile__checkmark {
+  top: 5px;
+  right: 5px;
+}
+
+.bx--tile--selectable {
+  padding-right: 0;
+}
+.bx--row {
+  display: block;
+}
+
+.bx--tile__checkmark svg {
+  fill: #2f4ffd
 }
