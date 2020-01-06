@@ -396,10 +396,9 @@ body {
   color: #444444;
 
   ul {
-
     li {
       display: inline-block;
-      padding: 12px 24px;
+      padding: 0 20px;
 
       a {
         text-decoration: none;
@@ -438,21 +437,21 @@ body {
   min-height: 100%;
   padding: 0;
 }
-.asset-center{
+.asset-center {
   display: inline-block;
   text-align: center;
   padding: 24px 30px;
   text-decoration: none;
   pointer-events: none;
 }
-.asset-left{
+.asset-left {
   display: inline-flex;
   padding: 5px 5px;
   align-items: center;
   text-decoration: none;
   pointer-events: none;
 }
-.icon-label{
+.icon-label {
   color: #000;
   padding: 0 10px;
   line-height: 1.2;
@@ -472,9 +471,10 @@ body {
 }
 
 .bx--tile__checkmark svg {
-  fill: #2f4ffd
+  fill: #2f4ffd;
 }
-.bx--tooltip--definition__bottom, .bx--tooltip--definition__top{
+.bx--tooltip--definition__bottom,
+.bx--tooltip--definition__top {
   min-width: 11rem;
 }
 .bx--tooltip--definition .bx--tooltip__trigger {
