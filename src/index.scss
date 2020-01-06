@@ -409,7 +409,7 @@ body {
 
   .icon-link {
     svg {
-      fill: #2f4ffd;
+      fill: #444444;
       vertical-align: middle;
     }
   }
@@ -473,4 +473,10 @@ body {
 
 .bx--tile__checkmark svg {
   fill: #2f4ffd
+}
+.bx--tooltip--definition__bottom, .bx--tooltip--definition__top{
+  min-width: 11rem;
+}
+.bx--tooltip--definition .bx--tooltip__trigger {
+  border-bottom: 2px dotted #444;
 }
