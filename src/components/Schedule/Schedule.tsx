@@ -204,24 +204,106 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
             <ul>
               <li>
                 <a
-                  href="https://chronologic.zendesk.com/hc/en-us"
+                  href="https://blog.chronologic.network/tagged/automate"
+                  target="_blank"
                   rel="noopener noreferrer"
+                  className="bx--tooltip--definition"
                 >
-                  Support
+                  <button
+                    className="bx--tooltip__trigger"
+                    type="button"
+                    aria-describedby="definition-tooltip"
+                  >
+                    What is Automate?
+                  </button>
+                  <div
+                    id="definition-tooltip"
+                    role="tooltip"
+                    className="bx--tooltip--definition__bottom"
+                  >
+                    <span className="bx--tooltip__caret" />
+                    <p>Conditional scheduling for Ethereum network</p>
+                  </div>
                 </a>
               </li>
               <li>
                 <a
-                  href="https://blog.chronologic.network/"
+                  href="https://app.chronologic.network"
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="bx--tooltip--definition"
                 >
-                  Blog
+                  <button
+                    className="bx--tooltip__trigger"
+                    type="button"
+                    aria-describedby="definition-tooltip"
+                  >
+                    Chronos &amp; Other dApps
+                  </button>
+                  <div
+                    id="definition-tooltip"
+                    role="tooltip"
+                    className="bx--tooltip--definition__bottom"
+                  >
+                    <span className="bx--tooltip__caret" />
+                    <p>
+                      Chronos, Run a Timenode &amp; our other scheduling dApps
+                    </p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://chronologic.zendesk.com/hc/en-us"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bx--tooltip--definition"
+                >
+                  <button
+                    className="bx--tooltip__trigger"
+                    type="button"
+                    aria-describedby="definition-tooltip"
+                  >
+                    Support
+                  </button>
+                  <div
+                    id="definition-tooltip"
+                    role="tooltip"
+                    className="bx--tooltip--definition__bottom"
+                  >
+                    <span className="bx--tooltip__caret" />
+                    <p>Contact ChronoLogic team by submitting a request</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://blog.chronologic.network"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bx--tooltip--definition"
+                >
+                  <button
+                    className="bx--tooltip__trigger"
+                    type="button"
+                    aria-describedby="definition-tooltip"
+                  >
+                    Blog
+                  </button>
+                  <div
+                    id="definition-tooltip"
+                    role="tooltip"
+                    className="bx--tooltip--definition__bottom"
+                  >
+                    <span className="bx--tooltip__caret" />
+                    <p>Stay updated by subscribing to our Medium</p>
+                  </div>
                 </a>
               </li>
               <li>
                 <a
                   href="https://twitter.com/ChronoLogicETH"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="icon-link"
                 >
@@ -233,6 +315,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
               <li>
                 <a
                   href="https://t.me/chronologicnetwork"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="icon-link"
                 >
