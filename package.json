@@ -1,13 +1,11 @@
 {
   "name": "sentinel-ui",
-  "author": "Piotr Kosinski <piort@chronologic.network",
-  "version": "0.9.0",
+  "author": "Piotr Kosinski <piotr@chronologic.network",
+  "version": "1.1.0",
   "private": true,
   "engines": {
-    "node": "8",
-    "npm": "6"
+    "node": "12"
   },
-  "engineStrict": true,
   "dependencies": {
     "axios": "^0.18.0",
     "carbon-components": "^9.54.1",
