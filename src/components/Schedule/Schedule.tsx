@@ -18,6 +18,7 @@ import {
   SentinelAPI
 } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
+import { AssetType } from 'src/models'
 
 import ConditionSection from './ConditionSection';
 import SummarySection from './SummarySection';
@@ -35,7 +36,15 @@ interface ISentinelProps {
   onChange: () => void;
 }
 
+enum Step {
+  Asset = 'asset',
+  Transaction = 'transaction',
+  Condition = 'condition'
+}
+
 interface ISentinelState extends IDecodedTransaction {
+  assetType: AssetType | null;
+  step: Step;
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
   loadingSentinelResponse: boolean;
@@ -51,6 +60,7 @@ interface ISentinelState extends IDecodedTransaction {
 }
 
 const defaultState: ISentinelState = {
+  assetType: null,
   conditionalAsset: {
     ...ETH,
     address: '',
@@ -68,6 +78,7 @@ const defaultState: ISentinelState = {
   signedSender: '',
   signedTransaction: '',
   signedTransactionIsValid: true,
+  step: Step.Asset,
   timeConditionIsValid: false,
   timeScheduling: false
 };
@@ -80,8 +91,9 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
   public render() {
     const send = this.send.bind(this);
-
     const response = this.renderResponse();
+
+    const { step } = this.state;
 
     const conditionSectionActive = Boolean(
       this.state.signedTransaction && this.state.signedTransactionIsValid
@@ -91,7 +103,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
       <div>
         <div
           className={`bx--row${
-            conditionSectionActive ? '' : ' main-section-blue'
+            step === Step.Asset ? ' main-section-blue' : ''
           }`}
         >
           <div className="bx--col-xs-6 main-section">
