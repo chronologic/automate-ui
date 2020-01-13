@@ -8,8 +8,10 @@ import {
   TextArea,
   Tooltip
 } from 'carbon-components-react';
+import cn from 'classnames';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
+
 import {
   IAsset,
   IDecodedTransaction,
@@ -18,8 +20,9 @@ import {
   SentinelAPI
 } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
-import { AssetType } from 'src/models'
+import { AssetType } from 'src/models';
 
+import AssetSelector from './AssetSelector';
 import ConditionSection from './ConditionSection';
 import SummarySection from './SummarySection';
 
@@ -37,18 +40,19 @@ interface ISentinelProps {
 }
 
 enum Step {
-  Asset = 'asset',
-  Transaction = 'transaction',
-  Condition = 'condition'
+  Asset = 0,
+  Transaction = 1,
+  Condition = 2
 }
 
 interface ISentinelState extends IDecodedTransaction {
-  assetType: AssetType | null;
   step: Step;
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
   loadingSentinelResponse: boolean;
   loadingSignedTransaction: boolean;
+  selectedAsset: AssetType | null;
+  selectedSymbol: string;
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -60,7 +64,6 @@ interface ISentinelState extends IDecodedTransaction {
 }
 
 const defaultState: ISentinelState = {
-  assetType: null,
   conditionalAsset: {
     ...ETH,
     address: '',
@@ -69,6 +72,8 @@ const defaultState: ISentinelState = {
   conditionalAssetIsValid: true,
   loadingSentinelResponse: false,
   loadingSignedTransaction: false,
+  selectedAsset: null,
+  selectedSymbol: '',
   senderNonce: NaN,
   sentinelResponse: undefined,
   signedAsset: { address: '', decimals: 0, name: '', amount: '' },
@@ -87,13 +92,26 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
   constructor(props: ISentinelProps) {
     super(props);
     this.state = defaultState;
+
+    this.handleSelectAsset = this.handleSelectAsset.bind(this);
+  }
+
+  public handleSelectAsset(
+    selectedAsset: AssetType,
+    selectedSymbol: string
+  ): void {
+    this.setState({
+      selectedAsset,
+      selectedSymbol,
+      step: Step.Transaction
+    });
   }
 
   public render() {
     const send = this.send.bind(this);
     const response = this.renderResponse();
 
-    const { step } = this.state;
+    const { step, selectedSymbol } = this.state;
 
     const conditionSectionActive = Boolean(
       this.state.signedTransaction && this.state.signedTransactionIsValid
@@ -101,687 +119,17 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
     return (
       <div>
+        <AssetSelector
+          active={step === Step.Asset}
+          selectedSymbol={selectedSymbol}
+          onClick={this.handleSelectAsset}
+        />
         <div
-          className={`bx--row${
-            step === Step.Asset ? ' main-section-blue' : ''
-          }`}
+          className={cn(
+            'bx--row',
+            step === Step.Transaction ? ' main-section-blue' : ''
+          )}
         >
-          <div className="bx--col-xs-6 main-section">
-            <div className="grid-layout">
-              <div className="grid-item span-1 grid-item-1">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-center">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/eth.svg'}
-                        height={120}
-                      />
-                      <p className="icon-label">Ethereum</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-1 grid-item-2">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-center">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/dot.svg'}
-                        height={120}
-                      />
-                      <p className="icon-label">Polkadot</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-3">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/usdt.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Tether</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-4">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/usdc.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">USD Coin</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-5">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/kitty.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Cryptokitties</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-6">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/png"
-                        src={'./assets/axie.png'}
-                        height={45}
-                      />
-                      <p className="icon-label">Axie Infinity</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-7">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/snx.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Synthetix</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-8">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/dai.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Multi-Collateral Dai</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-9">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/mana.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Decentraland</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-10">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/png"
-                        src={'./assets/heroes.png'}
-                        height={45}
-                      />
-                      <p className="icon-label">My Crypto Heroes</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-11">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/png"
-                        src={'./assets/hot.png'}
-                        height={45}
-                      />
-                      <p className="icon-label">Holochain</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-12">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/link.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Chainlink</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-13">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/png"
-                        src={'./assets/gods.png'}
-                        height={45}
-                      />
-                      <p className="icon-label">Gods Unchained</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-              <div className="grid-item span-2 grid-item-14">
-                <input
-                  tabIndex={-1}
-                  data-tile-input={true}
-                  id="tile-id"
-                  className="bx--tile-input"
-                  defaultValue="tile"
-                  type="checkbox"
-                  name="tiles"
-                  title="tile"
-                />
-                <label
-                  htmlFor="tile-id"
-                  aria-label="tile"
-                  className="bx--tile bx--tile--selectable"
-                  data-tile="selectable"
-                  tabIndex={0}
-                >
-                  <div className="bx--tile__checkmark">
-                    <svg
-                      focusable="false"
-                      preserveAspectRatio="xMidYMid meet"
-                      style={{ willChange: 'transform' }}
-                      xmlns="http://www.w3.org/2000/svg"
-                      width={16}
-                      height={16}
-                      viewBox="0 0 16 16"
-                      aria-hidden="true"
-                    >
-                      <path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zM7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z" />
-                      <path
-                        d="M7 11L4.3 8.3l.9-.8L7 9.3l4-3.9.9.8L7 11z"
-                        opacity={0}
-                      />
-                    </svg>
-                  </div>
-                  <div className="bx--tile-content">
-                    <div className="asset-left">
-                      <embed
-                        type="image/svg+xml"
-                        src={'./assets/erc20.svg'}
-                        height={45}
-                      />
-                      <p className="icon-label">Other ERC20 Tokens</p>
-                    </div>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </div>
           <div className={`bx--col-xs-6 main-section`}>
             <div className="bx--label">
               EXECUTE{' '}
