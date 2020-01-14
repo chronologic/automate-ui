@@ -141,7 +141,13 @@ export default class SummarySection extends React.Component<
   private getNonceInfo(): JSX.Element {
     const { signedNonce, senderNonce } = this.props;
 
-    if (!signedNonce || !senderNonce) {
+    // tslint:disable-next-line: no-console
+    console.log({
+      senderNonce,
+      signedNonce
+    });
+
+    if (signedNonce == null || senderNonce == null) {
       return <></>;
     }
 
@@ -163,7 +169,7 @@ export default class SummarySection extends React.Component<
 
     return (
       <>
-        Transaction nonce: <b className="font-weight-600">{signedNonce}</b>
+        Transaction nonce: <b className="font-weight-600">{signedNonce}</b>{' '}
         {status}
       </>
     );

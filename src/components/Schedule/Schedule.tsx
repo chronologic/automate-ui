@@ -26,10 +26,15 @@ import { iconHelpSolid } from 'carbon-icons';
 const EXPERIMENTAL_FEATURES = !!(window as any).experimental;
 
 const SUPPORTED_NETWORKS = {
-  1: 'Mainnet',
-  3: 'Ropsten',
-  4: 'Rinkeby',
-  42: 'Kovan'
+  [AssetType.Ethereum]: {
+    1: 'Mainnet',
+    3: 'Ropsten',
+    4: 'Rinkeby',
+    42: 'Kovan'
+  },
+  [AssetType.Polkadot]: {
+    1: 'Kusama'
+  }
 };
 
 interface ISentinelProps {
@@ -238,9 +243,13 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           <SummarySection
             chainId={this.state.signedChain.chainId}
             isNetworkSupported={this.isNetworkSupported(
+              this.state.selectedAsset as AssetType,
               this.state.signedChain.chainId
             )}
-            networkName={this.getNetworkName(this.state.signedChain.chainId)}
+            networkName={this.getNetworkName(
+              this.state.selectedAsset as AssetType,
+              this.state.signedChain.chainId
+            )}
             conditionalAsset={this.state.conditionalAsset}
             senderNonce={this.state.senderNonce}
             signedAsset={this.state.signedAsset}
@@ -401,12 +410,19 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     );
   }
 
-  private isNetworkSupported(networkId: number): boolean {
-    return Boolean(this.getNetworkName(networkId));
+  private isNetworkSupported(assetType: AssetType, networkId: number): boolean {
+    return Boolean(this.getNetworkName(assetType, networkId));
   }
 
-  private getNetworkName(networkId: number): string | undefined {
-    return SUPPORTED_NETWORKS[this.state.signedChain.chainId];
+  private getNetworkName(
+    assetType: AssetType,
+    networkId: number
+  ): string | undefined {
+    if (SUPPORTED_NETWORKS[assetType]) {
+      return SUPPORTED_NETWORKS[assetType][this.state.signedChain.chainId];
+    }
+
+    return;
   }
 
   private emitConditional = (conditionalAsset: IAsset) => {
