@@ -28,6 +28,8 @@ import SummarySection from './SummarySection';
 
 import { iconHelpSolid } from 'carbon-icons';
 
+const EXPERIMENTAL_FEATURES = !!(window as any).experimental;
+
 const SUPPORTED_NETWORKS = {
   1: 'Mainnet',
   3: 'Ropsten',
@@ -72,7 +74,7 @@ const defaultState: ISentinelState = {
   conditionalAssetIsValid: true,
   loadingSentinelResponse: false,
   loadingSignedTransaction: false,
-  selectedAsset: null,
+  selectedAsset: EXPERIMENTAL_FEATURES ? null : AssetType.Ethereum,
   selectedSymbol: '',
   senderNonce: NaN,
   sentinelResponse: undefined,
@@ -83,7 +85,7 @@ const defaultState: ISentinelState = {
   signedSender: '',
   signedTransaction: '',
   signedTransactionIsValid: true,
-  step: Step.Asset,
+  step: EXPERIMENTAL_FEATURES ? Step.Asset : Step.Transaction,
   timeConditionIsValid: false,
   timeScheduling: false
 };
@@ -119,11 +121,13 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
     return (
       <div>
-        <AssetSelector
-          active={step === Step.Asset}
-          selectedSymbol={selectedSymbol}
-          onClick={this.handleSelectAsset}
-        />
+        {EXPERIMENTAL_FEATURES && (
+          <AssetSelector
+            active={step === Step.Asset}
+            selectedSymbol={selectedSymbol}
+            onClick={this.handleSelectAsset}
+          />
+        )}
         <div
           className={cn(
             'bx--row',
