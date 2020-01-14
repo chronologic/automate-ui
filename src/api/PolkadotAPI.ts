@@ -14,6 +14,8 @@ interface IPolkadotTx {
   decimals?: number;
 }
 
+export const DOT = { name: 'DOT', decimals: 12 };
+
 const API_URL: string = process.env.REACT_APP_API_URL + '/polkadot';
 
 const api = axios.create({

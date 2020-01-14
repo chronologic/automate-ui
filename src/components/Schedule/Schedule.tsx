@@ -86,7 +86,7 @@ const defaultState: ISentinelState = {
 };
 
 const TxTooltip = ({ assetType }: { assetType: AssetType }) => {
-  let toolLink = <div />;
+  let toolLink = null;
 
   switch (assetType) {
     case AssetType.Ethereum: {
@@ -117,6 +117,10 @@ const TxTooltip = ({ assetType }: { assetType: AssetType }) => {
     }
   }
 
+  if (!toolLink) {
+    return null;
+  }
+
   return (
     <Tooltip
       showIcon={true}
@@ -133,7 +137,7 @@ const TxTooltip = ({ assetType }: { assetType: AssetType }) => {
         Please follow a step-by-step tutorial on how to sign Tx using
         MyEtherWallet for later use in Automate.
       </p>
-      <div className={`bx--tooltip__footer`}>
+      <div className="bx--tooltip__footer">
         <a
           href="https://www.youtube.com/watch?v=KBsY_iuOB-E"
           target="_blank"

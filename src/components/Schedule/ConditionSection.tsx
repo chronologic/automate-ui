@@ -9,6 +9,7 @@ import {
 } from 'carbon-components-react';
 import * as React from 'react';
 
+import { DOT } from 'src/api/PolkadotAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
 import { IAsset } from 'src/models';
 import { AssetType } from 'src/models';
@@ -66,10 +67,16 @@ export default class ConditionSection extends React.Component<
       timeScheduling
     } = this.props;
 
+    const isEthereum = selectedAsset === AssetType.Ethereum;
+    let defaultAssetName = 'ETH';
+    if (selectedAsset === AssetType.Polkadot) {
+      defaultAssetName = DOT.name;
+    }
+
     const conditionAssetOptions: IConditionAssetOption[] = [
       {
         address: '',
-        label: 'ETH'
+        label: defaultAssetName
       }
     ];
 
@@ -94,7 +101,6 @@ export default class ConditionSection extends React.Component<
     const selectedConditionAsset = conditionAssetOptions.find(
       item => item && item.label === conditionalAsset.name
     );
-    const isEthereum = selectedAsset === AssetType.Ethereum;
 
     return (
       <>
