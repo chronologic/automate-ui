@@ -1,24 +1,30 @@
 import { FormItem, Link, TextInput } from 'carbon-components-react';
 import * as React from 'react';
-import {
-  IDecodedTransaction,
-  IScheduledTransaction,
-  Status
-} from 'src/api/SentinelAPI';
 
+import { IScheduledTransaction, Status } from 'src/api/SentinelAPI';
+import { AssetType, IDecodedTransaction } from 'src/models';
 import Skeleton from '../Skeleton/Skeleton';
 
 interface ITransactionStatusProps
   extends IScheduledTransaction,
     IDecodedTransaction {}
 
+type IExplorers = {
+  [key in AssetType]: Map<number, string>;
+};
+
 class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
-  private explorers = new Map<number, string>([
-    [1, 'https://etherscan.io/tx/'],
-    [3, 'https://ropsten.etherscan.io/tx/'],
-    [4, 'https://rinkeby.etherscan.io/tx/'],
-    [42, 'https://kovan.etherscan.io/tx/']
-  ]);
+  private explorers: IExplorers = {
+    [AssetType.Ethereum]: new Map<number, string>([
+      [1, 'https://etherscan.io/tx/'],
+      [3, 'https://ropsten.etherscan.io/tx/'],
+      [4, 'https://rinkeby.etherscan.io/tx/'],
+      [42, 'https://kovan.etherscan.io/tx/']
+    ]),
+    [AssetType.Polkadot]: new Map<number, string>([
+      [1, 'https://polkascan.io/pre/kusama-cc3/transaction/']
+    ])
+  };
 
   public render() {
     if (!this.props || !this.props.id) {
@@ -35,7 +41,7 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
       <div>
         <div className="bx--row row-padding">
           <TextInput
-            className="bx--col-xs-6"
+            className="bx--col-xs-12"
             labelText="Transaction id"
             disabled={true}
             value={this.props.id}
@@ -43,7 +49,7 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
         </div>
         <div className="bx--row row-padding">
           <TextInput
-            className="bx--col-xs-6"
+            className="bx--col-xs-12"
             labelText="Status"
             disabled={true}
             value={statusText}
@@ -57,39 +63,55 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
   }
 
   private renderTransactionHash() {
-    const explorerUrl = this.getExplorerUrl(
-      this.props.signedChain.chainId,
-      this.props.transactionHash
-    );
-    if (explorerUrl) {
-      return (
-        <FormItem>
-          <label className="bx--label">Transaction hash</label>
-          <Link href={explorerUrl} className="bx--text-input bx--col-xs-6">
-            {this.props.transactionHash}
-          </Link>
-        </FormItem>
+    if (this.props.status === Status.Completed) {
+      const explorerUrl = this.getExplorerUrl(
+        this.props.assetType,
+        this.props.signedChain.chainId,
+        this.props.transactionHash as string
       );
+      if (explorerUrl) {
+        return (
+          <FormItem>
+            <label className="bx--label">Transaction hash</label>
+            <Link
+              href={explorerUrl}
+              className="bx--text-input bx--col-xs-12"
+              target="_blank"
+            >
+              {this.props.transactionHash}
+            </Link>
+          </FormItem>
+        );
+      } else {
+        return (
+          <TextInput
+            className="bx--col-xs-12"
+            labelText="Transaction hash"
+            disabled={true}
+            value={this.props.transactionHash || 'Pending'}
+          />
+        );
+      }
     } else {
       return (
         <TextInput
-          className="bx--col-xs-6"
+          className="bx--col-xs-12"
           labelText="Transaction hash"
           disabled={true}
-          value={this.props.transactionHash || "Pending"}
+          value={'Pending'}
         />
       );
     }
   }
 
-  private getExplorerUrl(chainId: number, hash: string) {
+  private getExplorerUrl(assetType: AssetType, chainId: number, hash: string) {
     if (!hash) {
-      return "";
+      return '';
     }
 
-    const explorer = this.explorers.get(chainId);
+    const explorer = this.explorers[assetType].get(chainId);
 
-    return explorer ? explorer + hash : "";
+    return explorer ? explorer + hash : '';
   }
 }
 

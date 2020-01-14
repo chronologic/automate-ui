@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IAsset } from 'src/api/SentinelAPI';
+import { IAsset } from 'src/models';
 
 import Asset from './Asset';
 

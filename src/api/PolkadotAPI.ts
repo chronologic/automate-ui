@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IDecodedTransaction, IError } from './SentinelAPI';
+import { IDecodedTransaction, IError } from 'src/models';
 
 interface IPolkadotTx {
   signer: string;
@@ -34,12 +34,11 @@ const parseTx: (
   tx: string
 ) => Promise<IDecodedTransaction | IError> = async tx => {
   try {
-    const res = await api.get('parseTx', {
+    const { data: parsed } = await api.get<IPolkadotTx>('parseTx', {
       params: {
         tx
       }
     });
-    const parsed: IPolkadotTx = res.data;
     const decoded: IDecodedTransaction = {
       senderNonce: parsed.accountNonce,
       signedAsset: {
@@ -54,7 +53,8 @@ const parseTx: (
       },
       signedNonce: parsed.nonce,
       signedRecipient: parsed.dest || '',
-      signedSender: parsed.signer
+      signedSender: parsed.signer,
+      transactionHash: parsed.hash
     };
 
     return decoded;

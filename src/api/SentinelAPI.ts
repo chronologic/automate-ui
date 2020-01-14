@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { Transaction } from 'ethers/utils';
+
+import { AssetType, IAsset, IDecodedTransaction, IError } from 'src/models';
+import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
 
 export enum Status {
@@ -11,6 +14,7 @@ export enum Status {
 }
 
 export interface IScheduleRequest {
+  assetType: AssetType;
   conditionAmount: string;
   conditionAsset: string;
   signedTransaction: string;
@@ -23,7 +27,7 @@ interface IScheduledTransactionRaw {
   error: string;
   signedTransaction: string;
   status: Status;
-  transactionHash: string;
+  transactionHash?: string;
 }
 
 export interface IScheduleResponse
@@ -35,39 +39,15 @@ export interface IScheduleAccessKey {
   key: string;
 }
 
-export interface IError {
-  errors: string[];
-}
-
 export interface ICancelResponse {
   status: Status;
 }
 
 export interface IScheduledTransaction extends IScheduledTransactionRaw {
+  assetType: AssetType;
   conditionalAsset: IAsset;
   timeCondition: number;
   timeConditionTZ: string;
-}
-
-export interface IAsset {
-  address: string;
-  amount: string;
-  decimals: number;
-  name: string;
-}
-
-export interface INetwork {
-  chainId: number;
-  chainName: string;
-}
-
-export interface IDecodedTransaction {
-  signedAsset: IAsset;
-  signedRecipient: string;
-  signedSender: string;
-  signedChain: INetwork;
-  signedNonce: number;
-  senderNonce: number;
 }
 
 export class SentinelAPI {
@@ -93,28 +73,43 @@ export class SentinelAPI {
       const response = await axios.get<IScheduleResponse>(this.API_URL, {
         params: request
       });
-      const decodedTransaction = (await this.decode(
-        response.data.signedTransaction
-      )) as IDecodedTransaction;
-      const conditionalAssetInfo = await TokenAPI.tokenInfo(
-        response.data.conditionAsset,
-        decodedTransaction.signedChain.chainId
-      );
-      const amount = TokenAPI.withDecimals(
-        response.data.conditionAmount,
-        conditionalAssetInfo.decimals
-      );
+      switch (response.data.assetType) {
+        case AssetType.Ethereum: {
+          const decodedTransaction = (await this.decode(
+            response.data.signedTransaction,
+            AssetType.Ethereum
+          )) as IDecodedTransaction;
+          const conditionalAssetInfo = await TokenAPI.tokenInfo(
+            response.data.conditionAsset,
+            decodedTransaction.signedChain.chainId
+          );
+          const amount = TokenAPI.withDecimals(
+            response.data.conditionAmount,
+            conditionalAssetInfo.decimals
+          );
 
-      const conditionalAsset = {
-        ...conditionalAssetInfo,
-        address: response.data.conditionAsset,
-        amount
-      };
+          const conditionalAsset = {
+            ...conditionalAssetInfo,
+            address: response.data.conditionAsset,
+            amount
+          };
 
-      return {
-        ...response.data,
-        conditionalAsset
-      };
+          return {
+            ...response.data,
+            conditionalAsset
+          };
+        }
+        case AssetType.Polkadot: {
+          const parsed = await PolkadotAPI.parseTx(
+            response.data.signedTransaction
+          );
+
+          return {
+            ...response.data,
+            ...parsed
+          } as any;
+        }
+      }
     } catch (e) {
       return {
         errors: e.response
@@ -125,12 +120,36 @@ export class SentinelAPI {
   }
 
   public static async decode(
-    signedTransaction: string
+    signedTransaction: string,
+    assetType: AssetType
   ): Promise<IDecodedTransaction | IError> {
     let decodedTransaction: Transaction | undefined;
 
     try {
-      decodedTransaction = ethers.utils.parseTransaction(signedTransaction);
+      switch (assetType) {
+        case AssetType.Ethereum: {
+          decodedTransaction = ethers.utils.parseTransaction(signedTransaction);
+          break;
+        }
+        case AssetType.Polkadot: {
+          return PolkadotAPI.parseTx(signedTransaction);
+          // const parsed = (await PolkadotAPI.parseTx(
+          //   signedTransaction
+          // )) as IDecodedTransaction;
+          // decodedTransaction = {
+          //   chainId: parsed.signedChain.chainId,
+          //   data: signedTransaction,
+          //   from: parsed.signedSender,
+          //   gasLimit: new BigNumber('0'),
+          //   gasPrice: new BigNumber('0'),
+          //   hash: parsed.hash,
+          //   nonce: parsed.senderNonce,
+          //   to: parsed.signedRecipient,
+          //   value: new BigNumber(parsed.signedAsset.amount)
+          // };
+          // break;
+        }
+      }
       // tslint:disable-next-line:no-empty
     } catch (e) {
       return { errors: ['Unable to decode signed transaction'] } as IError;

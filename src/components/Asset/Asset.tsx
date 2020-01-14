@@ -1,13 +1,13 @@
 import { TextInput } from 'carbon-components-react';
 import * as React from 'react';
-import { IAsset } from 'src/api/SentinelAPI';
+import { IAsset } from 'src/models';
 
 interface IAssetProps extends IAsset {
   label: string;
   helperLabel?: string;
   amountLabel: string;
   amountHelperLabel?: string;
-  
+
   disabled: boolean;
   validationError?: string;
   onAddressChange?: (args: string) => void;
@@ -20,7 +20,7 @@ class Asset extends React.Component<IAssetProps, any> {
     return (
       <div>
         <div className="bx--row row-padding">
-          <div className="bx--col-xs-6">
+          <div className="bx--col-xs-12">
             <TextInput
               id="Address"
               labelText={this.props.label}
@@ -37,10 +37,10 @@ class Asset extends React.Component<IAssetProps, any> {
               invalidText={this.props.validationError}
             />
           </div>
-          <div className="bx--col-xs-2">
+          <div className="bx--col-xs-12">
             <TextInput
               id="Name"
-              className="bx--col-xs-6"
+              className="bx--col-xs-12"
               labelText="Asset name"
               value={this.props.name}
               disabled={true}
@@ -48,7 +48,7 @@ class Asset extends React.Component<IAssetProps, any> {
           </div>
         </div>
         <div className="bx--row row-padding">
-          <div className="bx--col-xs-6">
+          <div className="bx--col-xs-12">
             <TextInput
               id="Amount"
               labelText={this.props.amountLabel}
@@ -60,10 +60,7 @@ class Asset extends React.Component<IAssetProps, any> {
                   this.props.onAmountChange(e.target.value);
                 }
               }}
-              disabled={
-                this.props.disabled
-              }
-              
+              disabled={this.props.disabled}
             />
           </div>
         </div>

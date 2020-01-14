@@ -8,8 +8,10 @@ import {
   TextInput
 } from 'carbon-components-react';
 import * as React from 'react';
-import { IAsset } from 'src/api/SentinelAPI';
+
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
+import { IAsset } from 'src/models';
+import { AssetType } from 'src/models';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
 import SelectiveDisplay from './SelectiveDisplay';
 
@@ -17,6 +19,7 @@ interface IConditionSectionProps {
   active: boolean;
   chainId: number;
   conditionalAsset: IAsset;
+  selectedAsset: AssetType | null;
   signedAsset: IAsset;
   signedSender: string;
   timeScheduling: boolean;
@@ -58,6 +61,7 @@ export default class ConditionSection extends React.Component<
       signedSender,
       onTimeConditionValidatorError,
       onTimeConditionChange,
+      selectedAsset,
       setTimeScheduling,
       timeScheduling
     } = this.props;
@@ -90,6 +94,7 @@ export default class ConditionSection extends React.Component<
     const selectedConditionAsset = conditionAssetOptions.find(
       item => item && item.label === conditionalAsset.name
     );
+    const isEthereum = selectedAsset === AssetType.Ethereum;
 
     return (
       <>
@@ -109,28 +114,34 @@ export default class ConditionSection extends React.Component<
               </div>
               <div>balance of</div>
               <div className="schedule-condition_content_asset">
-                <DropdownV2
-                  label=""
-                  items={conditionAssetOptions}
-                  light={true}
-                  // tslint:disable-next-line
-                  itemToString={(item: IConditionAssetOption) =>
-                    item ? item.label : ''
-                  }
-                  onChange={this.onSelectedAssetChange}
-                  selectedItem={selectedConditionAsset}
-                />
-                <div
-                  className="schedule-condition_content_asset_custom"
-                  // tslint:disable-next-line
-                  onClick={() => {
-                    if (active) {
-                      this.setState({ customAssetAddressModalOpen: true });
+                {isEthereum ? (
+                  <DropdownV2
+                    label=""
+                    items={conditionAssetOptions}
+                    light={true}
+                    // tslint:disable-next-line
+                    itemToString={(item: IConditionAssetOption) =>
+                      item ? item.label : ''
                     }
-                  }}
-                >
-                  + Custom
-                </div>
+                    onChange={this.onSelectedAssetChange}
+                    selectedItem={selectedConditionAsset}
+                  />
+                ) : (
+                  selectedConditionAsset?.label
+                )}
+                {isEthereum && (
+                  <div
+                    className="schedule-condition_content_asset_custom"
+                    // tslint:disable-next-line
+                    onClick={() => {
+                      if (active) {
+                        this.setState({ customAssetAddressModalOpen: true });
+                      }
+                    }}
+                  >
+                    + Custom
+                  </div>
+                )}
               </div>
               <div>is greater or equal to</div>
               <div className="schedule-condition_content_asset-amount">

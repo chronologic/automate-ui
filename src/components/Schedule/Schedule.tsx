@@ -12,15 +12,9 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-import PolkadotAPI from 'src/api/PolkadotAPI';
-import {
-  IAsset,
-  IDecodedTransaction,
-  IError,
-  IScheduleAccessKey,
-  SentinelAPI
-} from 'src/api/SentinelAPI';
+import { IScheduleAccessKey, SentinelAPI } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
+import { IAsset, IDecodedTransaction, IError } from 'src/models';
 import { AssetType } from 'src/models';
 
 import AssetSelector from './AssetSelector';
@@ -91,6 +85,68 @@ const defaultState: ISentinelState = {
   timeScheduling: false
 };
 
+const TxTooltip = ({ assetType }: { assetType: AssetType }) => {
+  let toolLink = <div />;
+
+  switch (assetType) {
+    case AssetType.Ethereum: {
+      toolLink = (
+        <a
+          href="https://www.myetherwallet.com/interface/send-offline"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`bx--link`}
+        >
+          MyEtherWallet
+        </a>
+      );
+      break;
+    }
+    case AssetType.Polkadot: {
+      toolLink = (
+        <a
+          href="https://github.com/polkadot-js/tools/tree/master/packages/signer-cli"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`bx--link`}
+        >
+          signer-cli
+        </a>
+      );
+      break;
+    }
+  }
+
+  return (
+    <Tooltip
+      showIcon={true}
+      triggerText={''}
+      icon={iconHelpSolid}
+      triggerClassName="schedule-execute-tooltip-trigger"
+    >
+      <p>
+        Sign your transaction using {toolLink} now.
+        <br />
+        <br />
+        Need help?
+        <br />
+        Please follow a step-by-step tutorial on how to sign Tx using
+        MyEtherWallet for later use in Automate.
+      </p>
+      <div className={`bx--tooltip__footer`}>
+        <a
+          href="https://www.youtube.com/watch?v=KBsY_iuOB-E"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`bx--link`}
+        >
+          Watch Tutorial
+        </a>
+      </div>
+    </Tooltip>
+  );
+};
+
 class Schedule extends React.Component<ISentinelProps, ISentinelState> {
   constructor(props: ISentinelProps) {
     super(props);
@@ -114,7 +170,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     const send = this.send.bind(this);
     const response = this.renderResponse();
 
-    const { step, selectedSymbol } = this.state;
+    const { step, selectedAsset, selectedSymbol } = this.state;
 
     const conditionSectionActive = Boolean(
       this.state.signedTransaction && this.state.signedTransactionIsValid
@@ -137,42 +193,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
         >
           <div className={`bx--col-xs-6 main-section`}>
             <div className="bx--label">
-              EXECUTE{' '}
-              <Tooltip
-                showIcon={true}
-                triggerText={''}
-                icon={iconHelpSolid}
-                triggerClassName="schedule-execute-tooltip-trigger"
-              >
-                <p>
-                  Sign your transaction using{' '}
-                  <a
-                    href="https://www.myetherwallet.com/interface/send-offline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`bx--link`}
-                  >
-                    MyEtherWallet
-                  </a>{' '}
-                  now.
-                  <br />
-                  <br />
-                  Need help?
-                  <br />
-                  Please follow a step-by-step tutorial on how to sign Tx using
-                  MyEtherWallet for later use in Automate.
-                </p>
-                <div className={`bx--tooltip__footer`}>
-                  <a
-                    href="https://www.youtube.com/watch?v=KBsY_iuOB-E"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`bx--link`}
-                  >
-                    Watch Tutorial
-                  </a>
-                </div>
-              </Tooltip>
+              EXECUTE <TxTooltip assetType={selectedAsset as AssetType} />
             </div>
 
             <TextArea
@@ -197,6 +218,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           </div>
         </div>
         <ConditionSection
+          selectedAsset={selectedAsset}
           active={conditionSectionActive}
           chainId={this.state.signedChain.chainId}
           conditionalAsset={this.state.conditionalAsset}
@@ -367,6 +389,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
                 </a>
               </li>
             </ul>
+            <br />
             ChronoLogic {new Date().getFullYear()}
           </div>
         </div>
@@ -429,7 +452,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
       );
     } else {
       const response = this.state.sentinelResponse as IScheduleAccessKey;
-      const link = `/view/${response.id}/${response.key}`;
+      const link = `view/${response.id}/${response.key}`;
       modalBody = (
         <>
           <ModalHeader title="Success" />
@@ -470,24 +493,10 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     this.setState({
       loadingSignedTransaction: true
     });
-    let scheduledTransaction;
-
-    switch (selectedAsset) {
-      case AssetType.Ethereum: {
-        scheduledTransaction = await SentinelAPI.decode(signedTransaction);
-        break;
-      }
-      case AssetType.Polkadot: {
-        scheduledTransaction = await PolkadotAPI.parseTx(signedTransaction);
-        break;
-      }
-      default: {
-        throw new Error('Unsupported asset type: ' + selectedAsset);
-      }
-    }
-
-    // tslint:disable-next-line: no-console
-    console.log({ scheduledTransaction });
+    const scheduledTransaction = await SentinelAPI.decode(
+      signedTransaction,
+      selectedAsset as AssetType
+    );
 
     if ((scheduledTransaction as any).errors) {
       const emptyTransaction: IDecodedTransaction = {
@@ -564,6 +573,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     const timeConditionTZ = timeCondition ? this.state.timeConditionTZ! : '';
 
     const payload = {
+      assetType: this.state.selectedAsset as AssetType,
       conditionAmount,
       conditionAsset: conditionalAsset.address,
       signedTransaction: this.state.signedTransaction,

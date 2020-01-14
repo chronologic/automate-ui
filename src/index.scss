@@ -511,3 +511,22 @@ body {
 .bx--tooltip--definition .bx--tooltip__trigger {
   border-bottom: 2px dotted #444;
 }
+
+.view-transaction {
+  padding-bottom: 50px;
+  width: 50%;
+  min-width: 600px;
+  margin: 0 auto;
+}
+
+.platform-info {
+  padding: 16px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.platform-info-title {
+  text-transform: capitalize;
+  margin-left: 8px;
+}

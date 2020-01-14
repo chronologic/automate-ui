@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { IAsset } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
+import { IAsset } from 'src/models';
 
 import Asset from './Asset';
 
@@ -47,15 +47,15 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
 
   private async parseAmount(newAmount: string) {
     const parsed = Number.parseFloat(newAmount);
-    let amount = "";
+    let amount = '';
     if (!Number.isNaN(parsed)) {
       amount = parsed.toString();
-      
-      if (newAmount[newAmount.length - 1 ] === ".") {
-        amount += ".";
+
+      if (newAmount[newAmount.length - 1] === '.') {
+        amount += '.';
       }
-    } 
-    
+    }
+
     this.setState({ amount });
     if (this.props.onChange) {
       const newState = {
@@ -64,11 +64,13 @@ class ConditionalAsset extends React.Component<IAssetProps, IAssetState> {
       };
       this.props.onChange(newState);
     }
-
   }
 
-  private async resolveToken(address: string, chainId?: number) : Promise<void> {
-    const { name, decimals, validationError } = await TokenAPI.resolveToken(address, chainId || this.props.chainId);
+  private async resolveToken(address: string, chainId?: number): Promise<void> {
+    const { name, decimals, validationError } = await TokenAPI.resolveToken(
+      address,
+      chainId || this.props.chainId
+    );
 
     const newState = {
       ...this.state,
