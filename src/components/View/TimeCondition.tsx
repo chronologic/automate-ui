@@ -22,7 +22,7 @@ class TimeCondition extends React.Component<IScheduledTransaction, any> {
     return (
       <div className="bx--row row-padding">
         <TextInput
-          className="bx--col-xs-6"
+          className="bx--col-xs-12"
           labelText="Time condition"
           disabled={true}
           value={`${timeCondition ? timeCondition.toString() : ''} (local: ${

@@ -1,15 +1,14 @@
 import { Button, Loading, Tile } from 'carbon-components-react';
 import * as React from 'react';
+
 import {
   ICancelResponse,
-  IDecodedTransaction,
-  IError,
   IScheduleAccessKey,
   IScheduledTransaction,
   SentinelAPI,
   Status
 } from 'src/api/SentinelAPI';
-
+import { AssetType, IDecodedTransaction, IError } from 'src/models';
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';
@@ -30,6 +29,11 @@ interface IView {
   cancelResponse?: ICancelResponse | IError;
 }
 
+const platformImgUrl = {
+  [AssetType.Ethereum]: '/assets/eth.svg',
+  [AssetType.Polkadot]: '/assets/dot.svg'
+};
+
 class View extends React.Component<IViewProps, IView> {
   public async componentDidMount() {
     const response = await SentinelAPI.get(this.props.match.params);
@@ -41,7 +45,8 @@ class View extends React.Component<IViewProps, IView> {
     } else {
       const scheduledTransaction = response as IScheduledTransaction;
       const decodeResponse = await SentinelAPI.decode(
-        scheduledTransaction.signedTransaction
+        scheduledTransaction.signedTransaction,
+        scheduledTransaction.assetType
       );
       if ((response as any).errors) {
         this.setState({
@@ -69,7 +74,18 @@ class View extends React.Component<IViewProps, IView> {
     return this.state && this.state.errors ? (
       <Tile>{this.state.errors.join('<br/>')}</Tile>
     ) : (
-      <div>
+      <div className="view-transaction">
+        <div className="bx--type-gamma">Platform</div>
+        <div className="platform-info">
+          <embed
+            type="image/svg+xml"
+            src={platformImgUrl[this.state.scheduledTransaction.assetType]}
+            height="40"
+          />
+          <div className="platform-info-title">
+            {this.state.scheduledTransaction.assetType}
+          </div>
+        </div>
         <div className="bx--type-gamma">Transaction Status</div>
         <TransactionStatus
           {...{
@@ -89,8 +105,9 @@ class View extends React.Component<IViewProps, IView> {
           {...this.state.scheduledTransaction.conditionalAsset}
         />
         <TimeCondition {...this.state.scheduledTransaction} />
+        <br />
         <Button kind="danger" disabled={executed} onClick={cancel}>
-          Cancel watching
+          Cancel transaction
         </Button>
         {cancelStatus}
       </div>

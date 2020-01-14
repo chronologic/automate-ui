@@ -35,7 +35,6 @@ class App extends React.Component<{}, IAppState> {
       <Router>
         <div className="bx--grid">
           <Header updateCounter={updateCounter} />
-          <div className="bx--row space" />
           <Route exact={true} path="/" render={renderScheduleRoute} />
           <Route path="/view/:id/:key" render={renderViewRoute} />
         </div>
