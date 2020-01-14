@@ -12,6 +12,7 @@ import cn from 'classnames';
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
+import PolkadotAPI from 'src/api/PolkadotAPI';
 import {
   IAsset,
   IDecodedTransaction,
@@ -465,10 +466,29 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
   }
 
   private async decode(signedTransaction: string) {
+    const { selectedAsset } = this.state;
     this.setState({
       loadingSignedTransaction: true
     });
-    const scheduledTransaction = await SentinelAPI.decode(signedTransaction);
+    let scheduledTransaction;
+
+    switch (selectedAsset) {
+      case AssetType.Ethereum: {
+        scheduledTransaction = await SentinelAPI.decode(signedTransaction);
+        break;
+      }
+      case AssetType.Polkadot: {
+        scheduledTransaction = await PolkadotAPI.parseTx(signedTransaction);
+        break;
+      }
+      default: {
+        throw new Error('Unsupported asset type: ' + selectedAsset);
+      }
+    }
+
+    // tslint:disable-next-line: no-console
+    console.log({ scheduledTransaction });
+
     if ((scheduledTransaction as any).errors) {
       const emptyTransaction: IDecodedTransaction = {
         senderNonce: defaultState.senderNonce,
