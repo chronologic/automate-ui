@@ -41,7 +41,7 @@ const assets = [
   },
   {
     height: 45,
-    imgUrl: './assets/axie.png',
+    imgUrl: './assets/axie.svg',
     label: 'Axie Infinity',
     symbol: 'axie',
     type: AssetType.Ethereum
@@ -69,14 +69,14 @@ const assets = [
   },
   {
     height: 45,
-    imgUrl: './assets/heroes.png',
+    imgUrl: './assets/heroes.svg',
     label: 'My Crypto Heroes',
     symbol: 'heroes',
     type: AssetType.Ethereum
   },
   {
     height: 45,
-    imgUrl: './assets/hot.png',
+    imgUrl: './assets/hot.svg',
     label: 'Holochain',
     symbol: 'hot',
     type: AssetType.Ethereum
@@ -90,7 +90,7 @@ const assets = [
   },
   {
     height: 45,
-    imgUrl: './assets/gods.png',
+    imgUrl: './assets/gods.svg',
     label: 'Gods Unchained',
     symbol: 'gods',
     type: AssetType.Ethereum

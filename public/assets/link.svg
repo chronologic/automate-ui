@@ -1,27 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="45px" height="45px" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>Group 6</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <polygon id="path-1" points="1.45871501e-05 0.0310909091 44.9823551 0.0310909091 44.9823551 44.9090909 1.45871501e-05 44.9090909"></polygon>
-    </defs>
-    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Automate_Execute" transform="translate(-746.000000, -265.000000)">
-            <g id="Group-7" transform="translate(135.000000, 120.000000)">
-                <g id="Group-2-Copy-8" transform="translate(606.000000, 140.000000)">
-                    <g id="Group-6" transform="translate(5.000000, 5.000000)">
-                        <g id="Group-3" transform="translate(0.000000, 0.059818)">
-                            <mask id="mask-2" fill="white">
-                                <use xlink:href="#path-1"></use>
-                            </mask>
-                            <g id="Clip-2"></g>
-                            <path d="M0.140111562,19.5302182 C1.68161258,9.61421818 8.74506085,2.89385455 18.3582657,0.399581818 C20.9626065,-0.276145455 25.2298479,0.178763636 25.4126775,0.206490909 C37.9533469,2.1094 46.2536105,12.8447636 44.8221907,25.3152182 C43.4270081,37.4692182 31.6509736,46.4580364 19.4452028,44.6857636 C9.7278499,43.2746727 2.30723124,36.2524 0.349229209,26.6331273 C0.227920892,26.0372182 -0.22627789,22.6561273 0.140111562,19.5302182" id="Fill-1" fill="#2A5ADA" mask="url(#mask-2)"></path>
-                        </g>
-                        <path d="M14.3306105,27.2744273 L14.3306105,17.8165182 L22.5456207,13.0876091 L30.7606308,17.8165182 L30.7606308,27.2744273 L22.5456207,32.0034273 L14.3306105,27.2744273 Z M22.5456207,6.18179091 L19.5309858,7.90824545 L11.3159757,12.6372455 L8.30124949,14.3636091 L8.30124949,30.7272455 L11.3159757,32.4537909 L19.6062901,37.1826091 L22.6210162,38.9090636 L25.6357424,37.1826091 L33.7752657,32.4537909 L36.7899919,30.7272455 L36.7899919,14.3636091 L33.7752657,12.6372455 L25.5602556,7.90824545 L22.5456207,6.18179091 Z" id="Fill-4" fill="#FFFFFF"></path>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#2A5ADA;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#FFFFFF;stroke-width:17;stroke-miterlimit:10;}
+</style>
+<circle class="st0" cx="64" cy="64" r="64"/>
+<polygon class="st1" points="31.5,82.7 31.5,45.3 64,26.6 96.5,45.3 96.5,82.7 64,101.4 "/>
 </svg>
