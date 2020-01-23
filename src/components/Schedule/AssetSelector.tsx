@@ -156,7 +156,11 @@ const AssetSelector: React.FC<IAssetSelectorProps> = ({
               type={
                 asset.imgUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/png'
               }
-              src={asset.imgUrl}
+              src={
+                isSelected
+                  ? asset.imgUrl.replace('.svg', '_a.svg')
+                  : asset.imgUrl
+              }
               height={asset.height}
             />
             <p className="icon-label">{asset.label}</p>
