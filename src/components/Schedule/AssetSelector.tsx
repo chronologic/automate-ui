@@ -162,6 +162,7 @@ const AssetSelector: React.FC<IAssetSelectorProps> = ({
                   : asset.imgUrl
               }
               height={asset.height}
+              width={asset.height}
             />
             <p className="icon-label">{asset.label}</p>
           </div>
