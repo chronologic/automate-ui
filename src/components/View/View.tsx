@@ -41,6 +41,8 @@ const platformImgUrl = {
   [AssetType.Polkadot]: '/assets/dot.svg'
 };
 
+const EXPERIMENTAL_FEATURES = !!(window as any).experimental;
+
 class View extends React.Component<IViewProps, IView> {
   public async componentDidMount() {
     const response = await SentinelAPI.get(this.props.match.params);
@@ -94,40 +96,45 @@ class View extends React.Component<IViewProps, IView> {
             {scheduledTransaction.assetType}
           </div>
         </div>
-        <div className="bx--type-gamma">Payment Information</div>
-        <div>
-          <div className="bx--row row-padding">
-            <TextInput
-              className="bx--col-xs-12"
-              labelText="Payment address"
-              disabled={true}
-              value={scheduledTransaction.paymentAddress}
-            />
-          </div>
-          <div className="bx--row row-padding">
-            {scheduledTransaction.paymentTx ? (
-              <FormItem>
-                <label className="bx--label">Payment transaction hash</label>
-                <Link
-                  href={
-                    'https://etherscan.io/tx/' + scheduledTransaction.paymentTx
-                  }
-                  className="bx--text-input bx--col-xs-12"
-                  target="_blank"
-                >
-                  {scheduledTransaction.paymentTx}
-                </Link>
-              </FormItem>
-            ) : (
+        {EXPERIMENTAL_FEATURES && (
+          <div className="bx--type-gamma">Payment Information</div>
+        )}
+        {EXPERIMENTAL_FEATURES && (
+          <div>
+            <div className="bx--row row-padding">
               <TextInput
                 className="bx--col-xs-12"
-                labelText="Payment transaction hash"
+                labelText="Payment address"
                 disabled={true}
-                value={'Pending'}
+                value={scheduledTransaction.paymentAddress}
               />
-            )}
+            </div>
+            <div className="bx--row row-padding">
+              {scheduledTransaction.paymentTx ? (
+                <FormItem>
+                  <label className="bx--label">Payment transaction hash</label>
+                  <Link
+                    href={
+                      'https://etherscan.io/tx/' +
+                      scheduledTransaction.paymentTx
+                    }
+                    className="bx--text-input bx--col-xs-12"
+                    target="_blank"
+                  >
+                    {scheduledTransaction.paymentTx}
+                  </Link>
+                </FormItem>
+              ) : (
+                <TextInput
+                  className="bx--col-xs-12"
+                  labelText="Payment transaction hash"
+                  disabled={true}
+                  value={'Pending'}
+                />
+              )}
+            </div>
           </div>
-        </div>
+        )}
         <div className="bx--type-gamma">Transaction Status</div>
         <TransactionStatus
           {...{
