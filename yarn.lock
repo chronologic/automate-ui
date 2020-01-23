@@ -7432,6 +7432,14 @@ rc@^1.0.1, rc@^1.1.6:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-countdown@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/react-countdown/-/react-countdown-2.2.0.tgz#87a8e72794a6f368dca4ca496ac1ce21cf3d19df"
+  integrity sha512-90CyqROLBgy4RKDaZdTdVPjRhTGT6DAWPAYAD0gKp+nO7QXl5+hrBSTfVTs4KyR6oRHgWkQ9VmMcFbAT4prBKQ==
+  dependencies:
+    lodash.isequal "^4.5.0"
+    prop-types "^15.7.2"
+
 react-countup@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/react-countup/-/react-countup-4.2.3.tgz#22581e68861b2b93be0cf0d5c4c6dff349e7b3b0"

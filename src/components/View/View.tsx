@@ -1,4 +1,11 @@
-import { Button, Loading, Tile } from 'carbon-components-react';
+import {
+  Button,
+  FormItem,
+  Link,
+  Loading,
+  TextInput,
+  Tile
+} from 'carbon-components-react';
 import * as React from 'react';
 
 import {
@@ -65,6 +72,7 @@ class View extends React.Component<IViewProps, IView> {
       return <Loading />;
     }
 
+    const { scheduledTransaction } = this.state;
     const executed =
       this.state.scheduledTransaction &&
       this.state.scheduledTransaction.status !== Status.Pending;
@@ -79,17 +87,51 @@ class View extends React.Component<IViewProps, IView> {
         <div className="platform-info">
           <embed
             type="image/svg+xml"
-            src={platformImgUrl[this.state.scheduledTransaction.assetType]}
+            src={platformImgUrl[scheduledTransaction.assetType]}
             height="40"
           />
           <div className="platform-info-title">
-            {this.state.scheduledTransaction.assetType}
+            {scheduledTransaction.assetType}
+          </div>
+        </div>
+        <div className="bx--type-gamma">Payment Information</div>
+        <div>
+          <div className="bx--row row-padding">
+            <TextInput
+              className="bx--col-xs-12"
+              labelText="Payment address"
+              disabled={true}
+              value={scheduledTransaction.paymentAddress}
+            />
+          </div>
+          <div className="bx--row row-padding">
+            {scheduledTransaction.paymentTx ? (
+              <FormItem>
+                <label className="bx--label">Payment transaction hash</label>
+                <Link
+                  href={
+                    'https://etherscan.io/tx/' + scheduledTransaction.paymentTx
+                  }
+                  className="bx--text-input bx--col-xs-12"
+                  target="_blank"
+                >
+                  {scheduledTransaction.paymentTx}
+                </Link>
+              </FormItem>
+            ) : (
+              <TextInput
+                className="bx--col-xs-12"
+                labelText="Payment transaction hash"
+                disabled={true}
+                value={'Pending'}
+              />
+            )}
           </div>
         </div>
         <div className="bx--type-gamma">Transaction Status</div>
         <TransactionStatus
           {...{
-            ...this.state.scheduledTransaction,
+            ...scheduledTransaction,
             ...this.state.decodedTransaction
           }}
         />
@@ -101,10 +143,8 @@ class View extends React.Component<IViewProps, IView> {
           skeleton={true}
         />
         <div className="bx--type-gamma">Conditions</div>
-        <DecodedConditionalAsset
-          {...this.state.scheduledTransaction.conditionalAsset}
-        />
-        <TimeCondition {...this.state.scheduledTransaction} />
+        <DecodedConditionalAsset {...scheduledTransaction.conditionalAsset} />
+        <TimeCondition {...scheduledTransaction} />
         <br />
         <Button kind="danger" disabled={executed} onClick={cancel}>
           Cancel transaction

@@ -141,12 +141,6 @@ export default class SummarySection extends React.Component<
   private getNonceInfo(): JSX.Element {
     const { signedNonce, senderNonce } = this.props;
 
-    // tslint:disable-next-line: no-console
-    console.log({
-      senderNonce,
-      signedNonce
-    });
-
     if (signedNonce == null || senderNonce == null) {
       return <></>;
     }

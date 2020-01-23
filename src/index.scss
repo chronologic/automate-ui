@@ -2,6 +2,14 @@ $color__blue-51: #2f4ffd;
 
 @import 'carbon-components/scss/globals/scss/styles.scss';
 
+b {
+  font-weight: bold;
+}
+
+i {
+  font-style: italic;
+}
+
 body {
   margin: 0;
   background: white;
@@ -43,7 +51,9 @@ body {
   }
 }
 
-.header-countup {
+.header-countup,
+.payment-modal__countdown,
+.payment-modal__address {
   color: #2f4ffd;
   font-size: 20px;
 }
@@ -529,4 +539,36 @@ body {
 .platform-info-title {
   text-transform: capitalize;
   margin-left: 8px;
+}
+
+.payment-modal__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 150%;
+  margin-bottom: 10px;
+}
+
+.payment-modal__button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.payment-modal__order-id {
+  text-align: center;
+}
+
+.payment-modal__copy-container {
+  display: inline-block;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.payment-modal__thank-you-screen {
+  text-align: center;
+}
+
+.scheduled-link {
+  word-break: break-all;
 }

@@ -28,3 +28,8 @@ export interface IDecodedTransaction {
   signedNonce: number;
   senderNonce: number;
 }
+
+export interface ISubmitParams {
+  email: string;
+  refundAddress: string;
+}

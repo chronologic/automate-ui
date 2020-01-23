@@ -10,13 +10,20 @@ export enum Status {
   Pending,
   Cancelled,
   Completed,
-  Error
+  Error,
+  StaleNonce,
+  PendingConfirmations,
+  PendingPayment,
+  PendingPaymentConfirmations,
+  PaymentExpired
 }
 
 export interface IScheduleRequest {
   assetType: AssetType;
   conditionAmount: string;
   conditionAsset: string;
+  paymentEmail: string;
+  paymentRefundAddress: string;
   signedTransaction: string;
   timeCondition: number;
   timeConditionTZ: string;
@@ -32,11 +39,16 @@ interface IScheduledTransactionRaw {
 
 export interface IScheduleResponse
   extends IScheduledTransactionRaw,
-    IScheduleRequest {}
+    IScheduleRequest {
+  paymentAddress: string;
+  paymentTx: string;
+}
 
 export interface IScheduleAccessKey {
   id: string;
   key: string;
+  createdAt: string;
+  paymentAddress: string;
 }
 
 export interface ICancelResponse {
@@ -48,6 +60,10 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
   conditionalAsset: IAsset;
   timeCondition: number;
   timeConditionTZ: string;
+  paymentAddress: string;
+  paymentEmail: string;
+  paymentRefundAddress: string;
+  paymentTx: string;
 }
 
 export class SentinelAPI {
