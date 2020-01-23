@@ -1,32 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="45px" height="45px" viewBox="0 0 45 45" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 52.5 (67469) - http://www.bohemiancoding.com/sketch -->
-    <title>Group 8</title>
-    <desc>Created with Sketch.</desc>
-    <defs>
-        <path d="M22.5,0 C10.0737766,0 0,10.0732979 0,22.5 C0,34.9262234 10.0737766,45 22.5,45 C34.9262234,45 45,34.9262234 45,22.5 C45,10.0732979 34.9262234,0 22.5,0 Z" id="path-1"></path>
-        <linearGradient x1="50%" y1="-14.1665926%" x2="50%" y2="110.500003%" id="linearGradient-3">
-            <stop stop-color="#F9A505" offset="0%"></stop>
-            <stop stop-color="#FBCC5E" offset="100%"></stop>
-        </linearGradient>
-    </defs>
-    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Automate_Execute" transform="translate(-746.000000, -195.000000)">
-            <g id="Group-7" transform="translate(135.000000, 120.000000)">
-                <g id="Group-2-Copy-5" transform="translate(606.000000, 70.000000)">
-                    <g id="Group-8" transform="translate(5.000000, 5.000000)">
-                        <path d="M22.5,0 C34.9262234,0 45,10.0732979 45,22.5 C45,34.9262234 34.9262234,45 22.5,45 C10.0732979,45 0,34.9262234 0,22.5 C0,10.0732979 10.0732979,0 22.5,0" id="Fill-1" fill="#F9FAFB"></path>
-                        <g id="Group-5">
-                            <mask id="mask-2" fill="white">
-                                <use xlink:href="#path-1"></use>
-                            </mask>
-                            <g id="Clip-4"></g>
-                            <path d="M22.5,0 C10.0737766,0 0,10.0732979 0,22.5 C0,34.9262234 10.0737766,45 22.5,45 C34.9262234,45 45,34.9262234 45,22.5 C45,10.0732979 34.9262234,0 22.5,0 Z" id="Fill-3" fill="url(#linearGradient-3)" mask="url(#mask-2)"></path>
-                        </g>
-                        <path d="M30.8411809,22.5600798 C30.8411809,22.9952394 30.8115,23.4222606 30.7516596,23.8353989 L15.8863404,23.8353989 L15.8863404,21.2474202 L30.7588404,21.2474202 C30.8115,21.6524202 30.8411809,22.0722606 30.8411809,22.5002394 L30.8411809,22.5600798 Z M22.0585213,30.8850798 L15.8863404,30.8850798 L15.8863404,26.3027394 L30.0235213,26.3027394 C28.7036809,29.0472606 25.8686809,30.8850798 22.0585213,30.8850798 Z M15.8863404,14.1077394 L22.0585213,14.1077394 C25.884,14.1077394 28.7261809,15.9900798 30.0388404,18.7800798 L15.8863404,18.7800798 L15.8863404,14.1077394 Z M35.3636809,18.7877394 L32.6938404,18.7877394 C31.2236809,14.7075798 27.2713404,11.9099202 22.0585213,11.9099202 L13.4865,11.9099202 L13.4865,18.7877394 L10.5088404,18.7877394 L10.5088404,21.2550798 L13.4865,21.2550798 L13.4865,23.8425798 L10.5088404,23.8425798 L10.5088404,26.3099202 L13.4865,26.3099202 L13.4865,33.1049202 L22.0585213,33.1049202 C27.2110213,33.1049202 31.1336809,30.3302394 32.6411809,26.3099202 L35.3636809,26.3099202 L35.3636809,23.8425798 L33.2415,23.8425798 C33.2936809,23.4074202 33.3238404,22.9578989 33.3238404,22.5074202 L33.3238404,22.4475798 C33.3238404,22.0425798 33.3013404,21.6447606 33.264,21.2550798 L35.3713404,21.2550798 L35.3713404,18.7877394 L35.3636809,18.7877394 Z" id="Fill-6" fill="#FFFFFF"></path>
-                    </g>
-                </g>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:none;stroke:#FFFFFF;stroke-width:8;stroke-miterlimit:10;}
+	.st2{fill:#FFFFFF;stroke:#FFFFFF;stroke-width:8;stroke-miterlimit:10;}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="64" y1="0" x2="64" y2="128">
+	<stop  offset="0" style="stop-color:#F9A505"/>
+	<stop  offset="1" style="stop-color:#FBCC5E"/>
+</linearGradient>
+<circle class="st0" cx="64" cy="64" r="64"/>
+<path class="st1" d="M62.4,96c6.9,0,13-1.4,18.2-4.1c5.2-2.7,9.2-6.5,12.1-11.3C95.6,75.8,97,70.3,97,64s-1.4-11.8-4.3-16.6
+	c-2.9-4.8-6.9-8.6-12.1-11.3C75.4,33.4,69.3,32,62.4,32H39v64H62.4z"/>
+<line class="st2" x1="28" y1="55.7" x2="108" y2="55.7"/>
+<line class="st2" x1="28" y1="72.7" x2="108" y2="72.7"/>
 </svg>
