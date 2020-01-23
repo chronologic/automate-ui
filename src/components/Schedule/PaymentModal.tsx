@@ -72,15 +72,11 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
       refundAddress
     });
   }, [email, refundAddress, onSubmit]);
+  const handleCopyAmount = React.useCallback(() => {
+    copyToClipboard('10');
+  }, []);
   const handleCopyAddress = React.useCallback(() => {
-    const clipboardInput = document.getElementById(
-      'clipboard'
-    ) as IInputElement;
-    clipboardInput.value = sentinelResponse?.paymentAddress;
-    clipboardInput.select();
-    clipboardInput.setSelectionRange(0, 99999); /*For mobile devices*/
-
-    document.execCommand('copy');
+    copyToClipboard(sentinelResponse?.paymentAddress);
   }, [sentinelResponse]);
   const handleScheduleAnother = React.useCallback(() => {
     setEmail('');
@@ -130,6 +126,19 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
       >
         DAY
       </a>
+      {scheduled?.status === Status.PendingPayment && (
+        <div
+          className="payment-modal__copy-container"
+          onClick={handleCopyAmount}
+        >
+          <Icon
+            icon={iconCopy}
+            iconTitle="Click to copy"
+            width="16"
+            height="16"
+          />
+        </div>
+      )}
     </span>
   );
   const orderIdNode = (
@@ -340,5 +349,14 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     </Modal>
   );
 };
+
+function copyToClipboard(value: string) {
+  const clipboardInput = document.getElementById('clipboard') as IInputElement;
+  clipboardInput.value = value;
+  clipboardInput.select();
+  clipboardInput.setSelectionRange(0, 99999); /*For mobile devices*/
+
+  document.execCommand('copy');
+}
 
 export default PaymentModal;
