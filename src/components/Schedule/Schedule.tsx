@@ -25,6 +25,7 @@ import AssetSelector from './AssetSelector';
 import ConditionSection from './ConditionSection';
 import Footer from './Footer';
 import PaymentModal from './PaymentModal';
+import ScheduledLink from './ScheduledLink';
 import SummarySection from './SummarySection';
 
 const EXPERIMENTAL_FEATURES = !!(window as any).experimental;
@@ -171,6 +172,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     this.handleSelectAsset = this.handleSelectAsset.bind(this);
     this.handlePaymentModalOpen = this.handlePaymentModalOpen.bind(this);
     this.handlePaymentModalClose = this.handlePaymentModalClose.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
   public handleSelectAsset(
@@ -279,7 +281,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
         <div className={`bx--col-xs-6 main-section`}>
           <div className="bx--row row-padding carbon--center">
             <Button
-              onClick={this.handlePaymentModalOpen}
+              onClick={this.handleScheduleClick}
               disabled={this.scheduleButtonDisabled}
             >
               {this.state.loadingSentinelResponse ? (
@@ -300,6 +302,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           sentinelResponse={sentinelResponse as IScheduleAccessKey}
           onDismiss={this.handlePaymentModalClose}
           onSubmit={this.send}
+          onReset={this.reset}
         />
         <div className="bx--row carbon--center">
           <Footer />
@@ -345,6 +348,18 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     this.setState({ timeScheduling: checked });
   };
 
+  private handleScheduleClick = () => {
+    if (EXPERIMENTAL_FEATURES) {
+      this.handlePaymentModalOpen();
+    } else {
+      const email = process.env.REACT_APP_DEV_EMAIL as string;
+      this.send({
+        email,
+        refundAddress: email
+      });
+    }
+  };
+
   private handlePaymentModalOpen = () => {
     this.setState({ paymentModalOpen: true });
   };
@@ -353,10 +368,13 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
     this.setState({ paymentModalOpen: false });
   };
 
+  private reset = () => {
+    this.setState(defaultState);
+  };
+
   private renderResponse() {
     let modalBody = <></>;
-    // TODO: handle reset
-    // const reset = () => this.setState(defaultState);
+    const reset = () => this.setState(defaultState);
     const closeAndDoNothing = () =>
       this.setState({ sentinelResponse: undefined });
 
@@ -377,36 +395,36 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           />
         </>
       );
+    } else if (!EXPERIMENTAL_FEATURES) {
+      const response = this.state.sentinelResponse as IScheduleAccessKey;
+      modalBody = (
+        <>
+          <ModalHeader title="Success" closeModal={closeAndDoNothing} />
+          <ModalBody>
+            You have successfully scheduled a transaction! <br />
+            <br />
+            Please save this link: <br />
+            <ScheduledLink id={response.id} signature={response.key} />
+            <br />
+            <br />
+          </ModalBody>
+          <ModalFooter
+            primaryButtonText="Schedule another one"
+            primaryButtonDisabled={false}
+            secondaryButtonText=""
+            onRequestClose={reset}
+            onRequestSubmit={reset}
+          />
+        </>
+      );
     }
-    // else {
-    //   const response = this.state.sentinelResponse as IScheduleAccessKey;
-    //   modalBody = (
-    //     <>
-    //       <ModalHeader title="Success" />
-    //       <ModalBody>
-    //         You have successfully scheduled a transaction! <br />
-    //         <br />
-    //         Please save this link: <br />
-    //         <ScheduledLink id={response.id} signature={response.key} />
-    //         <br />
-    //         <br />
-    //       </ModalBody>
-    //       <ModalFooter
-    //         primaryButtonText="Schedule another one"
-    //         primaryButtonDisabled={false}
-    //         secondaryButtonText=""
-    //         onRequestClose={reset}
-    //         onRequestSubmit={reset}
-    //       />
-    //     </>
-    //   );
-    // }
+
+    const openModal = EXPERIMENTAL_FEATURES
+      ? Boolean((this.state.sentinelResponse as any)?.errors)
+      : Boolean(this.state.sentinelResponse);
 
     return (
-      <ComposedModal
-        open={Boolean((this.state.sentinelResponse as any)?.errors)}
-        onClose={closeAndDoNothing}
-      >
+      <ComposedModal open={openModal} onClose={closeAndDoNothing}>
         {modalBody}
       </ComposedModal>
     );

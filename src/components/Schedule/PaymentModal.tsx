@@ -32,6 +32,7 @@ interface IPaymentModalProps {
   sentinelResponse: IScheduleAccessKey;
   onDismiss: () => void;
   onSubmit: (params: ISubmitParams) => void;
+  onReset: () => void;
 }
 
 const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
@@ -39,7 +40,8 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   loading,
   sentinelResponse,
   onDismiss,
-  onSubmit
+  onSubmit,
+  onReset
 }) => {
   const [email, setEmail] = React.useState<string>('');
   const [refundAddress, setRefundAddress] = React.useState<string>('');
@@ -80,6 +82,13 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
 
     document.execCommand('copy');
   }, [sentinelResponse]);
+  const handleScheduleAnother = React.useCallback(() => {
+    setEmail('');
+    setRefundAddress('');
+    setTermsAccepted(false);
+    setScheduled(undefined);
+    onReset();
+  }, [setEmail, setRefundAddress, setTermsAccepted, setScheduled]);
 
   React.useEffect(() => {
     let refreshInterval: any;
@@ -259,6 +268,10 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         <br />
         <br />
         {ticketNode}
+        <br />
+        <div className="payment-modal__button-container">
+          <Button onClick={handleScheduleAnother}>Schedule another</Button>
+        </div>
       </div>
     );
   } else {
