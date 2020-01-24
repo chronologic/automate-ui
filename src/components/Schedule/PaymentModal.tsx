@@ -320,7 +320,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
               <span>
                 I agree to the{' '}
                 <a
-                  href="https://chronologic.zendesk.com/hc/en-us"
+                  href="https://chronologic.zendesk.com/hc/en-us/articles/360011331820"
                   target="_blank"
                 >
                   Terms
