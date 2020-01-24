@@ -5,100 +5,100 @@ import { AssetType } from 'src/models';
 
 const assets = [
   {
-    height: 120,
     imgUrl: './assets/eth.svg',
     label: 'Ethereum',
+    size: 120,
     symbol: AssetType.Ethereum,
     type: AssetType.Ethereum
   },
   {
-    height: 120,
     imgUrl: './assets/dot.svg',
     label: 'Polkadot',
+    size: 120,
     symbol: AssetType.Polkadot,
     type: AssetType.Polkadot
   },
   {
-    height: 45,
     imgUrl: './assets/usdt.svg',
     label: 'Tether',
+    size: 45,
     symbol: 'usdt',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/usdc.svg',
     label: 'USD Coin',
+    size: 45,
     symbol: 'usdc',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/kitty.svg',
     label: 'Cryptokitties',
+    size: 45,
     symbol: 'kitty',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/axie.svg',
     label: 'Axie Infinity',
+    size: 45,
     symbol: 'axie',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/snx.svg',
     label: 'Synthetix',
+    size: 45,
     symbol: 'snx',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/dai.svg',
     label: 'Multi-Collateral Dai',
+    size: 45,
     symbol: 'dai',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/mana.svg',
     label: 'Decentraland',
+    size: 45,
     symbol: 'mana',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/heroes.svg',
     label: 'My Crypto Heroes',
+    size: 45,
     symbol: 'heroes',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/hot.svg',
     label: 'Holochain',
+    size: 45,
     symbol: 'hot',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/link.svg',
     label: 'Chainlink',
+    size: 45,
     symbol: 'link',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/gods.svg',
     label: 'Gods Unchained',
+    size: 45,
     symbol: 'gods',
     type: AssetType.Ethereum
   },
   {
-    height: 45,
     imgUrl: './assets/erc20.svg',
     label: 'Other ERC20 Tokens',
+    size: 45,
     symbol: 'erc20',
     type: AssetType.Ethereum
   }
@@ -152,18 +152,26 @@ const AssetSelector: React.FC<IAssetSelectorProps> = ({
         {isSelected && <Checkmark />}
         <div className="bx--tile-content">
           <div className={isMain ? 'asset-center' : 'asset-left'}>
-            <embed
-              type={
-                asset.imgUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/png'
-              }
-              src={
-                isSelected
-                  ? asset.imgUrl.replace('.svg', '_a.svg')
-                  : asset.imgUrl
-              }
-              height={asset.height}
-              width={asset.height}
-            />
+            {isSelected ? (
+              <object
+                type="image/svg+xml"
+                data={asset.imgUrl.replace('.svg', '_a.svg')}
+                width={asset.size}
+                height={asset.size}
+              >
+                <param
+                  name="src"
+                  value={asset.imgUrl.replace('.svg', '_a.svg')}
+                />
+              </object>
+            ) : (
+              <embed
+                type="image/svg+xml"
+                src={asset.imgUrl}
+                height={asset.size}
+                width={asset.size}
+              />
+            )}
             <p className="icon-label">{asset.label}</p>
           </div>
         </div>
