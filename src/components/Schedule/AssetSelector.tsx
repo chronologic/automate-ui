@@ -1,19 +1,22 @@
 import cn from 'classnames';
 import * as React from 'react';
 
-import { AssetType } from 'src/models';
+import { AssetType, PolkadotChainId } from 'src/models';
 
 const assets = [
   {
     imgUrl: './assets/eth.svg',
     label: 'Ethereum',
+    main: true,
     size: 120,
     symbol: AssetType.Ethereum,
     type: AssetType.Ethereum
   },
   {
+    chainId: PolkadotChainId.Kusama,
     imgUrl: './assets/dot.svg',
     label: 'Polkadot',
+    main: true,
     size: 120,
     symbol: AssetType.Polkadot,
     type: AssetType.Polkadot
@@ -88,12 +91,20 @@ const assets = [
     symbol: 'link',
     type: AssetType.Ethereum
   },
+  // {
+  //   imgUrl: './assets/gods.svg',
+  //   label: 'Gods Unchained',
+  //   size: 45,
+  //   symbol: 'gods',
+  //   type: AssetType.Ethereum
+  // },
   {
-    imgUrl: './assets/gods.svg',
-    label: 'Gods Unchained',
+    chainId: PolkadotChainId.EdgewareTestnet4,
+    imgUrl: './assets/dot.svg',
+    label: 'Edgeware',
     size: 45,
-    symbol: 'gods',
-    type: AssetType.Ethereum
+    symbol: AssetType.Polkadot,
+    type: AssetType.Polkadot
   },
   {
     imgUrl: './assets/erc20.svg',
@@ -107,7 +118,8 @@ const assets = [
 interface IAssetSelectorProps {
   active: boolean;
   selectedSymbol: string;
-  onClick: (type: AssetType, symbol: string) => void;
+  selectedChainId?: PolkadotChainId;
+  onClick: (type: AssetType, symbol: string, chainId?: PolkadotChainId) => void;
 }
 
 const Checkmark = () => (
@@ -131,27 +143,28 @@ const Checkmark = () => (
 const AssetSelector: React.FC<IAssetSelectorProps> = ({
   active,
   selectedSymbol,
+  selectedChainId,
   onClick
 }) => {
   const assetNodes = assets.map(asset => {
-    const isMain = asset.type === asset.symbol;
-    const isSelected = asset.symbol === selectedSymbol;
+    const isSelected =
+      asset.symbol === selectedSymbol && asset.chainId === selectedChainId;
     const hasSelectedItem = !!selectedSymbol;
-    const handleClick = () => onClick(asset.type, asset.symbol);
+    const handleClick = () => onClick(asset.type, asset.symbol, asset.chainId);
 
     return (
       <div
-        key={asset.symbol}
+        key={asset.symbol + asset.label}
         className={cn(
           'bx--tile grid-item',
-          isMain ? 'span-1' : 'span-2',
+          asset.main ? 'span-1' : 'span-2',
           isSelected ? 'selected' : hasSelectedItem ? 'not-selected' : ''
         )}
         onClick={handleClick}
       >
         {isSelected && <Checkmark />}
         <div className="bx--tile-content">
-          <div className={isMain ? 'asset-center' : 'asset-left'}>
+          <div className={asset.main ? 'asset-center' : 'asset-left'}>
             {isSelected ? (
               <object
                 type="image/svg+xml"

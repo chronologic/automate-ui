@@ -3,6 +3,11 @@ export enum AssetType {
   Polkadot = 'polkadot'
 }
 
+export enum PolkadotChainId {
+  Kusama = 1,
+  EdgewareTestnet4 = 2
+}
+
 export interface IError {
   errors: string[];
 }

@@ -119,13 +119,13 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   const amountNode = (
     <span>
       10.0{' '}
-      <a
+      {/* <a
         href="https://coinmarketcap.com/currencies/chronologic/"
         target="_blank"
         rel="noopener noreferer"
-      >
-        DAY
-      </a>
+      > */}
+      DAY
+      {/* </a> */}
       {scheduled?.status === Status.PendingPayment && (
         <div
           className="payment-modal__copy-container"
@@ -202,9 +202,9 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
             <Countdown date={expirationDate} daysInHours={true} />
           </span>
         </div>
+        {/* <br />
         <br />
-        <br />
-        {detailsNode}
+        {detailsNode} */}
       </div>
     );
   } else if (scheduled?.status === Status.PaymentExpired) {
@@ -316,7 +316,17 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
           <br />
           <Checkbox
             id="acceptTerms"
-            labelText={<span>I agree to the Terms</span>}
+            labelText={
+              <span>
+                I agree to the{' '}
+                <a
+                  href="https://chronologic.zendesk.com/hc/en-us"
+                  target="_blank"
+                >
+                  Terms
+                </a>
+              </span>
+            }
             checked={termsAccepted}
             onChange={setTermsAccepted}
           />

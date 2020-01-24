@@ -18,7 +18,13 @@ import {
   SentinelAPI
 } from 'src/api/SentinelAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
-import { IAsset, IDecodedTransaction, IError, ISubmitParams } from 'src/models';
+import {
+  IAsset,
+  IDecodedTransaction,
+  IError,
+  ISubmitParams,
+  PolkadotChainId
+} from 'src/models';
 import { AssetType } from 'src/models';
 
 import AssetSelector from './AssetSelector';
@@ -61,6 +67,7 @@ interface ISentinelState extends IDecodedTransaction {
   paymentModalOpen: boolean;
   selectedAsset: AssetType | null;
   selectedSymbol: string;
+  selectedChainId?: PolkadotChainId;
   sentinelResponse?: IScheduleAccessKey | IError;
   signedTransaction: string;
   signedTransactionIsValid: boolean;
@@ -82,6 +89,7 @@ const defaultState: ISentinelState = {
   loadingSignedTransaction: false,
   paymentModalOpen: false,
   selectedAsset: EXPERIMENTAL_FEATURES ? null : AssetType.Ethereum,
+  selectedChainId: undefined,
   selectedSymbol: '',
   senderNonce: NaN,
   sentinelResponse: undefined,
@@ -177,10 +185,12 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
   public handleSelectAsset(
     selectedAsset: AssetType,
-    selectedSymbol: string
+    selectedSymbol: string,
+    selectedChainId: PolkadotChainId
   ): void {
     this.setState({
       selectedAsset,
+      selectedChainId,
       selectedSymbol,
       step: Step.Transaction
     });
@@ -195,6 +205,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
       sentinelResponse,
       step,
       selectedAsset,
+      selectedChainId,
       selectedSymbol
     } = this.state;
 
@@ -208,6 +219,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           <AssetSelector
             active={step === Step.Asset}
             selectedSymbol={selectedSymbol}
+            selectedChainId={selectedChainId}
             onClick={this.handleSelectAsset}
           />
         )}
@@ -431,13 +443,14 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
   }
 
   private async decode(signedTransaction: string) {
-    const { selectedAsset } = this.state;
+    const { selectedAsset, selectedChainId } = this.state;
     this.setState({
       loadingSignedTransaction: true
     });
     const scheduledTransaction = await SentinelAPI.decode(
       signedTransaction,
-      selectedAsset as AssetType
+      selectedAsset as AssetType,
+      selectedChainId
     );
 
     if ((scheduledTransaction as any).errors) {
@@ -510,12 +523,14 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
       conditionalAsset.amount,
       conditionalAsset.decimals
     ).toString();
+    const { selectedChainId } = this.state;
 
     const timeCondition = this.state.timeCondition || 0;
     const timeConditionTZ = timeCondition ? this.state.timeConditionTZ! : '';
 
     const payload: IScheduleRequest = {
       assetType: this.state.selectedAsset as AssetType,
+      chainId: selectedChainId,
       conditionAmount,
       conditionAsset: conditionalAsset.address,
       paymentEmail: email,

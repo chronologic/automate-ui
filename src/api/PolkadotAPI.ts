@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IDecodedTransaction, IError } from 'src/models';
+import { IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
 
 interface IPolkadotTx {
   signer: string;
@@ -22,10 +22,11 @@ const api = axios.create({
   baseURL: API_URL
 });
 
-const getBalance = async (address: string) => {
+const getBalance = async (address: string, chainId: PolkadotChainId) => {
   const res = await api.get('balance', {
     params: {
-      address
+      address,
+      chainId
     }
   });
 
@@ -33,11 +34,13 @@ const getBalance = async (address: string) => {
 };
 
 const parseTx: (
-  tx: string
-) => Promise<IDecodedTransaction | IError> = async tx => {
+  tx: string,
+  chainId: PolkadotChainId
+) => Promise<IDecodedTransaction | IError> = async (tx, chainId) => {
   try {
     const { data: parsed } = await api.get<IPolkadotTx>('parseTx', {
       params: {
+        chainId,
         tx
       }
     });
@@ -65,10 +68,11 @@ const parseTx: (
   }
 };
 
-const getNextNonce = async (address: string) => {
+const getNextNonce = async (address: string, chainId: PolkadotChainId) => {
   const res = await api.get('nextNonce', {
     params: {
-      address
+      address,
+      chainId
     }
   });
 

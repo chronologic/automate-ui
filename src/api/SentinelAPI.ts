@@ -2,7 +2,13 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import { Transaction } from 'ethers/utils';
 
-import { AssetType, IAsset, IDecodedTransaction, IError } from 'src/models';
+import {
+  AssetType,
+  IAsset,
+  IDecodedTransaction,
+  IError,
+  PolkadotChainId
+} from 'src/models';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
 
@@ -20,6 +26,7 @@ export enum Status {
 
 export interface IScheduleRequest {
   assetType: AssetType;
+  chainId?: PolkadotChainId;
   conditionAmount: string;
   conditionAsset: string;
   paymentEmail: string;
@@ -40,6 +47,7 @@ interface IScheduledTransactionRaw {
 export interface IScheduleResponse
   extends IScheduledTransactionRaw,
     IScheduleRequest {
+  chainId: number;
   paymentAddress: string;
   paymentTx: string;
 }
@@ -117,7 +125,8 @@ export class SentinelAPI {
         }
         case AssetType.Polkadot: {
           const parsed = await PolkadotAPI.parseTx(
-            response.data.signedTransaction
+            response.data.signedTransaction,
+            response.data.chainId
           );
 
           return {
@@ -137,7 +146,8 @@ export class SentinelAPI {
 
   public static async decode(
     signedTransaction: string,
-    assetType: AssetType
+    assetType: AssetType,
+    chainId?: PolkadotChainId
   ): Promise<IDecodedTransaction | IError> {
     let decodedTransaction: Transaction | undefined;
 
@@ -148,7 +158,10 @@ export class SentinelAPI {
           break;
         }
         case AssetType.Polkadot: {
-          return PolkadotAPI.parseTx(signedTransaction);
+          return PolkadotAPI.parseTx(
+            signedTransaction,
+            chainId as PolkadotChainId
+          );
           // const parsed = (await PolkadotAPI.parseTx(
           //   signedTransaction
           // )) as IDecodedTransaction;
@@ -171,8 +184,7 @@ export class SentinelAPI {
       return { errors: ['Unable to decode signed transaction'] } as IError;
     }
 
-    const chainId = decodedTransaction.chainId;
-    const chainName = ethers.utils.getNetwork(chainId).name;
+    const chainName = ethers.utils.getNetwork(decodedTransaction.chainId).name;
 
     let signedRecipient = decodedTransaction.to!;
     let signedAmount = TokenAPI.withDecimals(
@@ -186,7 +198,7 @@ export class SentinelAPI {
     try {
       const { name, decimals } = await TokenAPI.tokenInfo(
         signedRecipient,
-        chainId
+        decodedTransaction.chainId
       );
 
       const callDataParameters = '0x' + decodedTransaction.data.substring(10);
@@ -204,7 +216,7 @@ export class SentinelAPI {
     } catch (e) {}
 
     const signedChain = {
-      chainId,
+      chainId: decodedTransaction.chainId,
       chainName
     };
 
@@ -219,9 +231,9 @@ export class SentinelAPI {
 
     let senderNonce = NaN;
     try {
-      senderNonce = await this.getProvider(chainId).getTransactionCount(
-        signedSender
-      );
+      senderNonce = await this.getProvider(
+        decodedTransaction.chainId
+      ).getTransactionCount(signedSender);
       // tslint:disable-next-line:no-empty
     } catch (e) {}
 
