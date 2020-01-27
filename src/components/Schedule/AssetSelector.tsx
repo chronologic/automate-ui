@@ -100,7 +100,7 @@ const assets = [
   // },
   {
     chainId: PolkadotChainId.EdgewareTestnet4,
-    imgUrl: './assets/dot.svg',
+    imgUrl: './assets/edg.svg',
     label: 'Edgeware',
     size: 45,
     symbol: AssetType.Polkadot,
