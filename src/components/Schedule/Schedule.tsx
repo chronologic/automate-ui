@@ -31,10 +31,7 @@ import AssetSelector from './AssetSelector';
 import ConditionSection from './ConditionSection';
 import Footer from './Footer';
 import PaymentModal from './PaymentModal';
-import ScheduledLink from './ScheduledLink';
 import SummarySection from './SummarySection';
-
-const EXPERIMENTAL_FEATURES = !!(window as any).experimental;
 
 const SUPPORTED_NETWORKS = {
   [AssetType.Ethereum]: {
@@ -88,7 +85,7 @@ const defaultState: ISentinelState = {
   loadingSentinelResponse: false,
   loadingSignedTransaction: false,
   paymentModalOpen: false,
-  selectedAsset: EXPERIMENTAL_FEATURES ? null : AssetType.Ethereum,
+  selectedAsset: null,
   selectedChainId: undefined,
   selectedSymbol: '',
   senderNonce: NaN,
@@ -100,7 +97,7 @@ const defaultState: ISentinelState = {
   signedSender: '',
   signedTransaction: '',
   signedTransactionIsValid: true,
-  step: EXPERIMENTAL_FEATURES ? Step.Asset : Step.Transaction,
+  step: Step.Asset,
   timeConditionIsValid: false,
   timeScheduling: false
 };
@@ -215,14 +212,12 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
     return (
       <div>
-        {EXPERIMENTAL_FEATURES && (
-          <AssetSelector
-            active={step === Step.Asset}
-            selectedSymbol={selectedSymbol}
-            selectedChainId={selectedChainId}
-            onClick={this.handleSelectAsset}
-          />
-        )}
+        <AssetSelector
+          active={step === Step.Asset}
+          selectedSymbol={selectedSymbol}
+          selectedChainId={selectedChainId}
+          onClick={this.handleSelectAsset}
+        />
         <div
           className={cn(
             'bx--row',
@@ -361,15 +356,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
   };
 
   private handleScheduleClick = () => {
-    if (EXPERIMENTAL_FEATURES) {
-      this.handlePaymentModalOpen();
-    } else {
-      const email = process.env.REACT_APP_DEV_EMAIL as string;
-      this.send({
-        email,
-        refundAddress: email
-      });
-    }
+    this.handlePaymentModalOpen();
   };
 
   private handlePaymentModalOpen = () => {
@@ -386,7 +373,6 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
   private renderResponse() {
     let modalBody = <></>;
-    const reset = () => this.setState(defaultState);
     const closeAndDoNothing = () =>
       this.setState({ sentinelResponse: undefined });
 
@@ -407,33 +393,9 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           />
         </>
       );
-    } else if (!EXPERIMENTAL_FEATURES) {
-      const response = this.state.sentinelResponse as IScheduleAccessKey;
-      modalBody = (
-        <>
-          <ModalHeader title="Success" closeModal={closeAndDoNothing} />
-          <ModalBody>
-            You have successfully scheduled a transaction! <br />
-            <br />
-            Please save this link: <br />
-            <ScheduledLink id={response.id} signature={response.key} />
-            <br />
-            <br />
-          </ModalBody>
-          <ModalFooter
-            primaryButtonText="Schedule another one"
-            primaryButtonDisabled={false}
-            secondaryButtonText=""
-            onRequestClose={reset}
-            onRequestSubmit={reset}
-          />
-        </>
-      );
     }
 
-    const openModal = EXPERIMENTAL_FEATURES
-      ? Boolean((this.state.sentinelResponse as any)?.errors)
-      : Boolean(this.state.sentinelResponse);
+    const openModal = Boolean((this.state.sentinelResponse as any)?.errors);
 
     return (
       <ComposedModal open={openModal} onClose={closeAndDoNothing}>
