@@ -5,7 +5,7 @@ export enum AssetType {
 
 export enum PolkadotChainId {
   Kusama = 1,
-  EdgewareTestnet4 = 2
+  EdgewareMainnet = 2
 }
 
 export interface IError {

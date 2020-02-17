@@ -99,7 +99,7 @@ const assets = [
   //   type: AssetType.Ethereum
   // },
   {
-    chainId: PolkadotChainId.EdgewareTestnet4,
+    chainId: PolkadotChainId.EdgewareMainnet,
     imgUrl: './assets/edg.svg',
     label: 'Edgeware',
     size: 45,
