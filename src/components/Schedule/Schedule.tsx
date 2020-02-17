@@ -41,7 +41,8 @@ const SUPPORTED_NETWORKS = {
     42: 'Kovan'
   },
   [AssetType.Polkadot]: {
-    1: 'Kusama'
+    1: 'Kusama',
+    2: 'Edgeware Mainnet'
   }
 };
 
