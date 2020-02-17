@@ -72,6 +72,7 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
   paymentEmail: string;
   paymentRefundAddress: string;
   paymentTx: string;
+  chainId?: number;
 }
 
 export class SentinelAPI {

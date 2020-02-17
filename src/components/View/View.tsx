@@ -15,7 +15,12 @@ import {
   SentinelAPI,
   Status
 } from 'src/api/SentinelAPI';
-import { AssetType, IDecodedTransaction, IError } from 'src/models';
+import {
+  AssetType,
+  IDecodedTransaction,
+  IError,
+  PolkadotChainId
+} from 'src/models';
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';
@@ -36,9 +41,21 @@ interface IView {
   cancelResponse?: ICancelResponse | IError;
 }
 
-const platformImgUrl = {
-  [AssetType.Ethereum]: '/assets/eth.svg',
-  [AssetType.Polkadot]: '/assets/dot.svg'
+const getAssetNameAndImage = (
+  assetType: AssetType,
+  chainId: any
+): [string, string] => {
+  if (assetType === AssetType.Ethereum) {
+    return ['Ethereum', '/assets/eth.svg'];
+  } else if (assetType === AssetType.Polkadot) {
+    if (chainId === PolkadotChainId.Kusama) {
+      return ['Polkadot', '/assets/dot.svg'];
+    } else if (chainId === PolkadotChainId.EdgewareMainnet) {
+      return ['Edgeware', '/assets/edg.svg'];
+    }
+  }
+
+  return ['', ''];
 };
 
 class View extends React.Component<IViewProps, IView> {
@@ -53,7 +70,8 @@ class View extends React.Component<IViewProps, IView> {
       const scheduledTransaction = response as IScheduledTransaction;
       const decodeResponse = await SentinelAPI.decode(
         scheduledTransaction.signedTransaction,
-        scheduledTransaction.assetType
+        scheduledTransaction.assetType,
+        scheduledTransaction.chainId
       );
       if ((response as any).errors) {
         this.setState({
@@ -78,6 +96,10 @@ class View extends React.Component<IViewProps, IView> {
       this.state.scheduledTransaction.status !== Status.Pending;
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
+    const [assetName, assetImgUrl] = getAssetNameAndImage(
+      scheduledTransaction.assetType,
+      scheduledTransaction.chainId
+    );
 
     return this.state && this.state.errors ? (
       <Tile>{this.state.errors.join('<br/>')}</Tile>
@@ -85,14 +107,8 @@ class View extends React.Component<IViewProps, IView> {
       <div className="view-transaction">
         <div className="bx--type-gamma">Platform</div>
         <div className="platform-info">
-          <embed
-            type="image/svg+xml"
-            src={platformImgUrl[scheduledTransaction.assetType]}
-            height="40"
-          />
-          <div className="platform-info-title">
-            {scheduledTransaction.assetType}
-          </div>
+          <embed type="image/svg+xml" src={assetImgUrl} height="40" />
+          <div className="platform-info-title">{assetName}</div>
         </div>
         <div className="bx--type-gamma">Payment Information</div>
         <div>
@@ -110,8 +126,7 @@ class View extends React.Component<IViewProps, IView> {
                 <label className="bx--label">Payment transaction hash</label>
                 <Link
                   href={
-                    'https://etherscan.io/tx/' +
-                    scheduledTransaction.paymentTx
+                    'https://etherscan.io/tx/' + scheduledTransaction.paymentTx
                   }
                   className="bx--text-input bx--col-xs-12"
                   target="_blank"
