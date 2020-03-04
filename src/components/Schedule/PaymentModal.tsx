@@ -59,8 +59,6 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   onSubmit,
   onReset
 }) => {
-  // tslint:disable-next-line: no-console
-  console.log({ loading, sentinelResponse });
   const [email, setEmail] = React.useState<string>(
     retrieveEmailAndRefundAddress().email
   );
@@ -361,7 +359,10 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         </div>
         <br />
         <div className="payment-modal__button-container">
-          <Button disabled={!formValid || loading} onClick={handleSubmit}>
+          <Button
+            disabled={!formValid || loading || sentinelResponse}
+            onClick={handleSubmit}
+          >
             {loading ? (
               <InlineLoading
                 className="white-loading"
