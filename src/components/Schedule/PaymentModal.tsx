@@ -60,7 +60,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   onReset
 }) => {
   // tslint:disable-next-line: no-console
-  console.log({ loading });
+  console.log({ loading, sentinelResponse });
   const [email, setEmail] = React.useState<string>(
     retrieveEmailAndRefundAddress().email
   );
