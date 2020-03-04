@@ -35,6 +35,22 @@ interface IPaymentModalProps {
   onReset: () => void;
 }
 
+interface IEmailAndRefundAddress {
+  email: string;
+  refundAddress: string;
+}
+
+function retrieveEmailAndRefundAddress(): IEmailAndRefundAddress {
+  return JSON.parse(
+    localStorage.getItem('payment_credentials') ||
+      '{"email": "", "refundAddress": ""}'
+  );
+}
+
+function storeEmailAndRefundAddress(params: IEmailAndRefundAddress): void {
+  localStorage.setItem('payment_credentials', JSON.stringify(params));
+}
+
 const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   open,
   loading,
@@ -43,8 +59,14 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   onSubmit,
   onReset
 }) => {
-  const [email, setEmail] = React.useState<string>('');
-  const [refundAddress, setRefundAddress] = React.useState<string>('');
+  // tslint:disable-next-line: no-console
+  console.log({ loading });
+  const [email, setEmail] = React.useState<string>(
+    retrieveEmailAndRefundAddress().email
+  );
+  const [refundAddress, setRefundAddress] = React.useState<string>(
+    retrieveEmailAndRefundAddress().refundAddress
+  );
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
   const [scheduled, setScheduled] = React.useState<IScheduledTransaction>();
   const expirationDate = React.useMemo(() => {
@@ -67,6 +89,10 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     [setRefundAddress]
   );
   const handleSubmit = React.useCallback(() => {
+    storeEmailAndRefundAddress({
+      email,
+      refundAddress
+    });
     onSubmit({
       email,
       refundAddress
@@ -314,22 +340,24 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
           </i>
           <br />
           <br />
-          <Checkbox
-            id="acceptTerms"
-            labelText={
-              <span>
-                I agree to the{' '}
-                <a
-                  href="https://chronologic.zendesk.com/hc/en-us/articles/360011331820"
-                  target="_blank"
-                >
-                  Terms
-                </a>
-              </span>
-            }
-            checked={termsAccepted}
-            onChange={setTermsAccepted}
-          />
+          <div style={{ marginLeft: '4px' }}>
+            <Checkbox
+              id="acceptTerms"
+              labelText={
+                <span>
+                  I agree to the{' '}
+                  <a
+                    href="https://chronologic.zendesk.com/hc/en-us/articles/360011331820"
+                    target="_blank"
+                  >
+                    Terms
+                  </a>
+                </span>
+              }
+              checked={termsAccepted}
+              onChange={setTermsAccepted}
+            />
+          </div>
         </div>
         <br />
         <div className="payment-modal__button-container">
