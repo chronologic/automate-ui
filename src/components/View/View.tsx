@@ -48,7 +48,7 @@ const getAssetNameAndImage = (
   if (assetType === AssetType.Ethereum) {
     return ['Ethereum', '/assets/eth.svg'];
   } else if (assetType === AssetType.Polkadot) {
-    if (chainId === PolkadotChainId.Kusama) {
+    if (chainId === PolkadotChainId.PolkadotMainnet) {
       return ['Polkadot', '/assets/dot.svg'];
     } else if (chainId === PolkadotChainId.EdgewareMainnet) {
       return ['Edgeware', '/assets/edg.svg'];

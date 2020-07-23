@@ -4,7 +4,7 @@ export enum AssetType {
 }
 
 export enum PolkadotChainId {
-  Kusama = 1,
+  PolkadotMainnet = 1,
   EdgewareMainnet = 2
 }
 

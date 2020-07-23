@@ -22,7 +22,7 @@ class TransactionStatus extends React.Component<ITransactionStatusProps, any> {
       [42, 'https://kovan.etherscan.io/tx/']
     ]),
     [AssetType.Polkadot]: new Map<number, string>([
-      [1, 'https://polkascan.io/pre/kusama-cc3/transaction/']
+      [1, 'https://polkascan.io/polkadot/transaction/']
     ])
   };
 

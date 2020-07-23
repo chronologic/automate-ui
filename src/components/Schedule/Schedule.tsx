@@ -41,7 +41,7 @@ const SUPPORTED_NETWORKS = {
     42: 'Kovan'
   },
   [AssetType.Polkadot]: {
-    1: 'Kusama',
+    1: 'Polkadot',
     2: 'Edgeware Mainnet'
   }
 };
@@ -241,6 +241,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
               invalid={!this.state.signedTransactionIsValid}
               invalidText="Signed transaction is invalid"
               disabled={this.state.loadingSignedTransaction}
+              readOnly={step !== Step.Transaction}
             />
 
             {this.state.loadingSignedTransaction && (

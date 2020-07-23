@@ -9,7 +9,7 @@ import {
 } from 'carbon-components-react';
 import * as React from 'react';
 
-import { KSM } from 'src/api/PolkadotAPI';
+import { DOT } from 'src/api/PolkadotAPI';
 import { ETH, TokenAPI } from 'src/api/TokenAPI';
 import { IAsset } from 'src/models';
 import { AssetType } from 'src/models';
@@ -70,7 +70,7 @@ export default class ConditionSection extends React.Component<
     const isEthereum = selectedAsset === AssetType.Ethereum;
     let defaultAssetName = 'ETH';
     if (selectedAsset === AssetType.Polkadot) {
-      defaultAssetName = KSM.name;
+      defaultAssetName = DOT.name;
     }
 
     const conditionAssetOptions: IConditionAssetOption[] = [

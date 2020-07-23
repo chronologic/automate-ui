@@ -13,7 +13,7 @@ const assets = [
     type: AssetType.Ethereum
   },
   {
-    chainId: PolkadotChainId.Kusama,
+    chainId: PolkadotChainId.PolkadotMainnet,
     imgUrl: './assets/dot.svg',
     label: 'Polkadot',
     main: true,
