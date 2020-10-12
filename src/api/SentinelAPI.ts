@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
-import { Transaction } from 'ethers/utils';
+import { BigNumber, Transaction } from 'ethers/utils';
 
 import {
   AssetType,
@@ -217,6 +217,7 @@ export class SentinelAPI {
     } catch (e) {}
 
     const signedChain = {
+      baseAssetName: 'ETH',
       chainId: decodedTransaction.chainId,
       chainName
     };
@@ -238,10 +239,26 @@ export class SentinelAPI {
       // tslint:disable-next-line:no-empty
     } catch (e) {}
 
+    let senderBalance = new BigNumber(0);
+    try {
+      senderBalance = await this.getProvider(
+        decodedTransaction.chainId
+      ).getBalance(decodedTransaction.from!);
+      // tslint:disable-next-line:no-empty
+    } catch (e) {}
+
+    const signedGasLimit = decodedTransaction.gasLimit;
+    const signedGasPrice = decodedTransaction.gasPrice;
+    const maxTxCost = signedGasPrice.mul(signedGasLimit);
+
     return {
+      maxTxCost,
+      senderBalance,
       senderNonce,
       signedAsset,
       signedChain,
+      signedGasLimit,
+      signedGasPrice,
       signedNonce,
       signedRecipient,
       signedSender

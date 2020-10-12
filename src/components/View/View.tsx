@@ -107,7 +107,12 @@ class View extends React.Component<IViewProps, IView> {
       <div className="view-transaction">
         <div className="bx--type-gamma">Platform</div>
         <div className="platform-info">
-          <embed type="image/svg+xml" src={assetImgUrl} height="40" />
+          <embed
+            type="image/svg+xml"
+            src={assetImgUrl}
+            height="40"
+            width="40"
+          />
           <div className="platform-info-title">{assetName}</div>
         </div>
         <div className="bx--type-gamma">Payment Information</div>
@@ -157,6 +162,7 @@ class View extends React.Component<IViewProps, IView> {
         <DecodedTransaction
           {...this.state.decodedTransaction}
           skeleton={true}
+          assetName={assetName}
         />
         <div className="bx--type-gamma">Conditions</div>
         <DecodedConditionalAsset {...scheduledTransaction.conditionalAsset} />

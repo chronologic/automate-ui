@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { BigNumber } from 'ethers/utils';
 import { IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
 
 interface IPolkadotTx {
@@ -45,6 +46,8 @@ const parseTx: (
       }
     });
     const decoded: IDecodedTransaction = {
+      maxTxCost: new BigNumber(0),
+      senderBalance: new BigNumber(0),
       senderNonce: parsed.accountNonce,
       signedAsset: {
         address: '',
@@ -56,6 +59,8 @@ const parseTx: (
         chainId: parsed.chainId,
         chainName: parsed.chainName
       },
+      signedGasLimit: new BigNumber(0),
+      signedGasPrice: new BigNumber(0),
       signedNonce: parsed.nonce,
       signedRecipient: parsed.dest || '',
       signedSender: parsed.signer,

@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers/utils';
+
 export enum AssetType {
   Ethereum = 'ethereum',
   Polkadot = 'polkadot'
@@ -22,6 +24,7 @@ export interface IAsset {
 export interface INetwork {
   chainId: number;
   chainName: string;
+  baseAssetName?: string;
 }
 
 export interface IDecodedTransaction {
@@ -31,7 +34,11 @@ export interface IDecodedTransaction {
   signedSender: string;
   signedChain: INetwork;
   signedNonce: number;
+  signedGasPrice: BigNumber;
+  signedGasLimit: BigNumber;
   senderNonce: number;
+  senderBalance: BigNumber;
+  maxTxCost: BigNumber;
 }
 
 export interface ISubmitParams {

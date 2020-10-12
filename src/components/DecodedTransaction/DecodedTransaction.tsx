@@ -1,12 +1,14 @@
 import { TextInput } from 'carbon-components-react';
 import * as React from 'react';
 import { IDecodedTransaction } from 'src/models';
+import { bigNumberToString } from 'src/utils';
 
 import DecodedAsset from '../Asset/DecodedAsset';
 import Skeleton from '../Skeleton/Skeleton';
 
 interface IDecodedTransactionView extends IDecodedTransaction {
   skeleton: boolean;
+  assetName?: string;
 }
 
 class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
@@ -44,6 +46,32 @@ class DecodedTransaction extends React.Component<IDecodedTransactionView, any> {
             />
           </div>
         </div>
+        {this.props.assetName === 'Ethereum' && (
+          <div className="bx--row row-padding">
+            <div className="bx--col-xs-12">
+              <TextInput
+                labelText="Transaction gas price"
+                helperText="Gas price for this transaction"
+                disabled={true}
+                value={
+                  bigNumberToString(this.props.signedGasPrice, 9, 0) + ' Gwei'
+                }
+              />
+            </div>
+          </div>
+        )}
+        {this.props.assetName === 'Ethereum' && (
+          <div className="bx--row row-padding">
+            <div className="bx--col-xs-12">
+              <TextInput
+                labelText="Transaction gas limit"
+                helperText="Gas limit for this transaction"
+                disabled={true}
+                value={bigNumberToString(this.props.signedGasLimit, 0, 0)}
+              />
+            </div>
+          </div>
+        )}
         <div className="bx--row row-padding">
           <div className="bx--col-xs-12">
             <TextInput

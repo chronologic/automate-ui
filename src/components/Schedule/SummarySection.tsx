@@ -1,25 +1,32 @@
 import { Tooltip } from 'carbon-components-react';
 import { iconHelpSolid } from 'carbon-icons';
+import { BigNumber } from 'ethers/utils';
 import * as moment from 'moment';
 import * as React from 'react';
 
 import { IAsset } from 'src/models';
+import { bigNumberToString } from 'src/utils';
 import { toDataUrl } from '../../lib/blockies';
 import SelectiveDisplay from './SelectiveDisplay';
 
 interface ISummarySectionProps {
+  baseAssetName: string;
   chainId: number;
   conditionalAsset: IAsset;
   isNetworkSupported: boolean;
   networkName: string | undefined;
+  senderBalance: BigNumber;
   senderNonce: number;
   signedAsset: IAsset;
+  signedGasLimit: BigNumber;
+  signedGasPrice: BigNumber;
   signedRecipient: string;
   signedSender: string;
   signedNonce: number;
   timeScheduling: boolean;
   timeCondition?: number;
   timeConditionTZ?: string;
+  maxTxCost: BigNumber;
 }
 
 export default class SummarySection extends React.Component<
@@ -27,6 +34,7 @@ export default class SummarySection extends React.Component<
 > {
   public render() {
     const {
+      baseAssetName,
       chainId,
       conditionalAsset,
       signedAsset,
@@ -34,6 +42,7 @@ export default class SummarySection extends React.Component<
       signedSender,
       networkName,
       isNetworkSupported,
+      senderBalance,
       senderNonce,
       timeScheduling,
       timeCondition,
@@ -80,6 +89,18 @@ export default class SummarySection extends React.Component<
                   ''
                 )}
               </div>
+              <div className="schedule-summary_party_balance">
+                {senderBalance ? (
+                  <>
+                    Balance:{' '}
+                    <b className="font-weight-600">
+                      {bigNumberToString(senderBalance)} {baseAssetName}
+                    </b>
+                  </>
+                ) : (
+                  ''
+                )}
+              </div>
             </div>
             <div className="schedule-summary_details">
               <div className="schedule-summary_details_amount">
@@ -118,7 +139,9 @@ export default class SummarySection extends React.Component<
                     <br />
                   </>
                 )}
-                {this.getNonceInfo()}
+                <div>{this.getNonceInfo()}</div>
+                <div>{this.getTxCostInfo()}</div>
+                <div>{this.getGasInfo()}</div>
               </div>
             </div>
             <div className="schedule-summary_party">
@@ -165,6 +188,61 @@ export default class SummarySection extends React.Component<
       <>
         Transaction nonce: <b className="font-weight-600">{signedNonce}</b>{' '}
         {status}
+      </>
+    );
+  }
+
+  private getTxCostInfo(): JSX.Element {
+    const { baseAssetName, maxTxCost, senderBalance } = this.props;
+
+    if (maxTxCost == null || senderBalance == null) {
+      return <></>;
+    }
+
+    let status;
+
+    if (maxTxCost.gt(senderBalance)) {
+      status = (
+        <span className="bx--tag bx--tag--private">
+          ! - sender balance too low to cover tx cost
+        </span>
+      );
+    } else {
+      status = (
+        <span className="bx--tag bx--tag--community">
+          ✔ sender balance enough to cover tx cost
+        </span>
+      );
+    }
+
+    return (
+      <>
+        Max tx cost:{' '}
+        <b className="font-weight-600">
+          {bigNumberToString(maxTxCost)} {baseAssetName}
+        </b>{' '}
+        {status}
+      </>
+    );
+  }
+
+  private getGasInfo(): JSX.Element {
+    const { baseAssetName, signedGasLimit, signedGasPrice } = this.props;
+
+    if (baseAssetName !== 'ETH') {
+      return <></>;
+    }
+
+    return (
+      <>
+        Gas price:{' '}
+        <b className="font-weight-600">
+          {bigNumberToString(signedGasPrice, 9, 0)} Gwei
+        </b>{' '}
+        Gas limit:{' '}
+        <b className="font-weight-600">
+          {bigNumberToString(signedGasLimit, 0, 0)}
+        </b>{' '}
       </>
     );
   }

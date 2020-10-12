@@ -10,6 +10,7 @@ import {
 } from 'carbon-components-react';
 import { iconHelpSolid } from 'carbon-icons';
 import cn from 'classnames';
+import { BigNumber } from 'ethers/utils';
 import * as React from 'react';
 
 import {
@@ -85,14 +86,18 @@ const defaultState: ISentinelState = {
   conditionalAssetIsValid: true,
   loadingSentinelResponse: false,
   loadingSignedTransaction: false,
+  maxTxCost: new BigNumber(0),
   paymentModalOpen: false,
   selectedAsset: null,
   selectedChainId: undefined,
   selectedSymbol: '',
+  senderBalance: new BigNumber(0),
   senderNonce: NaN,
   sentinelResponse: undefined,
   signedAsset: { address: '', decimals: 0, name: '', amount: '' },
   signedChain: { chainId: 0, chainName: '' },
+  signedGasLimit: new BigNumber(0),
+  signedGasPrice: new BigNumber(0),
   signedNonce: NaN,
   signedRecipient: '',
   signedSender: '',
@@ -267,18 +272,23 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
         />
         {this.state.signedSender && (
           <SummarySection
+            baseAssetName={this.state.signedChain.baseAssetName!}
             chainId={this.state.signedChain.chainId}
             isNetworkSupported={this.isNetworkSupported(
               this.state.selectedAsset as AssetType,
               this.state.signedChain.chainId
             )}
+            maxTxCost={this.state.maxTxCost}
             networkName={this.getNetworkName(
               this.state.selectedAsset as AssetType,
               this.state.signedChain.chainId
             )}
             conditionalAsset={this.state.conditionalAsset}
+            senderBalance={this.state.senderBalance}
             senderNonce={this.state.senderNonce}
             signedAsset={this.state.signedAsset}
+            signedGasLimit={this.state.signedGasLimit}
+            signedGasPrice={this.state.signedGasPrice}
             signedNonce={this.state.signedNonce}
             signedRecipient={this.state.signedRecipient}
             signedSender={this.state.signedSender}
@@ -419,9 +429,13 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
     if ((scheduledTransaction as any).errors) {
       const emptyTransaction: IDecodedTransaction = {
+        maxTxCost: defaultState.maxTxCost,
+        senderBalance: defaultState.senderBalance,
         senderNonce: defaultState.senderNonce,
         signedAsset: defaultState.signedAsset,
         signedChain: defaultState.signedChain,
+        signedGasLimit: defaultState.signedGasLimit,
+        signedGasPrice: defaultState.signedGasPrice,
         signedNonce: defaultState.signedNonce,
         signedRecipient: defaultState.signedRecipient,
         signedSender: defaultState.signedSender
