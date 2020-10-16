@@ -16,9 +16,7 @@ export function bigNumberToString(
     str = str.slice(0, len - decimals) + '.' + str.slice(-decimals);
     len = str.length;
   }
-  console.log(str);
   str = str.slice(0, len + precision - decimals);
-  console.log(str);
 
   return str;
 }
