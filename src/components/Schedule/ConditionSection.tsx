@@ -5,8 +5,10 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  TextInput
+  TextInput,
+  Tooltip
 } from 'carbon-components-react';
+import { iconHelpSolid } from 'carbon-icons';
 import * as React from 'react';
 
 import { DOT } from 'src/api/PolkadotAPI';
@@ -24,11 +26,13 @@ interface IConditionSectionProps {
   signedAsset: IAsset;
   signedSender: string;
   timeScheduling: boolean;
+  gasPriceAware: boolean;
 
   onConditionalAssetChange: (args: IAsset) => void;
   onTimeConditionChange: (timeCondition: number, tz: string) => void;
   onTimeConditionValidatorError: (error: string) => void;
   setTimeScheduling: (checked: any) => void;
+  setGasPriceAware: (checked: any) => void;
 }
 
 interface IConditionAssetOption {
@@ -58,11 +62,13 @@ export default class ConditionSection extends React.Component<
     const {
       active,
       conditionalAsset,
+      gasPriceAware,
       signedAsset,
       signedSender,
       onTimeConditionValidatorError,
       onTimeConditionChange,
       selectedAsset,
+      setGasPriceAware,
       setTimeScheduling,
       timeScheduling
     } = this.props;
@@ -180,6 +186,27 @@ export default class ConditionSection extends React.Component<
                     disabled={false}
                   />
                 )}
+                <div className="bx--col-xs-12 timescheduling-wrapper">
+                  <Checkbox
+                    id="gasPriceAware"
+                    labelText="Delay execution until gas price is low enough"
+                    onChange={setGasPriceAware}
+                    checked={gasPriceAware}
+                  />
+                  <Tooltip
+                    showIcon={true}
+                    triggerText={''}
+                    icon={iconHelpSolid}
+                    triggerClassName="schedule-execute-tooltip-trigger"
+                  >
+                    Your transaction might get stuck or get rejected if network
+                    gas prices are too high at the time of execution.
+                    <br />
+                    This will make Automate wait for gas prices to go down
+                    before executing the transaction, even if you defined a
+                    balance and/or time condition.
+                  </Tooltip>
+                </div>
               </div>
             </div>
           </div>

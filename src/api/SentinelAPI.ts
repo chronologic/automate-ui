@@ -29,6 +29,7 @@ export interface IScheduleRequest {
   chainId?: PolkadotChainId;
   conditionAmount: string;
   conditionAsset: string;
+  gasPriceAware: boolean;
   paymentEmail: string;
   paymentRefundAddress: string;
   signedTransaction: string;

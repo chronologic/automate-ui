@@ -61,6 +61,7 @@ interface ISentinelState extends IDecodedTransaction {
   step: Step;
   conditionalAsset: IAsset;
   conditionalAssetIsValid: boolean;
+  gasPriceAware: boolean;
   loadingSentinelResponse: boolean;
   loadingSignedTransaction: boolean;
   paymentModalOpen: boolean;
@@ -84,6 +85,7 @@ const defaultState: ISentinelState = {
     amount: ''
   },
   conditionalAssetIsValid: true,
+  gasPriceAware: true,
   loadingSentinelResponse: false,
   loadingSignedTransaction: false,
   maxTxCost: new BigNumber(0),
@@ -269,6 +271,8 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
           onTimeConditionValidatorError={this.onTimeConditionValidatorError}
           setTimeScheduling={this.setTimeScheduling}
           timeScheduling={this.state.timeScheduling}
+          gasPriceAware={this.state.gasPriceAware}
+          setGasPriceAware={this.setGasPriceAware}
         />
         {this.state.signedSender && (
           <SummarySection
@@ -365,6 +369,10 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
 
   private setTimeScheduling = (checked: any) => {
     this.setState({ timeScheduling: checked });
+  };
+
+  private setGasPriceAware = (checked: any) => {
+    this.setState({ gasPriceAware: checked });
   };
 
   private handleScheduleClick = () => {
@@ -511,6 +519,7 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
       chainId: selectedChainId,
       conditionAmount,
       conditionAsset: conditionalAsset.address,
+      gasPriceAware: this.state.gasPriceAware,
       paymentEmail: email,
       paymentRefundAddress: refundAddress,
       signedTransaction: this.state.signedTransaction,
