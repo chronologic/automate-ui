@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Schedule from './components/Schedule/Schedule';
 import View from './components/View/View';
-import Maintenance from './Maintenance';
+// import Maintenance from './Maintenance';
 
 interface IAppState {
   updateCounter: number;
