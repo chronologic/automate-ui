@@ -1,9 +1,9 @@
 import * as React from 'react';
-// import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-// import Header from './components/Header/Header';
-// import Schedule from './components/Schedule/Schedule';
-// import View from './components/View/View';
+import Header from './components/Header/Header';
+import Schedule from './components/Schedule/Schedule';
+import View from './components/View/View';
 import Maintenance from './Maintenance';
 
 interface IAppState {
@@ -26,25 +26,25 @@ class App extends React.Component<{}, IAppState> {
     }));
   }
 
-  // public render() {
-  //   const { updateCounter } = this.state;
-  //   const renderScheduleRoute = () => <Schedule onChange={this.handleChange} />;
-  //   const renderViewRoute = (props: any) => (
-  //     <View {...props} onChange={this.handleChange} />
-  //   );
-  //   return (
-  //     <Router>
-  //       <div className="bx--grid">
-  //         <Header updateCounter={updateCounter} />
-  //         <Route exact={true} path="/" render={renderScheduleRoute} />
-  //         <Route path="/view/:id/:key" render={renderViewRoute} />
-  //       </div>
-  //     </Router>
-  //   );
-  // }
   public render() {
-    return <Maintenance />;
+    const { updateCounter } = this.state;
+    const renderScheduleRoute = () => <Schedule onChange={this.handleChange} />;
+    const renderViewRoute = (props: any) => (
+      <View {...props} onChange={this.handleChange} />
+    );
+    return (
+      <Router>
+        <div className="bx--grid">
+          <Header updateCounter={updateCounter} />
+          <Route exact={true} path="/" render={renderScheduleRoute} />
+          <Route path="/view/:id/:key" render={renderViewRoute} />
+        </div>
+      </Router>
+    );
   }
+  // public render() {
+  //   return <Maintenance />;
+  // }
 }
 
 export default App;
