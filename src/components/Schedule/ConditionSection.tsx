@@ -186,7 +186,10 @@ export default class ConditionSection extends React.Component<
                     disabled={false}
                   />
                 )}
-                <div className="bx--col-xs-12 timescheduling-wrapper">
+                <div
+                  className="bx--col-xs-12 timescheduling-wrapper"
+                  style={{ visibility: isEthereum ? 'visible' : 'hidden' }}
+                >
                   <Checkbox
                     id="gasPriceAware"
                     labelText="Delay execution until gas price is low enough"
