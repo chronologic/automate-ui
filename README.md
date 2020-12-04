@@ -2,7 +2,7 @@
 
 # Automate UI
 
-This contains UI project for Automate project.
+⏱️ This contains UI project for Automate project.
 
 API project here https://github.com/chronologic/automate-api
 
