@@ -6,11 +6,11 @@
 
 API project here https://github.com/chronologic/automate-api
 
-__LIVE version available here__ [https://automate.chronologic.network/](https://automate.chronologic.network/)
+📌__LIVE version available here__ [https://automate.chronologic.network/](https://automate.chronologic.network/)
 
 __ProductHunt:__[here](https://www.producthunt.com/posts/automate-1)
 
-__Tutorials and help:__ [here](https://blog.chronologic.network/automate/home)
+❓__Tutorials and help:__ [here](https://blog.chronologic.network/automate/home)
 
 ## How to start
 
