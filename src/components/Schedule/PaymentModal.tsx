@@ -103,8 +103,9 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     copyToClipboard(sentinelResponse?.paymentAddress);
   }, [sentinelResponse]);
   const handleScheduleAnother = React.useCallback(() => {
-    setEmail('');
-    setRefundAddress('');
+    // don't reset email and refund address - remember them
+    // setEmail('');
+    // setRefundAddress('');
     setTermsAccepted(false);
     setScheduled(undefined);
     onReset();
