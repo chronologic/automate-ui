@@ -1,8 +1,10 @@
+import 'antd/dist/antd.css';
 import * as React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 import Header from './components/Header/Header';
 import Schedule from './components/Schedule/Schedule';
+import Scheduleds from './components/Scheduleds';
 import View from './components/View/View';
 // import Maintenance from './Maintenance';
 
@@ -32,12 +34,15 @@ class App extends React.Component<{}, IAppState> {
     const renderViewRoute = (props: any) => (
       <View {...props} onChange={this.handleChange} />
     );
+    const renderScheduledsRoute = () => <Scheduleds />;
+
     return (
       <Router>
         <div className="bx--grid">
           <Header updateCounter={updateCounter} />
           <Route exact={true} path="/" render={renderScheduleRoute} />
           <Route path="/view/:id/:key" render={renderViewRoute} />
+          <Route path="/scheduleds" render={renderScheduledsRoute} />
         </div>
       </Router>
     );

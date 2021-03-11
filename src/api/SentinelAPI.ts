@@ -21,7 +21,8 @@ export enum Status {
   PendingConfirmations,
   PendingPayment,
   PendingPaymentConfirmations,
-  PaymentExpired
+  PaymentExpired,
+  Draft
 }
 
 export interface IScheduleRequest {
@@ -74,6 +75,34 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
   paymentRefundAddress: string;
   paymentTx: string;
   chainId?: number;
+}
+
+export interface IScheduledForUser {
+  id: string;
+  assetType: AssetType;
+  signedTransaction: string;
+  conditionAsset: string;
+  conditionAmount: string;
+  status: Status;
+  statusName: string;
+  transactionHash: string;
+  error: string;
+  from: string;
+  nonce: number;
+  chainId: number;
+  conditionBlock: number;
+  timeCondition: number;
+  timeConditionTZ: string;
+  gasPriceAware: boolean;
+  executionAttempts: number;
+  lastExecutionAttempt: string;
+  assetName: string;
+  assetAmount: number;
+  assetValue: number;
+  createdAt: string;
+  executedAt: string;
+  txKey: string;
+  notes: string;
 }
 
 export class SentinelAPI {
@@ -281,7 +310,22 @@ export class SentinelAPI {
     }
   }
 
+  public static async getList(apiKey: string): Promise<IScheduledForUser[]> {
+    const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`);
+
+    const items = response.data.items as IScheduledForUser[];
+
+    return items.map(i => {
+      i.statusName = Status[i.status];
+
+      return i;
+    });
+  }
+
   private static API_URL: string = process.env.REACT_APP_API_URL + '/scheduled';
+
+  private static API_URL_LIST: string =
+    process.env.REACT_APP_API_URL + '/scheduleds';
 
   private static getProvider(chainId: number) {
     return ethers.getDefaultProvider(ethers.utils.getNetwork(chainId));
