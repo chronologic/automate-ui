@@ -1,14 +1,9 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { BigNumber, Transaction } from 'ethers/utils';
+import queryString from 'query-string';
 
-import {
-  AssetType,
-  IAsset,
-  IDecodedTransaction,
-  IError,
-  PolkadotChainId
-} from 'src/models';
+import { AssetType, IAsset, IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
 
@@ -31,6 +26,7 @@ export interface IScheduleRequest {
   conditionAmount: string;
   conditionAsset: string;
   gasPriceAware: boolean;
+  notes?: string;
   paymentEmail: string;
   paymentRefundAddress: string;
   signedTransaction: string;
@@ -46,9 +42,7 @@ interface IScheduledTransactionRaw {
   transactionHash?: string;
 }
 
-export interface IScheduleResponse
-  extends IScheduledTransactionRaw,
-    IScheduleRequest {
+export interface IScheduleResponse extends IScheduledTransactionRaw, IScheduleRequest {
   chainId: number;
   paymentAddress: string;
   paymentTx: string;
@@ -82,17 +76,21 @@ export interface IScheduledForUser {
   assetType: AssetType;
   signedTransaction: string;
   conditionAsset: string;
+  conditionAssetName: string;
+  conditionAssetDecimals: number;
   conditionAmount: string;
   status: Status;
   statusName: string;
   transactionHash: string;
   error: string;
   from: string;
+  to: string;
   nonce: number;
   chainId: number;
   conditionBlock: number;
   timeCondition: number;
   timeConditionTZ: string;
+  gasPrice: string;
   gasPriceAware: boolean;
   executionAttempts: number;
   lastExecutionAttempt: string;
@@ -105,25 +103,28 @@ export interface IScheduledForUser {
   notes: string;
 }
 
+export interface IScheduleParams {
+  apiKey: string;
+  draft?: boolean;
+}
+
 export class SentinelAPI {
   public static async schedule(
-    request: IScheduleRequest
+    request: IScheduleRequest,
+    queryParams?: IScheduleParams
   ): Promise<IScheduleAccessKey | IError> {
     try {
-      const response = await axios.post(this.API_URL, request);
+      const params = queryParams ? `?${queryString.stringify(queryParams)}` : '';
+      const response = await axios.post(this.API_URL + params, request);
       return response.data as IScheduleAccessKey;
     } catch (e) {
       return {
-        errors: e.response
-          ? e.response.data.errors
-          : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
       };
     }
   }
 
-  public static async get(
-    request: IScheduleAccessKey
-  ): Promise<IScheduledTransaction | IError> {
+  public static async get(request: IScheduleAccessKey): Promise<IScheduledTransaction | IError> {
     try {
       const response = await axios.get<IScheduleResponse>(this.API_URL, {
         params: request
@@ -138,10 +139,7 @@ export class SentinelAPI {
             response.data.conditionAsset,
             decodedTransaction.signedChain.chainId
           );
-          const amount = TokenAPI.withDecimals(
-            response.data.conditionAmount,
-            conditionalAssetInfo.decimals
-          );
+          const amount = TokenAPI.withDecimals(response.data.conditionAmount, conditionalAssetInfo.decimals);
 
           const conditionalAsset = {
             ...conditionalAssetInfo,
@@ -155,10 +153,7 @@ export class SentinelAPI {
           };
         }
         case AssetType.Polkadot: {
-          const parsed = await PolkadotAPI.parseTx(
-            response.data.signedTransaction,
-            response.data.chainId
-          );
+          const parsed = await PolkadotAPI.parseTx(response.data.signedTransaction, response.data.chainId);
 
           return {
             ...response.data,
@@ -168,9 +163,7 @@ export class SentinelAPI {
       }
     } catch (e) {
       return {
-        errors: e.response
-          ? e.response.data.errors
-          : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
       };
     }
   }
@@ -189,10 +182,7 @@ export class SentinelAPI {
           break;
         }
         case AssetType.Polkadot: {
-          return PolkadotAPI.parseTx(
-            signedTransaction,
-            chainId as PolkadotChainId
-          );
+          return PolkadotAPI.parseTx(signedTransaction, chainId as PolkadotChainId);
           // const parsed = (await PolkadotAPI.parseTx(
           //   signedTransaction
           // )) as IDecodedTransaction;
@@ -218,25 +208,17 @@ export class SentinelAPI {
     const chainName = ethers.utils.getNetwork(decodedTransaction.chainId).name;
 
     let signedRecipient = decodedTransaction.to!;
-    let signedAmount = TokenAPI.withDecimals(
-      decodedTransaction.value.toString()
-    );
+    let signedAmount = TokenAPI.withDecimals(decodedTransaction.value.toString());
     let signedAddress = '';
     let signedAssetName = 'ETH';
     let signedAssetDecimals = 18;
     const signedNonce = decodedTransaction.nonce;
 
     try {
-      const { name, decimals } = await TokenAPI.tokenInfo(
-        signedRecipient,
-        decodedTransaction.chainId
-      );
+      const { name, decimals } = await TokenAPI.tokenInfo(signedRecipient, decodedTransaction.chainId);
 
       const callDataParameters = '0x' + decodedTransaction.data.substring(10);
-      const params = ethers.utils.defaultAbiCoder.decode(
-        ['address', 'uint256'],
-        callDataParameters
-      );
+      const params = ethers.utils.defaultAbiCoder.decode(['address', 'uint256'], callDataParameters);
 
       signedAddress = decodedTransaction.to!;
       signedAssetName = name;
@@ -263,17 +245,13 @@ export class SentinelAPI {
 
     let senderNonce = NaN;
     try {
-      senderNonce = await this.getProvider(
-        decodedTransaction.chainId
-      ).getTransactionCount(signedSender);
+      senderNonce = await this.getProvider(decodedTransaction.chainId).getTransactionCount(signedSender);
       // tslint:disable-next-line:no-empty
     } catch (e) {}
 
     let senderBalance = new BigNumber(0);
     try {
-      senderBalance = await this.getProvider(
-        decodedTransaction.chainId
-      ).getBalance(decodedTransaction.from!);
+      senderBalance = await this.getProvider(decodedTransaction.chainId).getBalance(decodedTransaction.from!);
       // tslint:disable-next-line:no-empty
     } catch (e) {}
 
@@ -295,17 +273,13 @@ export class SentinelAPI {
     };
   }
 
-  public static async cancel(
-    request: IScheduleAccessKey
-  ): Promise<ICancelResponse | IError> {
+  public static async cancel(request: IScheduleAccessKey): Promise<ICancelResponse | IError> {
     try {
       const response = await axios.delete(this.API_URL, { params: request });
       return response.data as ICancelResponse;
     } catch (e) {
       return {
-        errors: e.response
-          ? e.response.data.errors
-          : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
       };
     }
   }
@@ -324,8 +298,7 @@ export class SentinelAPI {
 
   private static API_URL: string = process.env.REACT_APP_API_URL + '/scheduled';
 
-  private static API_URL_LIST: string =
-    process.env.REACT_APP_API_URL + '/scheduleds';
+  private static API_URL_LIST: string = process.env.REACT_APP_API_URL + '/scheduleds';
 
   private static getProvider(chainId: number) {
     return ethers.getDefaultProvider(ethers.utils.getNetwork(chainId));

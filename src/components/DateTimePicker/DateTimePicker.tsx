@@ -1,10 +1,4 @@
-import {
-  DatePicker,
-  DatePickerInput,
-  SelectItem,
-  TimePicker,
-  TimePickerSelect
-} from 'carbon-components-react';
+import { DatePicker, DatePickerInput, SelectItem, TimePicker, TimePickerSelect } from 'carbon-components-react';
 import * as moment from 'moment-timezone';
 import * as React from 'react';
 
@@ -31,10 +25,7 @@ interface IDateTimePickerState {
   meridiem: Meridiem;
 }
 
-class DateTimePicker extends React.Component<
-  IDateTimePickerView,
-  IDateTimePickerState
-> {
+class DateTimePicker extends React.Component<IDateTimePickerView, IDateTimePickerState> {
   private timePattern = new RegExp('^(1[0-2]|0?[1-9]):[0-5][0-9]$');
 
   constructor(props: IDateTimePickerView) {
@@ -54,12 +45,7 @@ class DateTimePicker extends React.Component<
     return (
       <>
         <div className="datetimepicker">
-          <DatePicker
-            id="date-picker"
-            datePickerType="single"
-            dateFormat="d/m/Y"
-            onChange={onDateChange}
-          >
+          <DatePicker id="date-picker" datePickerType="single" dateFormat="d/m/Y" onChange={onDateChange}>
             <DatePickerInput
               id="date-picker-input"
               labelText=""
