@@ -1,26 +1,8 @@
-import {
-  Button,
-  FormItem,
-  Link,
-  Loading,
-  TextInput,
-  Tile
-} from 'carbon-components-react';
+import { Button, FormItem, Link, Loading, TextInput, Tile } from 'carbon-components-react';
 import * as React from 'react';
 
-import {
-  ICancelResponse,
-  IScheduleAccessKey,
-  IScheduledTransaction,
-  SentinelAPI,
-  Status
-} from 'src/api/SentinelAPI';
-import {
-  AssetType,
-  IDecodedTransaction,
-  IError,
-  PolkadotChainId
-} from 'src/models';
+import { ICancelResponse, IScheduleAccessKey, IScheduledTransaction, SentinelAPI, Status } from 'src/api/SentinelAPI';
+import { AssetType, IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';
@@ -41,10 +23,7 @@ interface IView {
   cancelResponse?: ICancelResponse | IError;
 }
 
-const getAssetNameAndImage = (
-  assetType: AssetType,
-  chainId: any
-): [string, string] => {
+const getAssetNameAndImage = (assetType: AssetType, chainId: any): [string, string] => {
   if (assetType === AssetType.Ethereum) {
     return ['Ethereum', '/assets/eth.svg'];
   } else if (assetType === AssetType.Polkadot) {
@@ -91,15 +70,10 @@ class View extends React.Component<IViewProps, IView> {
     }
 
     const { scheduledTransaction } = this.state;
-    const executed =
-      this.state.scheduledTransaction &&
-      this.state.scheduledTransaction.status !== Status.Pending;
+    const cancellable = this.state.scheduledTransaction && this.state.scheduledTransaction.status !== Status.Pending;
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
-    const [assetName, assetImgUrl] = getAssetNameAndImage(
-      scheduledTransaction.assetType,
-      scheduledTransaction.chainId
-    );
+    const [assetName, assetImgUrl] = getAssetNameAndImage(scheduledTransaction.assetType, scheduledTransaction.chainId);
 
     return this.state && this.state.errors ? (
       <Tile>{this.state.errors.join('<br/>')}</Tile>
@@ -107,12 +81,7 @@ class View extends React.Component<IViewProps, IView> {
       <div className="view-transaction">
         <div className="bx--type-gamma">Platform</div>
         <div className="platform-info">
-          <embed
-            type="image/svg+xml"
-            src={assetImgUrl}
-            height="40"
-            width="40"
-          />
+          <embed type="image/svg+xml" src={assetImgUrl} height="40" width="40" />
           <div className="platform-info-title">{assetName}</div>
         </div>
         <div className="bx--type-gamma">Payment Information</div>
@@ -130,9 +99,7 @@ class View extends React.Component<IViewProps, IView> {
               <FormItem>
                 <label className="bx--label">Payment transaction hash</label>
                 <Link
-                  href={
-                    'https://etherscan.io/tx/' + scheduledTransaction.paymentTx
-                  }
+                  href={'https://etherscan.io/tx/' + scheduledTransaction.paymentTx}
                   className="bx--text-input bx--col-xs-12"
                   target="_blank"
                 >
@@ -159,16 +126,12 @@ class View extends React.Component<IViewProps, IView> {
         <div className="bx--type-gamma">Transaction Information</div>
         <SenderInformation skeleton={true} {...this.state.decodedTransaction} />
         <div className="bx--type-gamma">Transaction Info</div>
-        <DecodedTransaction
-          {...this.state.decodedTransaction}
-          skeleton={true}
-          assetName={assetName}
-        />
+        <DecodedTransaction {...this.state.decodedTransaction} skeleton={true} assetName={assetName} />
         <div className="bx--type-gamma">Conditions</div>
         <DecodedConditionalAsset {...scheduledTransaction.conditionalAsset} />
         <TimeCondition {...scheduledTransaction} />
         <br />
-        <Button kind="danger" disabled={executed} onClick={cancel}>
+        <Button kind="danger" disabled={cancellable} onClick={cancel}>
           Cancel transaction
         </Button>
         {cancelStatus}

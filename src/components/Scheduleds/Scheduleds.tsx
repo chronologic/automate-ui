@@ -1,12 +1,12 @@
+import { CheckCircleOutlined, ClockCircleOutlined, CloseSquareOutlined, FormOutlined } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Input, InputNumber, Layout, Select, Table, TimePicker } from 'antd';
-// import { TablePaginationConfig } from 'antd/lib/table';
+import { ethers } from 'ethers';
 import * as moment from 'moment-timezone';
 import queryString from 'query-string';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { IScheduledForUser, SentinelAPI } from '../../api/SentinelAPI';
 import { bigNumberToNumber, formatLongId, numberToBn } from '../../utils';
-// import TimeCondition from '../View/TimeCondition';
 
 const queryParams = queryString.parseUrl(location.href);
 const apiKey = queryParams.query.apiKey as string;
@@ -26,21 +26,16 @@ function Scheduleds() {
   const [editedGasPriceAware, setEditedGasPriceAware] = useState(false);
   const [editedNotes, setEditedNotes] = useState<string>('');
 
-  //   const paginationConfig: TablePaginationConfig = useMemo(
-  //     () => ({
-  //       //   pageSizeOptions: ['10', '25', '50', '100'],
-  //       showSizeChanger: false
-  //       //   showTotal: (total: number, [from, to]: [number, number]) =>
-  //       //     `${from}-${to} of ${total}`
-  //     }),
-  //     []
-  //   );
-
   const handleStartEditingItem = useCallback((record: IScheduledForUser) => {
     setEditingItem(record);
     setEditedConditionAsset(record.conditionAsset);
     setEditedConditionAmount(record.conditionAmount);
     setEditedTimeCondition(record.timeCondition);
+    if (record.timeCondition && record.timeConditionTZ) {
+      const date = moment.tz(record.timeCondition, record.timeConditionTZ);
+      setEditedTimeConditionDate(date as any);
+      setEditedTimeConditionTime(date as any);
+    }
     setEditedTimeConditionTZ(record.timeConditionTZ);
     setEditedNotes(record.notes);
     setEditedGasPriceAware(record.gasPriceAware);
@@ -64,30 +59,68 @@ function Scheduleds() {
     setEditedConditionAmount(amount ? numberToBn(amount).toString() : '');
   }, []);
 
-  const handleTimeCondtionDateChange = useCallback(
+  const handleTimeConditionDateChange = useCallback(
     date => {
-      const dateStr = moment(date).format('YYYY.MM.DD');
-      const timeStr = moment(editedTimeConditionTime).format('HH:mm');
-      const newDate = moment(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm')
-        .toDate()
-        .getTime();
       setEditedTimeConditionDate(date);
-      setEditedTimeCondition(newDate);
+      // const c = console;
+      // c.log(editedTimeConditionTime, date, editedTimeConditionTZ);
+      if (!editedTimeConditionTime || !date || !editedTimeConditionTZ) {
+        setEditedTimeCondition(0);
+      } else {
+        const dateStr = moment(date).format('YYYY.MM.DD');
+        const timeStr = moment(editedTimeConditionTime).format('HH:mm');
+        const newDate = moment
+          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
+          .toDate()
+          .getTime();
+        // const c = console;
+        // c.log(newDate, new Date(newDate));
+        setEditedTimeCondition(newDate);
+      }
     },
-    [editedTimeConditionTime]
+    [editedTimeConditionTime, editedTimeConditionTZ]
   );
 
-  const handleTimeCondtionTimeChange = useCallback(
+  const handleTimeConditionTimeChange = useCallback(
     time => {
-      const timeStr = moment(time).format('HH:mm');
-      const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
-      const newDate = moment(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm')
-        .toDate()
-        .getTime();
       setEditedTimeConditionTime(time);
-      setEditedTimeCondition(newDate);
+      // const c = console;
+      // c.log(editedTimeConditionDate, time, editedTimeConditionTZ);
+      if (!editedTimeConditionDate || !time || !editedTimeConditionTZ) {
+        setEditedTimeCondition(0);
+      } else {
+        const timeStr = moment(time).format('HH:mm');
+        const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
+        const newDate = moment
+          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
+          .toDate()
+          .getTime();
+        // const c = console;
+        // c.log(newDate, new Date(newDate));
+        setEditedTimeCondition(newDate);
+      }
     },
-    [editedTimeConditionDate]
+    [editedTimeConditionDate, editedTimeConditionTZ]
+  );
+
+  const handleTimeConditionTZChange = useCallback(
+    tz => {
+      setEditedTimeConditionTZ(tz);
+      if (!editedTimeConditionTime || !tz || !editedTimeConditionDate) {
+        setEditedTimeCondition(0);
+      } else {
+        const timeStr = moment(editedTimeConditionTime).format('HH:mm');
+        const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
+        const newDate = moment
+          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', tz)
+          .toDate()
+          .getTime();
+        // const c = console;
+        // c.log(newDate, new Date(newDate));
+        setEditedTimeCondition(newDate);
+      }
+    },
+    [editedTimeConditionTime, editedTimeConditionDate]
   );
 
   const handleSave = useCallback(async () => {
@@ -145,13 +178,47 @@ function Scheduleds() {
             {formatLongId(id)}
           </a>
         ),
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
         title: 'ID'
       },
       {
         dataIndex: 'statusName',
-        render: (status: string) => status,
-        sorter: true,
+        render: (status: string) => {
+          switch (status) {
+            case 'Draft': {
+              return (
+                <span style={{ color: 'blue' }}>
+                  <FormOutlined /> {status}
+                </span>
+              );
+            }
+            case 'Pending': {
+              return (
+                <span style={{ color: 'orange' }}>
+                  <ClockCircleOutlined /> {status}
+                </span>
+              );
+            }
+            case 'Completed': {
+              return (
+                <span style={{ color: 'green' }}>
+                  <CheckCircleOutlined /> {status}
+                </span>
+              );
+            }
+            case 'Error': {
+              return (
+                <span style={{ color: 'red' }}>
+                  <CloseSquareOutlined /> {status}
+                </span>
+              );
+            }
+            default: {
+              return status;
+            }
+          }
+        },
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
         title: 'Status'
       },
       {
@@ -161,7 +228,7 @@ function Scheduleds() {
             {formatLongId(from)}
           </a>
         ),
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From'
       },
       {
@@ -171,37 +238,38 @@ function Scheduleds() {
             {formatLongId(to || '')}
           </a>
         ),
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To'
       },
       {
         dataIndex: 'assetName',
         render: (assetName: string) => (assetName || '').toUpperCase(),
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset'
       },
       {
         dataIndex: 'assetAmount',
         render: (assetAmount: string) => assetAmount,
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetAmount || 0) - (b.assetAmount || 0),
         title: 'Amount'
       },
       {
         dataIndex: 'chainId',
         render: (chainId: string) => chainId,
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.chainId - b.chainId,
         title: 'Chain ID'
       },
       {
         dataIndex: 'nonce',
         render: (nonce: string) => nonce,
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.nonce - b.nonce,
         title: 'Nonce'
       },
       {
         dataIndex: 'gasPrice',
         render: (gasPrice: any) => bigNumberToNumber(gasPrice, 9),
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          new ethers.utils.BigNumber(a.gasPrice || '0').gte(new ethers.utils.BigNumber(b.gasPrice || '0')) as any,
         title: 'Gas Price'
       },
       {
@@ -225,7 +293,8 @@ function Scheduleds() {
 
           return assetName || '-';
         },
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
         title: 'Condition Asset'
       },
       {
@@ -242,7 +311,10 @@ function Scheduleds() {
 
           return num;
         },
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          new ethers.utils.BigNumber(a.conditionAsset || '0').gte(
+            new ethers.utils.BigNumber(b.conditionAsset || '0')
+          ) as any,
         title: 'Condition Amount'
       },
       {
@@ -261,22 +333,22 @@ function Scheduleds() {
               <>
                 <DatePicker
                   format={'MMM D yyyy'}
-                  defaultValue={timeConditionLocal as any}
-                  onChange={handleTimeCondtionDateChange}
+                  defaultValue={timeConditionForTz as any}
+                  onChange={handleTimeConditionDateChange}
                 />
                 <br />
                 <TimePicker
                   format={'hh:mm a'}
                   use12Hours={true}
-                  defaultValue={timeConditionLocal as any}
-                  onChange={handleTimeCondtionTimeChange}
+                  defaultValue={timeConditionForTz as any}
+                  onChange={handleTimeConditionTimeChange}
                 />
                 <br />
                 <Select
                   showSearch={true}
                   defaultValue={record.timeConditionTZ || moment.tz.guess()}
                   style={{ minWidth: '120px' }}
-                  onChange={setEditedTimeConditionTZ as any}
+                  onChange={handleTimeConditionTZChange}
                 >
                   {moment.tz.names().map((tz, index) => (
                     <Select.Option key={index} value={tz}>
@@ -301,7 +373,7 @@ function Scheduleds() {
 
           return '-';
         },
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
         title: 'Time Condition'
       },
       {
@@ -312,7 +384,8 @@ function Scheduleds() {
           const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
           return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
         },
-        sorter: true,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
         title: 'Gas Price Aware?'
       },
       {
@@ -327,6 +400,7 @@ function Scheduleds() {
 
           return notes;
         },
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
         title: 'Notes'
       },
       {
@@ -354,7 +428,14 @@ function Scheduleds() {
         title: ''
       }
     ];
-  }, [editingItem, handleConditionAmountChange, handleSave]);
+  }, [
+    editingItem,
+    handleConditionAmountChange,
+    handleTimeConditionDateChange,
+    handleTimeConditionTimeChange,
+    handleTimeConditionTZChange,
+    handleSave
+  ]);
 
   useEffect(() => {
     refresh();
