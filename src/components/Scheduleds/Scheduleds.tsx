@@ -256,7 +256,23 @@ function Scheduleds() {
       },
       {
         dataIndex: 'assetName',
-        render: (assetName: string) => (assetName || '').toUpperCase(),
+        render: (assetName: string, record: IScheduledForUser) => {
+          const name = (assetName || '').toUpperCase();
+
+          if (record.assetContract) {
+            return (
+              <a
+                href={`https://etherscan.io/address/${record.assetContract}`}
+                title={record.assetContract}
+                target="_blank"
+              >
+                {name}
+              </a>
+            );
+          }
+
+          return name;
+        },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset'
       },

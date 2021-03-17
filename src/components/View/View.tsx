@@ -57,6 +57,7 @@ class View extends React.Component<IViewProps, IView> {
           errors: (response as any).errors
         });
       } else {
+        console.log({ scheduledTransaction, decodeResponse });
         const decodedTransaction = decodeResponse as IDecodedTransaction;
 
         this.setState({ decodedTransaction, scheduledTransaction });
