@@ -1,4 +1,10 @@
-import { CheckCircleOutlined, ClockCircleOutlined, CloseSquareOutlined, FormOutlined } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseSquareOutlined,
+  DeleteOutlined,
+  FormOutlined
+} from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Input, InputNumber, Layout, Select, Table, TimePicker } from 'antd';
 import { ethers } from 'ethers';
 import * as moment from 'moment-timezone';
@@ -203,6 +209,13 @@ function Scheduleds() {
               return (
                 <span style={{ color: 'green' }}>
                   <CheckCircleOutlined /> {status}
+                </span>
+              );
+            }
+            case 'Cancelled': {
+              return (
+                <span style={{ color: 'gray' }}>
+                  <DeleteOutlined /> {status}
                 </span>
               );
             }
