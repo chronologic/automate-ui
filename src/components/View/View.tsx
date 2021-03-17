@@ -70,7 +70,9 @@ class View extends React.Component<IViewProps, IView> {
     }
 
     const { scheduledTransaction } = this.state;
-    const cancellable = this.state.scheduledTransaction && this.state.scheduledTransaction.status !== Status.Pending;
+    const cancellable =
+      this.state.scheduledTransaction &&
+      [Status.Pending, Status.Draft].includes(this.state.scheduledTransaction.status);
     const cancel = this.cancel.bind(this);
     const cancelStatus = this.renderResponse();
     const [assetName, assetImgUrl] = getAssetNameAndImage(scheduledTransaction.assetType, scheduledTransaction.chainId);
@@ -131,7 +133,7 @@ class View extends React.Component<IViewProps, IView> {
         <DecodedConditionalAsset {...scheduledTransaction.conditionalAsset} />
         <TimeCondition {...scheduledTransaction} />
         <br />
-        <Button kind="danger" disabled={cancellable} onClick={cancel}>
+        <Button kind="danger" disabled={!cancellable} onClick={cancel}>
           Cancel transaction
         </Button>
         {cancelStatus}
