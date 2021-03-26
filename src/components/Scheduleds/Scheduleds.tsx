@@ -42,7 +42,7 @@ function Scheduleds() {
       setEditedTimeConditionDate(date as any);
       setEditedTimeConditionTime(date as any);
     }
-    setEditedTimeConditionTZ(record.timeConditionTZ);
+    setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
     setEditedNotes(record.notes);
     setEditedGasPriceAware(record.gasPriceAware);
   }, []);
