@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { IAssetState } from 'src/components/Asset/ConditionalAsset';
 import { ERC20 } from './erc20';
 
-export const ETH = { name: 'ETH', decimals: 18 };
+export const ETH = { name: 'ETH', symbol: 'ETH', decimals: 18 };
 
 export class TokenAPI {
   public static withDecimals(amount: string, decimals: number = 18) {
@@ -17,21 +17,22 @@ export class TokenAPI {
     if (address === '') {
       return ETH;
     }
-    const token = new ethers.Contract(
-      address,
-      ERC20,
-      ethers.getDefaultProvider(ethers.utils.getNetwork(chainId))
-    );
+    const token = new ethers.Contract(address, ERC20, ethers.getDefaultProvider(ethers.utils.getNetwork(chainId)));
     const name = await token.name();
+    let symbol = name;
+
+    try {
+      symbol = await token.symbol();
+    } catch (e) {
+      //
+    }
+
     const decimals = await token.decimals();
 
-    return { name, decimals };
+    return { name, symbol, decimals };
   }
 
-  public static async resolveToken(
-    address: string,
-    chainId: number
-  ): Promise<IAssetState> {
+  public static async resolveToken(address: string, chainId: number): Promise<IAssetState> {
     let validationError = '';
     let { name, decimals } = ETH;
 
@@ -43,11 +44,13 @@ export class TokenAPI {
       }
     }
 
+    let symbol = '';
     if (!validationError) {
       try {
         const tokenInfo = await TokenAPI.tokenInfo(address, chainId);
         decimals = tokenInfo.decimals;
         name = tokenInfo.name;
+        symbol = tokenInfo.symbol;
       } catch (e) {
         validationError = 'Asset is not ERC-20 compatible';
       }
@@ -58,6 +61,7 @@ export class TokenAPI {
       amount: '',
       decimals,
       name,
+      symbol,
       validationError
     };
   }

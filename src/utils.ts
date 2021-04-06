@@ -36,3 +36,17 @@ export function numberToBn(num: number, decimals = 18): BigNumber {
 export function formatLongId(id: string): string {
   return id.substring(0, 6) + '...' + id.substring(id.length - 4, id.length);
 }
+
+export function normalizeBigNumber(bn: BigNumber, decimalsIn: number, decimalsOut = 18): BigNumber {
+  const decimalsDiff = decimalsOut - decimalsIn;
+
+  if (decimalsDiff > 0) {
+    return new BigNumber(bn.toString() + '0'.repeat(decimalsDiff));
+  }
+  if (decimalsDiff < 0) {
+    const bnString = bn.toString();
+    return new BigNumber(bnString.substring(0, bnString.length + decimalsDiff) || '0');
+  }
+
+  return bn;
+}

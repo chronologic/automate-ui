@@ -34,10 +34,10 @@ const getBalance = async (address: string, chainId: PolkadotChainId) => {
   return (res as any).balance as string;
 };
 
-const parseTx: (
-  tx: string,
-  chainId: PolkadotChainId
-) => Promise<IDecodedTransaction | IError> = async (tx, chainId) => {
+const parseTx: (tx: string, chainId: PolkadotChainId) => Promise<IDecodedTransaction | IError> = async (
+  tx,
+  chainId
+) => {
   try {
     const { data: parsed } = await api.get<IPolkadotTx>('parseTx', {
       params: {
@@ -53,7 +53,8 @@ const parseTx: (
         address: '',
         amount: parsed.value || '0',
         decimals: parsed.decimals || 18,
-        name: parsed.assetName
+        name: parsed.assetName,
+        symbol: parsed.assetName
       },
       signedChain: {
         chainId: parsed.chainId,

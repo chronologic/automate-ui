@@ -19,6 +19,7 @@ export interface IAsset {
   amount: string;
   decimals: number;
   name: string;
+  symbol?: string;
 }
 
 export interface INetwork {

@@ -1,22 +1,10 @@
-import {
-  Button,
-  Checkbox,
-  Icon,
-  InlineLoading,
-  Modal,
-  TextInput
-} from 'carbon-components-react';
+import { Button, Checkbox, Icon, InlineLoading, Modal, TextInput } from 'carbon-components-react';
 import { iconCopy } from 'carbon-icons';
 import * as moment from 'moment';
 import * as React from 'react';
 import Countdown from 'react-countdown';
 
-import {
-  IScheduleAccessKey,
-  IScheduledTransaction,
-  SentinelAPI,
-  Status
-} from 'src/api/SentinelAPI';
+import { IScheduleAccessKey, IScheduledTransaction, SentinelAPI, Status } from 'src/api/SentinelAPI';
 import { ISubmitParams } from '../../models';
 import ScheduledLink from './ScheduledLink';
 
@@ -41,10 +29,7 @@ interface IEmailAndRefundAddress {
 }
 
 function retrieveEmailAndRefundAddress(): IEmailAndRefundAddress {
-  return JSON.parse(
-    localStorage.getItem('payment_credentials') ||
-      '{"email": "", "refundAddress": ""}'
-  );
+  return JSON.parse(localStorage.getItem('payment_credentials') || '{"email": "", "refundAddress": ""}');
 }
 
 function storeEmailAndRefundAddress(params: IEmailAndRefundAddress): void {
@@ -59,12 +44,8 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   onSubmit,
   onReset
 }) => {
-  const [email, setEmail] = React.useState<string>(
-    retrieveEmailAndRefundAddress().email
-  );
-  const [refundAddress, setRefundAddress] = React.useState<string>(
-    retrieveEmailAndRefundAddress().refundAddress
-  );
+  const [email, setEmail] = React.useState<string>(retrieveEmailAndRefundAddress().email);
+  const [refundAddress, setRefundAddress] = React.useState<string>(retrieveEmailAndRefundAddress().refundAddress);
   const [termsAccepted, setTermsAccepted] = React.useState<boolean>(false);
   const [scheduled, setScheduled] = React.useState<IScheduledTransaction>();
   const expirationDate = React.useMemo(() => {
@@ -79,13 +60,8 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
       .toDate()
       .getTime();
   }, [sentinelResponse]);
-  const handleEmailChange = React.useCallback(e => setEmail(e.target.value), [
-    setEmail
-  ]);
-  const handleRefundAddressChange = React.useCallback(
-    e => setRefundAddress(e.target.value),
-    [setRefundAddress]
-  );
+  const handleEmailChange = React.useCallback(e => setEmail(e.target.value), [setEmail]);
+  const handleRefundAddressChange = React.useCallback(e => setRefundAddress(e.target.value), [setRefundAddress]);
   const handleSubmit = React.useCallback(() => {
     storeEmailAndRefundAddress({
       email,
@@ -116,15 +92,10 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     if (
       sentinelResponse &&
       (!scheduled ||
-        (scheduled &&
-          [Status.PendingPayment, Status.PendingPaymentConfirmations].includes(
-            scheduled.status
-          )))
+        (scheduled && [Status.PendingPayment, Status.PendingPaymentConfirmations].includes(scheduled.status)))
     ) {
       const refresh = async () => {
-        const res = (await SentinelAPI.get(
-          sentinelResponse
-        )) as IScheduledTransaction;
+        const res = (await SentinelAPI.get(sentinelResponse)) as IScheduledTransaction;
         if (JSON.stringify(scheduled || {}) !== JSON.stringify(res)) {
           setScheduled(res);
         }
@@ -152,16 +123,8 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
       DAY
       {/* </a> */}
       {scheduled?.status === Status.PendingPayment && (
-        <div
-          className="payment-modal__copy-container"
-          onClick={handleCopyAmount}
-        >
-          <Icon
-            icon={iconCopy}
-            iconTitle="Click to copy"
-            width="16"
-            height="16"
-          />
+        <div className="payment-modal__copy-container" onClick={handleCopyAmount}>
+          <Icon icon={iconCopy} iconTitle="Click to copy" width="16" height="16" />
         </div>
       )}
     </span>
@@ -175,10 +138,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     <div>
       Details of the scheduled transaction can be found here:
       <br />
-      <ScheduledLink
-        id={sentinelResponse?.id}
-        signature={sentinelResponse?.key}
-      />
+      <ScheduledLink id={sentinelResponse?.id} signature={sentinelResponse?.key} />
       <br />
       Please bookmark this link
     </div>
@@ -187,10 +147,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     <div>
       <i>Noticed anything not quite right?</i>
       <br />
-      <a
-        href="https://chronologic.zendesk.com/hc/en-us/requests/new"
-        target="_blank"
-      >
+      <a href="https://chronologic.zendesk.com/hc/en-us/requests/new" target="_blank">
         Submit a ticket
       </a>
     </div>
@@ -205,19 +162,9 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         <div>Send {amountNode} to the following address:</div>
         <br />
         <div>
-          <span className="payment-modal__address">
-            {sentinelResponse?.paymentAddress}
-          </span>{' '}
-          <div
-            className="payment-modal__copy-container"
-            onClick={handleCopyAddress}
-          >
-            <Icon
-              icon={iconCopy}
-              iconTitle="Click to copy"
-              width="24"
-              height="24"
-            />
+          <span className="payment-modal__address">{sentinelResponse?.paymentAddress}</span>{' '}
+          <div className="payment-modal__copy-container" onClick={handleCopyAddress}>
+            <Icon icon={iconCopy} iconTitle="Click to copy" width="24" height="24" />
           </div>
         </div>
         <input type="text" id="clipboard" style={{ opacity: 0 }} />
@@ -264,11 +211,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         <ul>
           <li>
             Your DAY has been spotted:{' '}
-            <a
-              href={'https://etherscan.io/tx/' + scheduled?.paymentTx}
-              target="_blank"
-              rel="noopener noreferer"
-            >
+            <a href={'https://etherscan.io/tx/' + scheduled?.paymentTx} target="_blank" rel="noopener noreferer">
               click here to see the transaction
             </a>
           </li>
@@ -312,19 +255,13 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
     content = (
       <div>
         <div>
-          In order to Automate your transaction a payment of {amountNode} must
-          be made.
+          In order to Automate your transaction a payment of {amountNode} must be made.
           <br />
           Your transaction will be scheduled once the payment has been received.
         </div>
         <br />
         <div>
-          <TextInput
-            type="text"
-            placeholder="Your email address"
-            value={email}
-            onChange={handleEmailChange}
-          />
+          <TextInput type="text" placeholder="Your email address" value={email} onChange={handleEmailChange} />
           <br />
           <TextInput
             type="text"
@@ -333,10 +270,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
             onChange={handleRefundAddressChange}
           />
           <br />
-          <i>
-            Your email and refund address are required in case anything goes
-            wrong with your payment
-          </i>
+          <i>Your email and refund address are required in case anything goes wrong with your payment</i>
           <br />
           <br />
           <div style={{ marginLeft: '4px' }}>
@@ -345,10 +279,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
               labelText={
                 <span>
                   I agree to the{' '}
-                  <a
-                    href="https://chronologic.zendesk.com/hc/en-us/articles/360011331820"
-                    target="_blank"
-                  >
+                  <a href="https://chronologic.zendesk.com/hc/en-us/articles/360011331820" target="_blank">
                     Terms
                   </a>
                 </span>
@@ -360,18 +291,8 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         </div>
         <br />
         <div className="payment-modal__button-container">
-          <Button
-            disabled={!formValid || loading || sentinelResponse}
-            onClick={handleSubmit}
-          >
-            {loading ? (
-              <InlineLoading
-                className="white-loading"
-                description="Loading..."
-              />
-            ) : (
-              'Next'
-            )}
+          <Button disabled={!formValid || loading || sentinelResponse} onClick={handleSubmit}>
+            {loading ? <InlineLoading className="white-loading" description="Loading..." /> : 'Next'}
           </Button>
         </div>
       </div>
@@ -379,12 +300,7 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
   }
 
   return (
-    <Modal
-      open={open}
-      passiveModal={true}
-      modalHeading="Payment"
-      onRequestClose={onDismiss}
-    >
+    <Modal open={open} passiveModal={true} modalHeading="Payment" onRequestClose={onDismiss}>
       <div className="payment-modal__container">{content}</div>
     </Modal>
   );
