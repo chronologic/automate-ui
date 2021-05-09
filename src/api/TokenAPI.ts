@@ -18,7 +18,13 @@ export class TokenAPI {
       return ETH;
     }
     const token = new ethers.Contract(address, ERC20, ethers.getDefaultProvider(ethers.utils.getNetwork(chainId)));
-    const name = await token.name();
+    let name = '';
+    try {
+      name = await token.name();
+    } catch (e) {
+      return ETH;
+    }
+
     let symbol = name;
 
     try {

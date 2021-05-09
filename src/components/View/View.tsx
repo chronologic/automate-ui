@@ -66,7 +66,7 @@ class View extends React.Component<IViewProps, IView> {
   }
 
   public render() {
-    if (!this.state || !this.state.scheduledTransaction) {
+    if (!this.state) {
       return <Loading />;
     }
 

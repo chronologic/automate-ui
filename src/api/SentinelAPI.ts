@@ -120,8 +120,9 @@ export class SentinelAPI {
       const response = await axios.post(this.API_URL + params, request);
       return response.data as IScheduleAccessKey;
     } catch (e) {
+      console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['Schedule API error']
       };
     }
   }
@@ -142,7 +143,6 @@ export class SentinelAPI {
             decodedTransaction.signedChain.chainId
           );
           const amount = TokenAPI.withDecimals(response.data.conditionAmount, conditionalAssetInfo.decimals);
-
           const conditionalAsset = {
             ...conditionalAssetInfo,
             address: response.data.conditionAsset,
@@ -164,8 +164,9 @@ export class SentinelAPI {
         }
       }
     } catch (e) {
+      console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['Scheduled API read error']
       };
     }
   }
@@ -218,7 +219,6 @@ export class SentinelAPI {
 
     try {
       const { name, decimals } = await TokenAPI.tokenInfo(signedRecipient, decodedTransaction.chainId);
-
       const callDataParameters = '0x' + decodedTransaction.data.substring(10);
       const params = ethers.utils.defaultAbiCoder.decode(['address', 'uint256'], callDataParameters);
 
@@ -280,8 +280,9 @@ export class SentinelAPI {
       const response = await axios.delete(this.API_URL, { params: request });
       return response.data as ICancelResponse;
     } catch (e) {
+      console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['API seems to be down :(']
+        errors: e.response ? e.response.data.errors : ['Cancel API error']
       };
     }
   }
