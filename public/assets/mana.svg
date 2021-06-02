@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 128 128" style="enable-background:new 0 0 128 128;" xml:space="preserve">
+<style type="text/css">
+	.st0{filter:url(#Adobe_OpacityMaskFilter);}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+	.st2{mask:url(#mask-2_1_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-1_2_);}
+	.st3{filter:url(#Adobe_OpacityMaskFilter_1_);}
+	.st4{mask:url(#mask-5_1_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-4_1_);}
+	.st5{fill-rule:evenodd;clip-rule:evenodd;fill:#FC9965;}
+	.st6{fill-rule:evenodd;clip-rule:evenodd;fill:#FF2D55;}
+	.st7{fill-rule:evenodd;clip-rule:evenodd;fill:#FFBC5B;}
+	.st8{filter:url(#Adobe_OpacityMaskFilter_2_);}
+	.st9{mask:url(#mask-8_1_);fill-rule:evenodd;clip-rule:evenodd;fill:url(#Fill-14_1_);}
+	.st10{fill-rule:evenodd;clip-rule:evenodd;fill:#FFC95B;}
+</style>
+<defs>
+	<filter id="Adobe_OpacityMaskFilter" filterUnits="userSpaceOnUse" x="0" y="0" width="128" height="128">
+		<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+	</filter>
+</defs>
+<mask maskUnits="userSpaceOnUse" x="0" y="0" width="128" height="128" id="mask-2_1_">
+	<g class="st0">
+		<path id="path-1_1_" class="st1" d="M64,0C28.7,0,0,28.7,0,64s28.7,64,64,64s64-28.7,64-64S99.3,0,64,0z"/>
+	</g>
+</mask>
+<linearGradient id="Fill-1_2_" gradientUnits="userSpaceOnUse" x1="-638.9943" y1="769.0057" x2="-641.0057" y2="766.9943" gradientTransform="matrix(45 0 0 -45 28864 34624)">
+	<stop  offset="0" style="stop-color:#FF2D54"/>
+	<stop  offset="1" style="stop-color:#FFBC5B"/>
+</linearGradient>
+<path id="Fill-1_1_" class="st2" d="M64,0C28.7,0,0,28.7,0,64s28.7,64,64,64s64-28.7,64-64S99.3,0,64,0z"/>
+<g>
+	<defs>
+		<filter id="Adobe_OpacityMaskFilter_1_" filterUnits="userSpaceOnUse" x="45.3" y="41.6" width="40" height="48">
+			<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+		</filter>
+	</defs>
+	<mask maskUnits="userSpaceOnUse" x="45.3" y="41.6" width="40" height="48" id="mask-5_1_">
+		<g class="st3">
+			<polygon id="path-4_1_" class="st1" points="45.3,89.6 85.3,89.6 45.3,41.6 			"/>
+		</g>
+	</mask>
+	
+		<linearGradient id="Fill-4_1_" gradientUnits="userSpaceOnUse" x1="-605.838" y1="743.5274" x2="-605.838" y2="740.683" gradientTransform="matrix(14.0625 0 0 -16.875 8584.9414 12588.625)">
+		<stop  offset="0" style="stop-color:#A523B3"/>
+		<stop  offset="1" style="stop-color:#FF2D54"/>
+	</linearGradient>
+	<polygon id="Fill-4_3_" class="st4" points="45.3,89.6 85.3,89.6 45.3,41.6 	"/>
+	<polygon id="Fill-7_1_" class="st1" points="5.3,89.6 45.3,89.6 45.3,41.6 	"/>
+</g>
+<path id="Fill-9_1_" class="st5" d="M12.8,102.4c3.6,4.8,8,9.2,12.8,12.8h76.8c4.8-3.6,9.2-8,12.8-12.8H12.8z"/>
+<path id="Fill-11_1_" class="st6" d="M25.6,115.2c10.7,8,24,12.8,38.4,12.8s27.7-4.8,38.4-12.8H25.6z"/>
+<path id="Fill-17" class="st7" d="M85.9,89.6H5.3c2,4.6,4.5,8.9,7.5,12.8h73.1L85.9,89.6L85.9,89.6z"/>
+<g>
+	<defs>
+		<filter id="Adobe_OpacityMaskFilter_2_" filterUnits="userSpaceOnUse" x="85.9" y="67.2" width="29.3" height="35.2">
+			<feColorMatrix  type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 1 0"/>
+		</filter>
+	</defs>
+	<mask maskUnits="userSpaceOnUse" x="85.9" y="67.2" width="29.3" height="35.2" id="mask-8_1_">
+		<g class="st8">
+			<polygon id="path-7_1_" class="st1" points="85.9,102.4 115.2,102.4 85.9,67.2 			"/>
+		</g>
+	</mask>
+	
+		<linearGradient id="Fill-14_1_" gradientUnits="userSpaceOnUse" x1="-585.5922" y1="727.4687" x2="-585.5922" y2="724.6243" gradientTransform="matrix(10.3163 0 0 -12.375 6141.644 9069.625)">
+		<stop  offset="0" style="stop-color:#A523B3"/>
+		<stop  offset="1" style="stop-color:#FF2D54"/>
+	</linearGradient>
+	<polygon id="Fill-14" class="st9" points="85.9,102.4 115.2,102.4 85.9,67.2 	"/>
+	<polygon id="Fill-19" class="st1" points="56.5,102.4 85.9,102.4 85.9,67.2 	"/>
+</g>
+<path id="Fill-21" class="st10" d="M85.9,25.6c8.8,0,16,7.2,16,16s-7.2,16-16,16s-16-7.2-16-16S77,25.6,85.9,25.6"/>
+<path id="Fill-23" class="st10" d="M45.3,16c4.4,0,8,3.6,8,8s-3.6,8-8,8s-8-3.6-8-8S40.9,16,45.3,16"/>
+</svg>
