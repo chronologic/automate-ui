@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-import { IAssetState } from '../models';
+import { IAssetState } from '../types';
 import { ERC20 } from './erc20';
 
 export const ETH = { name: 'ETH', symbol: 'ETH', decimals: 18 };

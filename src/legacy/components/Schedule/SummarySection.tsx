@@ -4,7 +4,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { BigNumber } from 'ethers';
 import moment from 'moment';
 
-import { IAsset } from '../../../models';
+import { IAsset } from '../../../types';
 import { bigNumberToString } from '../../../utils';
 import { toDataUrl } from '../../../lib/blockies';
 import SelectiveDisplay from './SelectiveDisplay';

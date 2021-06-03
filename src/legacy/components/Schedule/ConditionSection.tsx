@@ -13,8 +13,8 @@ import React from 'react';
 
 import { DOT } from '../../../api/PolkadotAPI';
 import { ETH, TokenAPI } from '../../../api/TokenAPI';
-import { IAsset } from '../../../models';
-import { AssetType } from '../../../models';
+import { IAsset } from '../../../types';
+import { AssetType } from '../../../types';
 import DateTimePicker from '../DateTimePicker/DateTimePicker';
 import SelectiveDisplay from './SelectiveDisplay';
 

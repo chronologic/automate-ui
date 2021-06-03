@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { ETH, TokenAPI } from '../../../api/TokenAPI';
-import { IAsset, IAssetState } from '../../../models';
+import { IAsset, IAssetState } from '../../../types';
 import Asset from './Asset';
 
 interface IAssetProps {

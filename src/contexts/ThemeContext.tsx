@@ -2,7 +2,7 @@ import React, { createContext } from 'react';
 import { parseUrl } from 'query-string';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
-import { ITheme } from '../models';
+import { ITheme } from '../types';
 import themes from '../themes';
 
 const defaultTheme = 'automate';

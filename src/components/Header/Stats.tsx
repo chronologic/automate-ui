@@ -3,7 +3,7 @@ import CountUp from 'react-countup';
 import styled from 'styled-components';
 
 import { IStatsItem, StatsAPI } from '../../api/StatsAPI';
-import { IThemeProps } from '../../models';
+import { IThemeProps } from '../../types';
 
 function Stats() {
   const [pending, setPending] = useState<IStatsItem>({

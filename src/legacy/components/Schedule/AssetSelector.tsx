@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import * as React from 'react';
 
-import { AssetType, PolkadotChainId } from '../../../models';
+import { AssetType, PolkadotChainId } from '../../../types';
 
 const assets = [
   {

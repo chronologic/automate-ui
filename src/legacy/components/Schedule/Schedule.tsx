@@ -15,8 +15,8 @@ import { BigNumber } from 'ethers';
 
 import { IScheduleAccessKey, IScheduleRequest, SentinelAPI } from '../../../api/SentinelAPI';
 import { ETH, TokenAPI } from '../../../api/TokenAPI';
-import { IAsset, IDecodedTransaction, IError, ISubmitParams, PolkadotChainId } from '../../../models';
-import { AssetType } from '../../../models';
+import { IAsset, IDecodedTransaction, IError, ISubmitParams, PolkadotChainId } from '../../../types';
+import { AssetType } from '../../../types';
 import AssetSelector from './AssetSelector';
 import ConditionSection from './ConditionSection';
 import Footer from './Footer';

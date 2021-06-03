@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import logo from './logo.svg';
 import WalletConnector from '../WalletConnector';
+import FlexSpacer from '../FlexSpacer';
+import logo from './logo.svg';
+import User from './User';
 
 function HeaderMain() {
   return (
@@ -10,6 +12,8 @@ function HeaderMain() {
       <Link to="/" className="logo-link">
         <img alt="logo" className="logo" src={logo} />
       </Link>
+      <FlexSpacer />
+      <User />
       <WalletConnector />
     </Container>
   );

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { IAsset } from '../../../models';
+import { IAsset } from '../../../types';
 import Asset from './Asset';
 
 class DecodedAsset extends React.Component<IAsset, any> {

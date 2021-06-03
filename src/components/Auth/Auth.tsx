@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
-import { Button, Input } from 'antd';
+import { Button, Input, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { UserAPI } from '../../api/UserAPI';
+import PageTitle from '../PageTitle';
 
 function Auth() {
+  const [signUp, setSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [login, setLogin] = useState('');
@@ -30,12 +32,21 @@ function Auth() {
     setPassword(e.target.value);
   }, []);
 
+  const handleModeSwitch = useCallback(() => {
+    setSignUp(!signUp);
+  }, [signUp]);
+
   return (
     <Container>
+      <PageTitle />
+      <Typography.Title level={3} className="title">
+        {signUp ? 'Sign up for Automate' : 'Log in to Automate'}
+      </Typography.Title>
       <Input
-        type="text"
-        style={{ width: '320px' }}
-        placeholder="Login"
+        type="email"
+        size="large"
+        style={{ width: '240px' }}
+        placeholder="Email"
         disabled={loading}
         value={login}
         onChange={handleLoginChange}
@@ -43,18 +54,28 @@ function Auth() {
       <br />
       <Input
         type="password"
-        style={{ width: '320px' }}
+        size="large"
+        style={{ width: '240px' }}
         placeholder="Password"
         disabled={loading}
         value={password}
         onChange={handlePasswordChange}
       />
       <br />
-      <Button type="primary" loading={loading} disabled={!login || !password} onClick={handleAuth}>
+      <Button
+        type="primary"
+        size="large"
+        loading={loading}
+        disabled={!login || !password}
+        className="submit-btn"
+        onClick={handleAuth}
+      >
         Submit
       </Button>
-      <br />
-      <br />
+      <ModeSwitch>
+        <Typography.Text>{signUp ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
+        <Typography.Link onClick={handleModeSwitch}>{signUp ? 'Log in' : 'Sign up'}</Typography.Link>
+      </ModeSwitch>
       {apiKey && <span>Your API key is: {apiKey}</span>}
     </Container>
   );
@@ -63,9 +84,25 @@ function Auth() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   height: 100%;
+  padding-top: 60px;
+
+  .title {
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+
+  .submit-btn {
+    margin-top: 16px;
+    margin-bottom: 24px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+`;
+
+const ModeSwitch = styled.div`
+  margin-bottom: 32px;
 `;
 
 export default Auth;

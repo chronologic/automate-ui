@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { BigNumber, Transaction } from 'ethers';
 import queryString from 'query-string';
 
-import { AssetType, IAsset, IDecodedTransaction, IError, PolkadotChainId } from '../models';
+import { AssetType, IAsset, IDecodedTransaction, IError, PolkadotChainId } from '../types';
 import { API_URL } from '../env';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';

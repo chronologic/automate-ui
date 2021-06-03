@@ -8,7 +8,7 @@ import {
   SentinelAPI,
   Status,
 } from '../../../api/SentinelAPI';
-import { AssetType, IDecodedTransaction, IError, PolkadotChainId } from '../../../models';
+import { AssetType, IDecodedTransaction, IError, PolkadotChainId } from '../../../types';
 import DecodedConditionalAsset from '../Asset/DecodedConditionalAsset';
 import DecodedTransaction from '../DecodedTransaction/DecodedTransaction';
 import SenderInformation from '../Sender/SenderInformation';

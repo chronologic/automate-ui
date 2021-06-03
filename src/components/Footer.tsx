@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { IThemeProps } from '../models';
+import { IThemeProps } from '../types';
 
 function Footer() {
   return (

@@ -1,4 +1,4 @@
-import { ITheme } from '../models';
+import { ITheme } from '../types';
 
 const theme: ITheme = {
   colors: {

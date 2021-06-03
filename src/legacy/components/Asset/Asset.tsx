@@ -1,7 +1,7 @@
 import { TextInput } from 'carbon-components-react';
 import * as React from 'react';
 
-import { IAsset } from '../../../models';
+import { IAsset } from '../../../types';
 
 interface IAssetProps extends IAsset {
   label: string;

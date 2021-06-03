@@ -5,7 +5,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import Countdown from 'react-countdown';
 
 import { IScheduleAccessKey, IScheduledTransaction, SentinelAPI, Status } from '../../../api/SentinelAPI';
-import { ISubmitParams } from '../../../models';
+import { ISubmitParams } from '../../../types';
 import ScheduledLink from './ScheduledLink';
 
 interface IInputElement extends HTMLElement {

@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
-import { ITheme } from './models';
+import { ITheme } from './types';
 
 interface IProps {
   theme: ITheme;
@@ -38,6 +38,16 @@ const GlobalStyle = styled.div<IProps>`
     }
   }
 
+  a,
+  a.ant-typography {
+    color: ${(props) => props.theme.colors.accent};
+
+    &:hover,
+    &:focus {
+      color: ${(props) => props.theme.colors.accent};
+    }
+  }
+
   .ant-layout-header,
   .ant-layout-footer {
     height: auto;
@@ -51,6 +61,12 @@ const GlobalStyle = styled.div<IProps>`
     color: ${(props) => props.theme.colors.text};
   }
 
+  .ant-btn.ant-btn-primary:not([disabled]) {
+    background-color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
+    color: ${(props) => props.theme.colors.textAccent};
+  }
+
   .ant-btn-ghost:hover {
     color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
@@ -59,6 +75,14 @@ const GlobalStyle = styled.div<IProps>`
   .ant-btn-ghost.primary {
     color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-input:hover {
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-input:focus {
+    border-color: ${(props) => props.theme.colors.accent};
+    box-shadow: none;
   }
 `;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput } from 'carbon-components-react';
 
-import { IDecodedTransaction } from '../../../models';
+import { IDecodedTransaction } from '../../../types';
 import { bigNumberToString } from '../../../utils';
 
 import DecodedAsset from '../Asset/DecodedAsset';

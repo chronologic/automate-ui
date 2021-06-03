@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BigNumber } from 'ethers';
-import { IDecodedTransaction, IError, PolkadotChainId } from '../models';
+import { IDecodedTransaction, IError, PolkadotChainId } from '../types';
 
 import { API_URL } from '../env';
 

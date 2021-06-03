@@ -62,3 +62,8 @@ export interface ITheme {
 export interface IThemeProps {
   theme: ITheme;
 }
+
+export interface IUser {
+  email: string;
+  apiKey: string;
+}
