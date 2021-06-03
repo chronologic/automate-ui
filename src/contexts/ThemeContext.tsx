@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext } from 'react';
 import { parseUrl } from 'query-string';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
 import { ITheme } from '../models';
 import themes from '../themes';
@@ -15,19 +16,21 @@ interface IProps {
   children: React.ReactNode;
 }
 
+const theme = getTheme();
+
 export const ThemeContext = createContext<IThemeContext>({
-  theme: {} as any,
+  theme,
 });
 
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
-  const [theme, setTheme] = useState(themes[defaultTheme]);
+  // const [theme, setTheme] = useState(themes[defaultTheme]);
 
-  useEffect(() => {
-    const currentTheme = getTheme();
-    setTheme(currentTheme);
-  }, []);
+  // useEffect(() => {
+  //   const currentTheme = getTheme();
+  //   setTheme(currentTheme);
+  // }, []);
 
-  return <ThemeContext.Provider value={{ theme }}>{children}</ThemeContext.Provider>;
+  return <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>;
 };
 
 function getTheme(): ITheme {

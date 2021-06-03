@@ -59,3 +59,6 @@ export interface ITheme {
     accent: string;
   };
 }
+export interface IThemeProps {
+  theme: ITheme;
+}

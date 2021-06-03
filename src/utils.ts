@@ -54,3 +54,8 @@ export function isTruthy(value: string): boolean {
   // eslint-disable-next-line eqeqeq
   return value === 'true' || value == '1';
 }
+
+export function shortAddress(address?: string | null | undefined): string {
+  const addr = (address || '').toUpperCase();
+  return `0x${addr.substr(2, 4)}...${addr.substr(-4)}`;
+}

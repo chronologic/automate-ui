@@ -1,17 +1,15 @@
 import 'antd/dist/antd.css';
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Spin } from 'antd';
+import { Spin, Layout } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { MAINTENANCE_MODE } from './env';
-import Auth from './components/Auth/Auth';
-import Scheduleds from './components/Scheduleds';
-import Maintenance from './components/Maintenance';
+import { Auth, Scheduleds, Maintenance, Header, Footer } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
-import { useTheme } from './hooks';
+import { useEagerConnect, useTheme } from './hooks';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
@@ -28,6 +26,7 @@ class Wrapper extends React.Component {
 
 function App() {
   const { theme } = useTheme();
+  useEagerConnect();
 
   if (MAINTENANCE_MODE) {
     return <Maintenance />;
@@ -46,10 +45,14 @@ function App() {
           <Route path="/legacy" render={() => <LegacyComponent />} />
           <Route path="*">
             <GlobalStyle theme={theme} />
-            <Switch>
-              <Route exact={true} path="/" component={Auth} />
-              <Route path="/scheduleds" component={Scheduleds} />
-            </Switch>
+            <Header />
+            <Layout.Content>
+              <Switch>
+                <Route exact={true} path="/" component={Auth} />
+                <Route path="/scheduleds" component={Scheduleds} />
+              </Switch>
+            </Layout.Content>
+            <Footer />
           </Route>
         </Switch>
       </Suspense>

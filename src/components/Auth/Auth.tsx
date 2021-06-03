@@ -1,5 +1,6 @@
+import { useCallback, useState } from 'react';
 import { Button, Input } from 'antd';
-import React, { useCallback, useState } from 'react';
+import styled from 'styled-components';
 
 import { UserAPI } from '../../api/UserAPI';
 
@@ -30,16 +31,7 @@ function Auth() {
   }, []);
 
   return (
-    <div
-      style={{
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        justifyContent: 'center',
-        width: '100%'
-      }}
-    >
+    <Container>
       <Input
         type="text"
         style={{ width: '320px' }}
@@ -64,8 +56,16 @@ function Auth() {
       <br />
       <br />
       {apiKey && <span>Your API key is: {apiKey}</span>}
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+`;
 
 export default Auth;
