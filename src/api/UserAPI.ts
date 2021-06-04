@@ -8,7 +8,7 @@ export class UserAPI {
       return response.data.apiKey;
     } catch (e) {
       notification.error({
-        message: e.response?.data?.error || e.message || 'Error',
+        message: e.response?.data?.error?.message || e.message || 'Error',
       });
       throw e;
     }
