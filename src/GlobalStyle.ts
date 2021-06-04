@@ -14,7 +14,8 @@ const styled = {
 const GlobalStyle = styled.div<IProps>`
   body,
   html {
-    color: ${(props) => props.theme.colors.body};
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
     height: 100%;
     font-family: -apple-system, 'PingFangSC', BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
       'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -81,6 +82,26 @@ const GlobalStyle = styled.div<IProps>`
     border-color: ${(props) => props.theme.colors.accent};
   }
   .ant-input:focus {
+    border-color: ${(props) => props.theme.colors.accent};
+    box-shadow: none;
+  }
+
+  .ant-dropdown-menu {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+    a {
+      color: ${(props) => props.theme.colors.text};
+    }
+  }
+
+  .ant-slider-track,
+  .ant-slider:hover .ant-slider-track {
+    background-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-slider-dot,
+  .ant-slider-handle,
+  .ant-slider-handle:focus,
+  .ant-slider:hover .ant-slider-handle.ant-slider-handle {
     border-color: ${(props) => props.theme.colors.accent};
     box-shadow: none;
   }

@@ -18,7 +18,7 @@ function Footer() {
             <Link to="/legacy">Use legacy app</Link>
           </Column>
           <Column>
-            <a href="#">Transaction list</a>
+            <Link to="/transactions">Transaction list</Link>
             <a href="https://chronologic.zendesk.com/hc/en-us" target="_blank" rel="noopener noreferrer">
               Support
             </a>

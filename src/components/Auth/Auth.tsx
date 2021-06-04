@@ -1,32 +1,24 @@
 import { useCallback, useState } from 'react';
+import { Redirect } from 'react-router-dom';
 import { Button, Input, Typography, Form } from 'antd';
 import styled from 'styled-components';
 
-import { UserAPI } from '../../api/UserAPI';
 import PageTitle from '../PageTitle';
+import { useAuth } from '../../hooks';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
   /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/i;
 
 function Auth() {
-  const [signUp, setSignUp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
+  const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
+  const [signup, setSignup] = useState(false);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleAuth = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      const apiKeyRes = await UserAPI.auth(login, password);
-
-      setApiKey(apiKeyRes);
-    } finally {
-      setLoading(false);
-    }
-  }, [login, password]);
+  const handleAuth = useCallback(() => {
+    onAuthenticate(login, password, signup);
+  }, [login, onAuthenticate, password, signup]);
 
   const handleLoginChange = useCallback((e: any) => {
     setLogin(e.target.value);
@@ -37,15 +29,25 @@ function Auth() {
   }, []);
 
   const handleModeSwitch = useCallback(() => {
-    setSignUp(!signUp);
-  }, [signUp]);
+    setSignup(!signup);
+  }, [signup]);
+
+  if (isAuthenticated) {
+    return (
+      <Redirect
+        to={{
+          pathname: '/connection',
+        }}
+      />
+    );
+  }
 
   return (
     <Container>
       <Form layout="vertical">
         <PageTitle />
         <Typography.Title level={3} className="title">
-          {signUp ? 'Sign up for Automate' : 'Log in to Automate'}
+          {signup ? 'Sign up for Automate' : 'Log in to Automate'}
         </Typography.Title>
         <Form.Item
           name="email"
@@ -59,7 +61,7 @@ function Auth() {
             size="large"
             style={{ width: '240px' }}
             placeholder="Email"
-            disabled={loading}
+            disabled={authenticating}
             value={login}
             onChange={handleLoginChange}
           />
@@ -76,7 +78,7 @@ function Auth() {
             size="large"
             style={{ width: '240px' }}
             placeholder="Password"
-            disabled={loading}
+            disabled={authenticating}
             value={password}
             required={true}
             onChange={handlePasswordChange}
@@ -87,7 +89,7 @@ function Auth() {
           type="primary"
           size="large"
           htmlType="submit"
-          loading={loading}
+          loading={authenticating}
           disabled={!login || !password}
           className="submit-btn"
           onClick={handleAuth}
@@ -95,10 +97,9 @@ function Auth() {
           Submit
         </Button>
         <ModeSwitch>
-          <Typography.Text>{signUp ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
-          <Typography.Link onClick={handleModeSwitch}>{signUp ? 'Log in' : 'Sign up'}</Typography.Link>
+          <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
+          <Typography.Link onClick={handleModeSwitch}>{signup ? 'Log in' : 'Sign up'}</Typography.Link>
         </ModeSwitch>
-        {apiKey && <span>Your API key is: {apiKey}</span>}
       </Form>
     </Container>
   );
@@ -123,7 +124,6 @@ const Container = styled.div`
   }
 
   .submit-btn {
-    margin-top: 16px;
     margin-bottom: 24px;
     padding-left: 40px;
     padding-right: 40px;

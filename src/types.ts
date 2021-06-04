@@ -64,6 +64,10 @@ export interface IThemeProps {
 }
 
 export interface IUser {
-  email: string;
+  login: string;
   apiKey: string;
+}
+
+export interface IUserWithExpiration extends IUser {
+  expirationDate?: string;
 }

@@ -6,7 +6,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { MAINTENANCE_MODE } from './env';
-import { Auth, Scheduleds, Maintenance, Header, Footer } from './components';
+import { Auth, Scheduleds, Maintenance, Header, Footer, PrivateRoute, Config } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
 import { useEagerConnect, useTheme } from './hooks';
@@ -49,6 +49,9 @@ function App() {
             <Layout.Content>
               <Switch>
                 <Route exact={true} path="/" component={Auth} />
+                <PrivateRoute path="/connection">
+                  <Config />
+                </PrivateRoute>
                 <Route path="/scheduleds" component={Scheduleds} />
               </Switch>
             </Layout.Content>
