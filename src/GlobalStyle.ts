@@ -106,7 +106,7 @@ const GlobalStyle = styled.div<IProps>`
     box-shadow: none;
   }
 
-  .ant-checkbox-checked .ant-checkbox-inner {
+  .ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
     background-color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
   }

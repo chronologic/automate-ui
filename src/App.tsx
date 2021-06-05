@@ -1,7 +1,7 @@
 import 'antd/dist/antd.css';
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Spin, Layout } from 'antd';
+import { BrowserRouter as Router, Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Spin, Layout, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
@@ -57,6 +57,7 @@ function App() {
               </PrivateRoute>
               <Route path="/scheduleds" component={Scheduleds} />
               <Route exact={true} path="/" component={Auth} />
+              <Route path="*" component={RouteFallback} />
             </Switch>
           </Layout.Content>
           <Footer />
@@ -67,12 +68,38 @@ function App() {
   );
 }
 
+function RouteFallback() {
+  const history = useHistory();
+  const location = useLocation();
+
+  if (location.pathname.match(/\/view\/[a-z0-9]+/i)) {
+    history.replace(`/legacy${location.pathname}`);
+  }
+
+  return (
+    <NotFound>
+      <Typography.Title className="message">Not found</Typography.Title>
+    </NotFound>
+  );
+}
+
 const LoaderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
+`;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  .message {
+    font-weight: 300;
+  }
 `;
 
 export default Wrapper;

@@ -15,7 +15,9 @@ function Footer() {
             <a href="https://app.chronologic.network" target="_blank" rel="noopener noreferrer">
               <p>Chronos &amp; other dApps</p>
             </a>
-            <Link to="/legacy">Use legacy app</Link>
+            <Link to="/legacy" target="_blank" rel="noopener noreferrer">
+              Use legacy app
+            </Link>
           </Column>
           <Column>
             <Link to="/transactions">Transaction list</Link>
