@@ -24,7 +24,7 @@ function Connected({ wallet }: IProps) {
     </Menu>
   );
 
-  return (
+  return wallet?.account ? (
     <Dropdown trigger={['click']} overlay={menu}>
       <Container>
         <Jazzicon diameter={30} seed={jsNumberForAddress(wallet.account)} />
@@ -36,7 +36,7 @@ function Connected({ wallet }: IProps) {
         </Content>
       </Container>
     </Dropdown>
-  );
+  ) : null;
 }
 
 const Container = styled.div`

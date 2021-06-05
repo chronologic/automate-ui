@@ -13,7 +13,7 @@ function HeaderMain() {
     const menu = (
       <Menu>
         <Menu.Item key="0">
-          <Link to="/connection">Connection</Link>
+          <Link to="/connect">Connection</Link>
         </Menu.Item>
         <Menu.Item key="1">
           <Link to="/transactions">Transactions</Link>

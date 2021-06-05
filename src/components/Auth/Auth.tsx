@@ -36,7 +36,7 @@ function Auth() {
     return (
       <Redirect
         to={{
-          pathname: '/connection',
+          pathname: '/connect',
         }}
       />
     );

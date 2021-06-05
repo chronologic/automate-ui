@@ -49,7 +49,7 @@ function App() {
             <Layout.Content>
               <Switch>
                 <Route exact={true} path="/" component={Auth} />
-                <PrivateRoute path="/connection">
+                <PrivateRoute path="/connect">
                   <Config />
                 </PrivateRoute>
                 <Route path="/scheduleds" component={Scheduleds} />

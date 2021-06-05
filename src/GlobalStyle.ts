@@ -20,6 +20,7 @@ const GlobalStyle = styled.div<IProps>`
     font-family: -apple-system, 'PingFangSC', BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
       'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-size: 10px;
+    font-weight: 300;
     box-sizing: border-box;
   }
 
@@ -104,6 +105,16 @@ const GlobalStyle = styled.div<IProps>`
   .ant-slider:hover .ant-slider-handle.ant-slider-handle {
     border-color: ${(props) => props.theme.colors.accent};
     box-shadow: none;
+  }
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-checkbox-wrapper:hover .ant-checkbox-inner,
+  .ant-checkbox:hover .ant-checkbox-inner,
+  .ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color: ${(props) => props.theme.colors.accent};
   }
 `;
 
