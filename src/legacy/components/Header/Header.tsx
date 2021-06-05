@@ -43,6 +43,8 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
   public async updateStats() {
     const { completed, pending } = await StatsAPI.getStats();
 
+    console.log(completed, pending);
+
     this.setState({
       completed,
       pending,
@@ -54,14 +56,14 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
     const { completed, pending, statsLoaded } = this.state;
     return (
       <div className="bx--row carbon--center header">
-        {statsLoaded && (
+        {/* {statsLoaded && (
           <div className="header-stats-container">
             Transferred{' '}
             <CountUp prefix="$" separator="," end={completed.value} preserveValue={true} className="header-countup" />{' '}
             in <CountUp end={completed.txCount} preserveValue={true} className="header-countup" /> transactions across{' '}
             <CountUp end={completed.assetCount} preserveValue={true} className="header-countup" /> assets!
           </div>
-        )}
+        )} */}
         <Link
           to="/"
           style={{
@@ -73,14 +75,14 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
         >
           <img alt="logo" src={logo} />
         </Link>
-        {statsLoaded && (
+        {/* {statsLoaded && (
           <div className="header-stats-container">
             Pending{' '}
             <CountUp prefix="$" separator="," end={pending.value} preserveValue={true} className="header-countup" /> of
             transfers in <CountUp end={pending.txCount} preserveValue={true} className="header-countup" /> transactions
             across <CountUp end={pending.assetCount} preserveValue={true} className="header-countup" /> assets!
           </div>
-        )}
+        )} */}
       </div>
     );
   }
