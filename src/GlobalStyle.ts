@@ -29,7 +29,6 @@ const GlobalStyle = styled.div<IProps>`
   }
 
   #root {
-    height: 100%;
     min-height: 100%;
     display: flex;
     flex-direction: column;
@@ -113,7 +112,8 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-checkbox-wrapper:hover .ant-checkbox-inner,
   .ant-checkbox:hover .ant-checkbox-inner,
-  .ant-checkbox-input:focus + .ant-checkbox-inner {
+  .ant-checkbox-input:focus + .ant-checkbox-inner,
+  .ant-checkbox-checked:after {
     border-color: ${(props) => props.theme.colors.accent};
   }
 `;

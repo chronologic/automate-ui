@@ -6,7 +6,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { MAINTENANCE_MODE } from './env';
-import { Auth, Scheduleds, Maintenance, Header, Footer, PrivateRoute, Config } from './components';
+import { Auth, Scheduleds, Maintenance, Header, Footer, PrivateRoute, Config, Transactions } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
 import { useEagerConnect, useTheme } from './hooks';
@@ -18,7 +18,9 @@ class Wrapper extends React.Component {
   public render() {
     return (
       <Providers>
-        <App />
+        <Router>
+          <App />
+        </Router>
       </Providers>
     );
   }
@@ -33,34 +35,35 @@ function App() {
   }
 
   return (
-    <Router>
-      <Suspense
-        fallback={
-          <LoaderWrapper>
-            <Spin indicator={antIcon} />
-          </LoaderWrapper>
-        }
-      >
-        <Switch>
-          <Route path="/legacy" render={() => <LegacyComponent />} />
-          <Route path="*">
-            <GlobalStyle theme={theme} />
-            <Header />
-            <Layout.Content>
-              <Switch>
-                <Route exact={true} path="/" component={Auth} />
-                <PrivateRoute path="/connect">
-                  <Config />
-                </PrivateRoute>
-                <Route path="/scheduleds" component={Scheduleds} />
-              </Switch>
-            </Layout.Content>
-            <Footer />
-          </Route>
-        </Switch>
-      </Suspense>
+    <Suspense
+      fallback={
+        <LoaderWrapper>
+          <Spin indicator={antIcon} />
+        </LoaderWrapper>
+      }
+    >
+      <Switch>
+        <Route path="/legacy" render={() => <LegacyComponent />} />
+        <Route path="*">
+          <GlobalStyle theme={theme} />
+          <Header />
+          <Layout.Content>
+            <Switch>
+              <PrivateRoute path="/transactions">
+                <Transactions />
+              </PrivateRoute>
+              <PrivateRoute path="/connect">
+                <Config />
+              </PrivateRoute>
+              <Route path="/scheduleds" component={Scheduleds} />
+              <Route exact={true} path="/" component={Auth} />
+            </Switch>
+          </Layout.Content>
+          <Footer />
+        </Route>
+      </Switch>
       {/* <Header updateCounter={updateCounter} /> */}
-    </Router>
+    </Suspense>
   );
 }
 

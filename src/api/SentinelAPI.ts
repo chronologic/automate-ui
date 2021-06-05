@@ -3,23 +3,10 @@ import { ethers } from 'ethers';
 import { BigNumber, Transaction } from 'ethers';
 import queryString from 'query-string';
 
-import { AssetType, IAsset, IDecodedTransaction, IError, PolkadotChainId } from '../types';
+import { AssetType, IAsset, IDecodedTransaction, IError, IScheduledForUser, PolkadotChainId, Status } from '../types';
 import { API_URL } from '../env';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
-
-export enum Status {
-  Pending,
-  Cancelled,
-  Completed,
-  Error,
-  StaleNonce,
-  PendingConfirmations,
-  PendingPayment,
-  PendingPaymentConfirmations,
-  PaymentExpired,
-  Draft,
-}
 
 export interface IScheduleRequest {
   assetType: AssetType;
@@ -70,40 +57,6 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
   paymentRefundAddress: string;
   paymentTx: string;
   chainId?: number;
-}
-
-export interface IScheduledForUser {
-  id: string;
-  assetType: AssetType;
-  signedTransaction: string;
-  conditionAsset: string;
-  conditionAssetName: string;
-  conditionAssetDecimals: number;
-  conditionAmount: string;
-  status: Status;
-  statusName: string;
-  transactionHash: string;
-  error: string;
-  from: string;
-  to: string;
-  nonce: number;
-  chainId: number;
-  conditionBlock: number;
-  timeCondition: number;
-  timeConditionTZ: string;
-  gasPrice: string;
-  gasPriceAware: boolean;
-  executionAttempts: number;
-  lastExecutionAttempt: string;
-  assetName: string;
-  assetDecimals: number;
-  assetAmount: number;
-  assetValue: number;
-  assetContract: string;
-  createdAt: string;
-  executedAt: string;
-  txKey: string;
-  notes: string;
 }
 
 export interface IScheduleParams {

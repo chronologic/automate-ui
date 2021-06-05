@@ -71,3 +71,50 @@ export interface IUser {
 export interface IUserWithExpiration extends IUser {
   expirationDate?: string;
 }
+
+export enum Status {
+  Pending,
+  Cancelled,
+  Completed,
+  Error,
+  StaleNonce,
+  PendingConfirmations,
+  PendingPayment,
+  PendingPaymentConfirmations,
+  PaymentExpired,
+  Draft,
+}
+
+export interface IScheduledForUser {
+  id: string;
+  assetType: AssetType;
+  signedTransaction: string;
+  conditionAsset: string;
+  conditionAssetName: string;
+  conditionAssetDecimals: number;
+  conditionAmount: string;
+  status: Status;
+  statusName: string;
+  transactionHash: string;
+  error: string;
+  from: string;
+  to: string;
+  nonce: number;
+  chainId: number;
+  conditionBlock: number;
+  timeCondition: number;
+  timeConditionTZ: string;
+  gasPrice: string;
+  gasPriceAware: boolean;
+  executionAttempts: number;
+  lastExecutionAttempt: string;
+  assetName: string;
+  assetDecimals: number;
+  assetAmount: number;
+  assetValue: number;
+  assetContract: string;
+  createdAt: string;
+  executedAt: string;
+  txKey: string;
+  notes: string;
+}

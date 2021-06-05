@@ -1,8 +1,8 @@
 import { FormItem, Link, TextInput } from 'carbon-components-react';
 import * as React from 'react';
 
-import { IScheduledTransaction, Status } from '../../../api/SentinelAPI';
-import { AssetType, IDecodedTransaction } from '../../../types';
+import { IScheduledTransaction } from '../../../api/SentinelAPI';
+import { AssetType, IDecodedTransaction, Status } from '../../../types';
 import Skeleton from '../Skeleton/Skeleton';
 
 interface ITransactionStatusProps extends IScheduledTransaction, IDecodedTransaction {}

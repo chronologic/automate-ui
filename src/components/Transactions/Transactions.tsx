@@ -19,13 +19,15 @@ import { bigNumberToNumber, formatLongId, normalizeBigNumber, numberToBn } from 
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
+import { useTransactions } from '../../hooks/useTransactions';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
 
 const { TextArea } = Input;
 
-function Scheduleds() {
+function Transactions() {
+  const { getList } = useTransactions();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
   const [editingItem, setEditingItem] = useState<IScheduledForUser>({} as any);
@@ -99,16 +101,28 @@ function Scheduleds() {
     [items]
   );
 
+  // const refresh = useCallback(async () => {
+  //   console.log('REFresh');
+  //   try {
+  //     setLoading(true);
+  //     const res = await getList();
+  //     setItems(res);
+  //     updateAssetOptions(res);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [getList, updateAssetOptions]);
   const refresh = useCallback(async () => {
+    console.log('REFresh');
     try {
       setLoading(true);
-      const res = await SentinelAPI.getList(apiKey);
+      const res = await getList();
       setItems(res);
-      updateAssetOptions(res);
+      // updateAssetOptions(res);
     } finally {
       setLoading(false);
     }
-  }, [updateAssetOptions]);
+  }, [getList]);
 
   const handleStopEditingItem = useCallback(() => {
     setEditingItem({} as any);
@@ -683,4 +697,4 @@ function Scheduleds() {
   );
 }
 
-export default Scheduleds;
+export default Transactions;

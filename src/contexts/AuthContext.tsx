@@ -32,6 +32,7 @@ export const AuthContext = createContext<IAuthContext>({
 });
 
 export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
+  const [initialized, setInitialized] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<IUser>({
@@ -89,6 +90,8 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
       onLogout();
     }
 
+    setInitialized(true);
+
     return () => {
       clearTimeout(logoutTimeout);
     };
@@ -96,7 +99,7 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
 
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, authenticating, onAuthenticate, onLogout }}>
-      {children}
+      {initialized && children}
     </AuthContext.Provider>
   );
 };

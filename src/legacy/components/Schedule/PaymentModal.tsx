@@ -4,8 +4,8 @@ import { Button, Checkbox, InlineLoading, Modal, TextInput } from 'carbon-compon
 import { CopyOutlined } from '@ant-design/icons';
 import Countdown from 'react-countdown';
 
-import { IScheduleAccessKey, IScheduledTransaction, SentinelAPI, Status } from '../../../api/SentinelAPI';
-import { ISubmitParams } from '../../../types';
+import { IScheduleAccessKey, IScheduledTransaction, SentinelAPI } from '../../../api/SentinelAPI';
+import { ISubmitParams, Status } from '../../../types';
 import ScheduledLink from './ScheduledLink';
 
 interface IInputElement extends HTMLElement {
