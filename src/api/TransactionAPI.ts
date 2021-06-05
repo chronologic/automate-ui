@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '../env';
-import { IScheduledForUser } from '../types';
+import { IScheduledForUser, Status } from '../types';
 import { withErrorHandler } from './withErrorHandler';
 
 const api = axios.create({
@@ -15,6 +15,12 @@ export const TransactionAPI = {
         Authorization: `Bearer ${apiKey}`,
       },
     });
-    return response.data.items;
+    const items = response.data.items as IScheduledForUser[];
+
+    return items.map((i) => {
+      i.statusName = Status[i.status];
+
+      return i;
+    });
   }),
 };

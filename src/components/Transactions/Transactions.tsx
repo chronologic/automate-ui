@@ -7,7 +7,19 @@ import {
   FormOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
-import { Button, Checkbox, DatePicker, Input, InputNumber, Layout, Modal, Select, Table, TimePicker } from 'antd';
+import {
+  Button,
+  Checkbox,
+  DatePicker,
+  Input,
+  InputNumber,
+  Layout,
+  Modal,
+  Select,
+  Table,
+  TimePicker,
+  Typography,
+} from 'antd';
 import { BigNumber } from 'ethers';
 import uniqBy from 'lodash/uniqBy';
 import moment from 'moment-timezone';
@@ -20,11 +32,24 @@ import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 import { useTransactions } from '../../hooks/useTransactions';
+import styled from 'styled-components';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
 
 const { TextArea } = Input;
+
+const rowSelection = {
+  onChange: (selectedRowKeys: any, selectedRows: any) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  onSelect: (record: any, selected: any, selectedRows: any) => {
+    console.log(record, selected, selectedRows);
+  },
+  onSelectAll: (selected: any, selectedRows: any, changeRows: any) => {
+    console.log(selected, selectedRows, changeRows);
+  },
+};
 
 function Transactions() {
   const { getList } = useTransactions();
@@ -310,16 +335,16 @@ function Transactions() {
 
   const columns = useMemo(() => {
     return [
-      {
-        dataIndex: 'id',
-        render: (id: string, record: IScheduledForUser) => (
-          <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
-            {formatLongId(id)}
-          </a>
-        ),
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
-        title: 'ID',
-      },
+      // {
+      //   dataIndex: 'id',
+      //   render: (id: string, record: IScheduledForUser) => (
+      //     <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
+      //       {formatLongId(id)}
+      //     </a>
+      //   ),
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
+      //   title: 'ID',
+      // },
       {
         dataIndex: 'statusName',
         render: (status: string, record: IScheduledForUser) => {
@@ -327,46 +352,46 @@ function Transactions() {
           switch (status) {
             case 'Draft': {
               res = (
-                <span style={{ color: 'blue' }}>
-                  <FormOutlined /> {status}
+                <span style={{ color: 'blue' }} title={status}>
+                  <FormOutlined />
                 </span>
               );
               break;
             }
             case 'Pending': {
               res = (
-                <span style={{ color: 'orange' }}>
-                  <ClockCircleOutlined /> {status}
+                <span style={{ color: 'orange' }} title={status}>
+                  <ClockCircleOutlined />
                 </span>
               );
               break;
             }
             case 'Completed': {
               res = (
-                <span style={{ color: 'green' }}>
-                  <CheckCircleOutlined /> {status}
+                <span style={{ color: 'green' }} title={status}>
+                  <CheckCircleOutlined />
                 </span>
               );
               break;
             }
             case 'Cancelled': {
               res = (
-                <span style={{ color: 'gray' }}>
-                  <DeleteOutlined /> {status}
+                <span style={{ color: 'gray' }} title={status}>
+                  <DeleteOutlined />
                 </span>
               );
               break;
             }
             case 'Error': {
               res = (
-                <span style={{ color: 'red' }}>
-                  <CloseSquareOutlined /> {status}
+                <span style={{ color: 'red' }} title={status}>
+                  <CloseSquareOutlined />
                 </span>
               );
               break;
             }
             default: {
-              res = <span>{status}</span>;
+              res = <span title={status}>{status}</span>;
               break;
             }
           }
@@ -379,6 +404,7 @@ function Transactions() {
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
         title: 'Status',
+        align: 'center' as any,
       },
       {
         dataIndex: 'from',
@@ -389,6 +415,7 @@ function Transactions() {
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
+        align: 'center' as any,
       },
       {
         dataIndex: 'to',
@@ -399,6 +426,7 @@ function Transactions() {
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
+        align: 'center' as any,
       },
       {
         dataIndex: 'assetName',
@@ -422,24 +450,27 @@ function Transactions() {
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset',
+        align: 'center' as any,
       },
       {
         dataIndex: 'assetAmount',
         render: (assetAmount: string) => assetAmount,
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetAmount || 0) - (b.assetAmount || 0),
         title: 'Amount',
+        align: 'right' as any,
       },
-      {
-        dataIndex: 'chainId',
-        render: (chainId: string) => chainId,
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.chainId - b.chainId,
-        title: 'Chain ID',
-      },
+      // {
+      //   dataIndex: 'chainId',
+      //   render: (chainId: string) => chainId,
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.chainId - b.chainId,
+      //   title: 'Chain ID',
+      // },
       {
         dataIndex: 'nonce',
         render: (nonce: string) => nonce,
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.nonce - b.nonce,
         title: 'Nonce',
+        align: 'right' as any,
       },
       {
         dataIndex: 'gasPrice',
@@ -447,169 +478,178 @@ function Transactions() {
         sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
           BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
         title: 'Gas Price',
+        align: 'right' as any,
+      },
+      // {
+      //   dataIndex: 'conditionAsset',
+      //   render: (conditionAsset: string, record: IScheduledForUser) => {
+      //     const isEditing = record.id === editingItem.id;
+
+      //     if (isEditing) {
+      //       const handler = (value: string) => handleConditionAssetChange(value);
+      //       return (
+      //         <div>
+      //           <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
+      //             {assetOptions.map((asset) => (
+      //               <Select.Option key={asset.address} value={asset.address}>
+      //                 {asset.name}
+      //               </Select.Option>
+      //             ))}
+      //           </Select>
+      //           <br />
+      //           <Button
+      //             type="ghost"
+      //             style={{ border: '0px', background: 'transparent' }}
+      //             onClick={handleOpenAddAssetModal}
+      //           >
+      //             <PlusOutlined /> Add
+      //           </Button>
+      //         </div>
+      //       );
+      //     }
+
+      //     const assetName = (record.conditionAssetName || '').toUpperCase();
+
+      //     if (conditionAsset) {
+      //       return (
+      //         <a
+      //           href={`https://etherscan.io/address/${conditionAsset}`}
+      //           title={conditionAsset}
+      //           target="_blank"
+      //           rel="noopener noreferrer"
+      //         >
+      //           {assetName || conditionAsset}
+      //         </a>
+      //       );
+      //     }
+
+      //     return assetName || '-';
+      //   },
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+      //     (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
+      //   title: 'Condition Asset',
+      // },
+      // {
+      //   dataIndex: 'conditionAmount',
+      //   render: (amount: string, record: IScheduledForUser) => {
+      //     const isEditing = record.id === editingItem.id;
+
+      //     const num = amount ? bigNumberToNumber(amount as any, record.conditionAssetDecimals) : '';
+
+      //     if (isEditing) {
+      //       const handler = (val: any) => handleConditionAmountChange(val);
+      //       return <InputNumber min={0} defaultValue={num} onChange={handler} />;
+      //     }
+
+      //     return num;
+      //   },
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
+      //     const aBN = BigNumber.from(a.conditionAmount || '0');
+      //     const bBN = BigNumber.from(b.conditionAmount || '0');
+      //     if (aBN.gt(bBN)) {
+      //       return 1;
+      //     }
+      //     if (aBN.lt(bBN)) {
+      //       return -1;
+      //     }
+      //     return 0;
+      //   },
+      //   title: 'Condition Amount',
+      // },
+      // {
+      //   dataIndex: 'timeCondition',
+      //   render: (timeCondition: string, record: IScheduledForUser) => {
+      //     const isEditing = record.id === editingItem.id;
+
+      //     const hasTimeCondition = timeCondition && timeCondition !== '0';
+      //     const timeConditionLocal = hasTimeCondition ? moment(timeCondition) : '';
+      //     const timeConditionForTz = hasTimeCondition
+      //       ? (timeConditionLocal as any).clone().tz(record.timeConditionTZ)
+      //       : '';
+      //     const timeConditionTime = timeConditionForTz || moment().startOf('day');
+
+      //     if (isEditing) {
+      //       return (
+      //         <>
+      //           <DatePicker
+      //             format={'MMM D yyyy'}
+      //             defaultValue={timeConditionForTz as any}
+      //             onChange={handleTimeConditionDateChange}
+      //           />
+      //           <br />
+      //           <TimePicker
+      //             format={'hh:mm a'}
+      //             use12Hours={true}
+      //             defaultValue={timeConditionTime as any}
+      //             onChange={handleTimeConditionTimeChange}
+      //           />
+      //           <br />
+      //           <Select
+      //             showSearch={true}
+      //             defaultValue={record.timeConditionTZ || moment.tz.guess()}
+      //             style={{ minWidth: '120px' }}
+      //             onChange={handleTimeConditionTZChange}
+      //           >
+      //             {moment.tz.names().map((tz, index) => (
+      //               <Select.Option key={index} value={tz}>
+      //                 {tz}
+      //               </Select.Option>
+      //             ))}
+      //           </Select>
+      //         </>
+      //       );
+      //     }
+
+      //     // return moment(new Date()).format('d/M/yyyy hh:mm a');
+      //     if (hasTimeCondition) {
+      //       return (
+      //         <div>
+      //           {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {record.timeConditionTZ}
+      //           <br />
+      //           <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
+      //         </div>
+      //       );
+      //     }
+
+      //     return '-';
+      //   },
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
+      //   title: 'Time Condition',
+      // },
+      // {
+      //   dataIndex: 'gasPriceAware',
+      //   render: (aware: boolean, record: IScheduledForUser) => {
+      //     const isEditing = record.id === editingItem.id;
+
+      //     const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
+      //     return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
+      //   },
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+      //     (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
+      //   title: 'Gas Price Aware?',
+      // },
+      // {
+      //   dataIndex: 'notes',
+      //   render: (notes: string, record: IScheduledForUser) => {
+      //     const isEditing = record.id === editingItem.id;
+
+      //     if (isEditing) {
+      //       const cb = (e: any) => setEditedNotes(e.target.value);
+      //       return <TextArea defaultValue={notes} onChange={cb} />;
+      //     }
+
+      //     return notes;
+      //   },
+      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
+      //   title: 'Notes',
+      // },
+      {
+        title: 'Gas Paid',
+        align: 'right' as any,
       },
       {
-        dataIndex: 'conditionAsset',
-        render: (conditionAsset: string, record: IScheduledForUser) => {
-          const isEditing = record.id === editingItem.id;
-
-          if (isEditing) {
-            const handler = (value: string) => handleConditionAssetChange(value);
-            return (
-              <div>
-                <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
-                  {assetOptions.map((asset) => (
-                    <Select.Option key={asset.address} value={asset.address}>
-                      {asset.name}
-                    </Select.Option>
-                  ))}
-                </Select>
-                <br />
-                <Button
-                  type="ghost"
-                  style={{ border: '0px', background: 'transparent' }}
-                  onClick={handleOpenAddAssetModal}
-                >
-                  <PlusOutlined /> Add
-                </Button>
-              </div>
-            );
-          }
-
-          const assetName = (record.conditionAssetName || '').toUpperCase();
-
-          if (conditionAsset) {
-            return (
-              <a
-                href={`https://etherscan.io/address/${conditionAsset}`}
-                title={conditionAsset}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {assetName || conditionAsset}
-              </a>
-            );
-          }
-
-          return assetName || '-';
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
-        title: 'Condition Asset',
-      },
-      {
-        dataIndex: 'conditionAmount',
-        render: (amount: string, record: IScheduledForUser) => {
-          const isEditing = record.id === editingItem.id;
-
-          const num = amount ? bigNumberToNumber(amount as any, record.conditionAssetDecimals) : '';
-
-          if (isEditing) {
-            const handler = (val: any) => handleConditionAmountChange(val);
-            return <InputNumber min={0} defaultValue={num} onChange={handler} />;
-          }
-
-          return num;
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
-          const aBN = BigNumber.from(a.conditionAmount || '0');
-          const bBN = BigNumber.from(b.conditionAmount || '0');
-          if (aBN.gt(bBN)) {
-            return 1;
-          }
-          if (aBN.lt(bBN)) {
-            return -1;
-          }
-          return 0;
-        },
-        title: 'Condition Amount',
-      },
-      {
-        dataIndex: 'timeCondition',
-        render: (timeCondition: string, record: IScheduledForUser) => {
-          const isEditing = record.id === editingItem.id;
-
-          const hasTimeCondition = timeCondition && timeCondition !== '0';
-          const timeConditionLocal = hasTimeCondition ? moment(timeCondition) : '';
-          const timeConditionForTz = hasTimeCondition
-            ? (timeConditionLocal as any).clone().tz(record.timeConditionTZ)
-            : '';
-          const timeConditionTime = timeConditionForTz || moment().startOf('day');
-
-          if (isEditing) {
-            return (
-              <>
-                <DatePicker
-                  format={'MMM D yyyy'}
-                  defaultValue={timeConditionForTz as any}
-                  onChange={handleTimeConditionDateChange}
-                />
-                <br />
-                <TimePicker
-                  format={'hh:mm a'}
-                  use12Hours={true}
-                  defaultValue={timeConditionTime as any}
-                  onChange={handleTimeConditionTimeChange}
-                />
-                <br />
-                <Select
-                  showSearch={true}
-                  defaultValue={record.timeConditionTZ || moment.tz.guess()}
-                  style={{ minWidth: '120px' }}
-                  onChange={handleTimeConditionTZChange}
-                >
-                  {moment.tz.names().map((tz, index) => (
-                    <Select.Option key={index} value={tz}>
-                      {tz}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </>
-            );
-          }
-
-          // return moment(new Date()).format('d/M/yyyy hh:mm a');
-          if (hasTimeCondition) {
-            return (
-              <div>
-                {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {record.timeConditionTZ}
-                <br />
-                <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
-              </div>
-            );
-          }
-
-          return '-';
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
-        title: 'Time Condition',
-      },
-      {
-        dataIndex: 'gasPriceAware',
-        render: (aware: boolean, record: IScheduledForUser) => {
-          const isEditing = record.id === editingItem.id;
-
-          const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
-          return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
-        title: 'Gas Price Aware?',
-      },
-      {
-        dataIndex: 'notes',
-        render: (notes: string, record: IScheduledForUser) => {
-          const isEditing = record.id === editingItem.id;
-
-          if (isEditing) {
-            const cb = (e: any) => setEditedNotes(e.target.value);
-            return <TextArea defaultValue={notes} onChange={cb} />;
-          }
-
-          return notes;
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
-        title: 'Notes',
+        title: 'Gas Saved',
+        align: 'right' as any,
       },
       {
         dataIndex: 'id',
@@ -634,6 +674,7 @@ function Transactions() {
           );
         },
         title: '',
+        align: 'center' as any,
       },
     ];
   }, [
@@ -656,7 +697,7 @@ function Transactions() {
   }, [refresh]);
 
   return (
-    <Layout>
+    <Container>
       <Modal
         visible={addAssetModalVisible}
         onCancel={handleDismissAddAsset}
@@ -677,7 +718,13 @@ function Transactions() {
         {addAssetError && <div style={{ color: 'red' }}>{addAssetError}</div>}
         <br />
       </Modal>
+      <TableHeader>
+        <Typography.Title className="title" level={4}>
+          Transaction list
+        </Typography.Title>
+      </TableHeader>
       <Table
+        className="table"
         size="small"
         footer={
           (() => {
@@ -687,14 +734,42 @@ function Transactions() {
         rowKey="id"
         columns={columns}
         dataSource={items}
+        rowSelection={rowSelection}
         // pagination={paginationConfig}
         loading={loading}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // onChange={handleTableChange as any}
         pagination={{ defaultPageSize: 100, showSizeChanger: false }}
       />
-    </Layout>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  width: 100%;
+  max-width: 1220px;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+
+  .table {
+    width: 100%;
+  }
+`;
+
+const TableHeader = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+
+  .title {
+    font-weight: 300;
+  }
+`;
 
 export default Transactions;
