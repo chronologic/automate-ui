@@ -1,41 +1,101 @@
-import { useCallback, useState } from 'react';
-import { Button, Checkbox, Typography, Slider } from 'antd';
+import { useCallback, useMemo, useState } from 'react';
+import { Form, Modal, Button, Checkbox, Typography, Slider, notification } from 'antd';
 import styled from 'styled-components';
 
+import { CHAIN_ID } from '../../env';
+import { useAuth, useEthers } from '../../hooks';
+import { isConnectedToAutomate } from '../../utils';
+import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
-import { useAuth } from '../../hooks';
 
 function Config() {
+  const { ethereum } = useEthers();
+  const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(1);
+  const [submitted, setSubmitted] = useState(false);
 
-  const sliderMarks = {
-    0: {
-      value: '0',
-      label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
-    },
-    1: {
-      value: '1d',
-      label: (
-        <div className={confirmationTime === 1 ? 'selected' : ''}>
-          <span>24 hours</span>
-          <br />
-          <span className="note">(recommended)</span>
-        </div>
-      ),
-    },
-    2: {
-      value: '3d',
-      label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
-    },
-    3: {
-      value: '5d',
-      label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
-    },
-  };
+  const sliderMarks: {
+    [key: number]: {
+      value: string;
+      label: React.ReactNode;
+    };
+  } = useMemo(
+    () => ({
+      0: {
+        value: '0',
+        label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
+      },
+      1: {
+        value: '1d',
+        label: (
+          <div className={confirmationTime === 1 ? 'selected' : ''}>
+            <span>24 hours</span>
+            <br />
+            <span className="note">(recommended)</span>
+          </div>
+        ),
+      },
+      2: {
+        value: '3d',
+        label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
+      },
+      3: {
+        value: '5d',
+        label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
+      },
+    }),
+    [confirmationTime]
+  );
 
-  const handleConnect = useCallback(async () => {}, []);
+  const networkName = useMemo(() => {
+    let name = 'Automate';
+    if (gasPriceAware) {
+      name += ' Gas';
+    }
+    if (draft) {
+      name += ' Draft';
+    }
+    if (confirmationTime) {
+      name += ` ${sliderMarks[confirmationTime].value}`;
+    }
+
+    return name;
+  }, [confirmationTime, draft, gasPriceAware, sliderMarks]);
+
+  const rpcUrl = useMemo(() => {
+    let url = `https://rpc.chronologic.network?email=${user.login}&apiKey=${user.apiKey}`;
+    if (gasPriceAware) {
+      url += '&gasPriceAware=true';
+    }
+    if (draft) {
+      url += '&draft=true';
+    }
+    if (confirmationTime) {
+      url += `&confirmationTime=${sliderMarks[confirmationTime].value}`;
+    }
+
+    return url;
+  }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
+
+  const handleConnect = useCallback(async () => {
+    setSubmitted(true);
+  }, []);
+
+  const handleCancel = useCallback(async () => {
+    setSubmitted(false);
+  }, []);
+
+  const handleConfirmConfigured = useCallback(async () => {
+    const isConnected = await isConnectedToAutomate(ethereum);
+    if (isConnected) {
+      notification.success({ message: `You're connected to Automate!` });
+      setSubmitted(false);
+    } else {
+      notification.error({ message: `You're not connected to Automate. Check your configuration.` });
+    }
+  }, [ethereum]);
 
   return (
     <Container>
@@ -45,7 +105,7 @@ function Config() {
       </Typography.Title>
       <Checkboxes>
         <CheckboxSection>
-          <Checkbox checked={gasPriceAware} onChange={(e) => setGasPriceAware(e.target.checked)}>
+          <Checkbox checked={gasPriceAware} disabled={submitted} onChange={(e) => setGasPriceAware(e.target.checked)}>
             <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
           </Checkbox>
           <p>
@@ -54,7 +114,7 @@ function Config() {
           </p>
         </CheckboxSection>
         <CheckboxSection>
-          <Checkbox checked={draft} onChange={(e) => setDraft(e.target.checked)}>
+          <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
             <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
           </Checkbox>
           <p>
@@ -77,6 +137,7 @@ function Config() {
             value={confirmationTime}
             min={0}
             max={3}
+            disabled={submitted}
             tooltipVisible={false}
             onChange={setConfirmationTime}
           />
@@ -85,6 +146,51 @@ function Config() {
       <Button type="primary" size="large" onClick={handleConnect}>
         Connect to Automate
       </Button>
+      <Modal
+        title="Add Automate to MetaMask"
+        visible={submitted}
+        onOk={handleConfirmConfigured}
+        onCancel={handleCancel}
+      >
+        <MetaMaskConfig>
+          <p>Almost there!</p>
+          <p>
+            Now you just need to add the Automate network configuration to your MetaMask.
+            <br />
+            To do that, just follow the instructions{' '}
+            <a
+              href="https://metamask.zendesk.com/hc/en-us/articles/360043227612-How-to-add-custom-Network-RPC-and-or-Block-Explorer"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              here
+            </a>{' '}
+            and when you get to the 'Add Network' screen, simply copy and paste all values presented below to their
+            respective inputs in MetaMask and save the connection.
+          </p>
+          <p>When you're done, click 'OK' below.</p>
+          <Form layout="vertical">
+            <Form.Item label="Network Name">
+              <CopyInput value={networkName} inputTitle="Network Name" />
+            </Form.Item>
+            <Form.Item label="New RPC URL">
+              <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
+            </Form.Item>
+            <Form.Item label="Chain ID">
+              <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
+            </Form.Item>
+            <Form.Item label="Currency Symbol">
+              <CopyInput value="ETH" inputTitle="Currency Symbol" />
+            </Form.Item>
+            <Form.Item label="Block Explorer URL">
+              <CopyInput
+                value="https://automate.chronologic.network/transactions?tx="
+                inputTitle="Block Explorer URL"
+              />
+            </Form.Item>
+          </Form>
+        </MetaMaskConfig>
+      </Modal>
     </Container>
   );
 }
@@ -146,6 +252,20 @@ const SliderContainer = styled.div`
     .ant-slider-mark-text-active .selected {
       font-weight: bold;
     }
+  }
+`;
+
+const MetaMaskConfig = styled.div`
+  .ant-form-item-control-input-content > div {
+    width: 100%;
+  }
+
+  .ant-col.ant-form-item-label {
+    padding-bottom: 0;
+  }
+
+  .ant-row.ant-form-item {
+    margin-bottom: 8px;
   }
 `;
 

@@ -61,6 +61,11 @@ const GlobalStyle = styled.div<IProps>`
   .ant-btn {
     color: ${(props) => props.theme.colors.text};
   }
+  .ant-btn:hover,
+  .ant-btn:focus {
+    border-color: ${(props) => props.theme.colors.accent};
+    color: ${(props) => props.theme.colors.accent};
+  }
 
   .ant-btn.ant-btn-primary:not([disabled]) {
     background-color: ${(props) => props.theme.colors.accent};
@@ -84,6 +89,14 @@ const GlobalStyle = styled.div<IProps>`
   .ant-input:focus {
     border-color: ${(props) => props.theme.colors.accent};
     box-shadow: none;
+  }
+  .ant-input-search .ant-input:hover,
+  .ant-input-search .ant-input:focus {
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-input-search .ant-input:hover + .ant-input-group-addon .ant-input-search-button:not(.ant-btn-primary),
+  .ant-input-search .ant-input:focus + .ant-input-group-addon .ant-input-search-button:not(.ant-btn-primary) {
+    border-left-color: ${(props) => props.theme.colors.accent};
   }
 
   .ant-dropdown-menu {

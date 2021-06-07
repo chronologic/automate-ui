@@ -4,10 +4,11 @@ import { Alert } from 'antd';
 import styled from 'styled-components';
 
 import { useEthers } from '../../hooks';
+import { isConnectedToAutomate } from '../../utils';
 
 function ConnectionStatus() {
   const history = useHistory();
-  const { connected, ethereum } = useEthers();
+  const { ethereum } = useEthers();
   const [connectedToAutomate, setConnectedToAutomate] = useState(false);
 
   const handleClick = useCallback(() => {
@@ -19,26 +20,15 @@ function ConnectionStatus() {
     let intervalId = setInterval(checkConnection, 5000);
 
     async function checkConnection() {
-      if (connected) {
-        const res = await ethereum?.request({
-          method: 'eth_call',
-          params: [
-            {
-              from: '0x0000000000000000000000000000000000000000',
-              // md5 hash of 'automate'
-              to: '0x00000000e7fdc80c0728d856260f92fde10af019',
-            },
-          ],
-        });
+      const connectedToAutomate = await isConnectedToAutomate(ethereum);
 
-        setConnectedToAutomate(res.includes('automate'));
-      }
+      setConnectedToAutomate(connectedToAutomate);
     }
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [connected, ethereum]);
+  }, [ethereum]);
 
   return (
     <Container onClick={handleClick}>
