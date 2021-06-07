@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -6,14 +6,18 @@ import {
   DeleteOutlined,
   FormOutlined,
   PlusOutlined,
+  MoreOutlined,
+  EditOutlined,
+  ExportOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import {
   Button,
-  Checkbox,
   DatePicker,
+  Dropdown,
   Input,
   InputNumber,
-  Layout,
+  Menu,
   Modal,
   Select,
   Table,
@@ -24,15 +28,16 @@ import { BigNumber } from 'ethers';
 import uniqBy from 'lodash/uniqBy';
 import moment from 'moment-timezone';
 import queryString from 'query-string';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
-import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, formatLongId, normalizeBigNumber, numberToBn } from '../../utils';
+import { bigNumberToNumber, formatLongId, formatNumber, normalizeBigNumber, numberToBn } from '../../utils';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 import { useTransactions } from '../../hooks/useTransactions';
-import styled from 'styled-components';
+import PageTitle from '../PageTitle';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
@@ -52,7 +57,7 @@ const rowSelection = {
 };
 
 function Transactions() {
-  const { getList } = useTransactions();
+  const { getList, editTx, cancelTx } = useTransactions();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
   const [editingItem, setEditingItem] = useState<IScheduledForUser>({} as any);
@@ -72,27 +77,38 @@ function Transactions() {
   const [addAssetDecimals, setAddAssetDecimals] = useState(18);
   const [addAssetError, setAddAssetError] = useState('');
   const [fetchingAsset, setFetchingAsset] = useState(false);
+  const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
-  const handleStartEditingItem = useCallback((record: IScheduledForUser) => {
-    setEditingItem(record);
-    setEditedConditionAsset(record.conditionAsset);
-    setEditedConditionAmount(record.conditionAmount);
-    setEditedConditionDecimals(record.conditionAssetDecimals);
-    setEditedTimeCondition(record.timeCondition);
-    if (record.timeCondition && record.timeConditionTZ) {
-      const date = moment.tz(record.timeCondition, record.timeConditionTZ);
-      setEditedTimeConditionDate(date as any);
-      setEditedTimeConditionTime(date as any);
-    } else {
-      setEditedTimeConditionTime(moment().startOf('day') as any);
-    }
-    setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
-    setEditedNotes(record.notes);
-    setEditedGasPriceAware(record.gasPriceAware);
-  }, []);
+  const handleStartEditingItem = useCallback(
+    (record: IScheduledForUser) => {
+      setEditingItem(record);
+      if (!expandedRowKeys.includes(record.id)) {
+        setExpandedRowKeys([...expandedRowKeys, record.id]);
+      }
+      setEditedConditionAsset(record.conditionAsset);
+      setEditedConditionAmount(record.conditionAmount);
+      setEditedConditionDecimals(record.conditionAssetDecimals);
+      setEditedTimeCondition(record.timeCondition);
+      if (record.timeCondition && record.timeConditionTZ) {
+        const date = moment.tz(record.timeCondition, record.timeConditionTZ);
+        setEditedTimeConditionDate(date as any);
+        setEditedTimeConditionTime(date as any);
+      } else {
+        setEditedTimeConditionTime(moment().startOf('day') as any);
+      }
+      setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
+      setEditedNotes(record.notes);
+      setEditedGasPriceAware(record.gasPriceAware);
+    },
+    [expandedRowKeys]
+  );
 
   const handleOpenAddAssetModal = useCallback(() => {
     setAddAssetModalVisible(true);
+  }, []);
+
+  const handleExpandedRowKeysChange = useCallback((keys: string[]) => {
+    setExpandedRowKeys(keys);
   }, []);
 
   const updateAssetOptions = useCallback(
@@ -138,16 +154,15 @@ function Transactions() {
   //   }
   // }, [getList, updateAssetOptions]);
   const refresh = useCallback(async () => {
-    console.log('REFresh');
     try {
       setLoading(true);
       const res = await getList();
       setItems(res);
-      // updateAssetOptions(res);
+      updateAssetOptions(res);
     } finally {
       setLoading(false);
     }
-  }, [getList]);
+  }, [getList, updateAssetOptions]);
 
   const handleStopEditingItem = useCallback(() => {
     setEditingItem({} as any);
@@ -256,7 +271,7 @@ function Transactions() {
     try {
       setLoading(true);
 
-      await SentinelAPI.schedule(
+      await editTx(
         {
           assetType: editingItem.assetType,
           conditionAmount: editedConditionAmount,
@@ -280,6 +295,7 @@ function Transactions() {
       setLoading(false);
     }
   }, [
+    editTx,
     editedConditionAmount,
     editedConditionAsset,
     editedGasPriceAware,
@@ -290,6 +306,26 @@ function Transactions() {
     editingItem.signedTransaction,
     refresh,
   ]);
+
+  const handleCancelTx = useCallback(
+    async (record: IScheduledForUser) => {
+      try {
+        setLoading(true);
+
+        await cancelTx({
+          id: record.id,
+          key: record.txKey,
+          createdAt: record.createdAt,
+          paymentAddress: '',
+        });
+
+        refresh();
+      } finally {
+        setLoading(false);
+      }
+    },
+    [cancelTx, refresh]
+  );
 
   const handleFetchAsset = useCallback(
     async (e: any) => {
@@ -454,7 +490,7 @@ function Transactions() {
       },
       {
         dataIndex: 'assetAmount',
-        render: (assetAmount: string) => assetAmount,
+        render: (assetAmount: number) => formatNumber(assetAmount),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetAmount || 0) - (b.assetAmount || 0),
         title: 'Amount',
         align: 'right' as any,
@@ -480,169 +516,7 @@ function Transactions() {
         title: 'Gas Price',
         align: 'right' as any,
       },
-      // {
-      //   dataIndex: 'conditionAsset',
-      //   render: (conditionAsset: string, record: IScheduledForUser) => {
-      //     const isEditing = record.id === editingItem.id;
 
-      //     if (isEditing) {
-      //       const handler = (value: string) => handleConditionAssetChange(value);
-      //       return (
-      //         <div>
-      //           <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
-      //             {assetOptions.map((asset) => (
-      //               <Select.Option key={asset.address} value={asset.address}>
-      //                 {asset.name}
-      //               </Select.Option>
-      //             ))}
-      //           </Select>
-      //           <br />
-      //           <Button
-      //             type="ghost"
-      //             style={{ border: '0px', background: 'transparent' }}
-      //             onClick={handleOpenAddAssetModal}
-      //           >
-      //             <PlusOutlined /> Add
-      //           </Button>
-      //         </div>
-      //       );
-      //     }
-
-      //     const assetName = (record.conditionAssetName || '').toUpperCase();
-
-      //     if (conditionAsset) {
-      //       return (
-      //         <a
-      //           href={`https://etherscan.io/address/${conditionAsset}`}
-      //           title={conditionAsset}
-      //           target="_blank"
-      //           rel="noopener noreferrer"
-      //         >
-      //           {assetName || conditionAsset}
-      //         </a>
-      //       );
-      //     }
-
-      //     return assetName || '-';
-      //   },
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-      //     (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
-      //   title: 'Condition Asset',
-      // },
-      // {
-      //   dataIndex: 'conditionAmount',
-      //   render: (amount: string, record: IScheduledForUser) => {
-      //     const isEditing = record.id === editingItem.id;
-
-      //     const num = amount ? bigNumberToNumber(amount as any, record.conditionAssetDecimals) : '';
-
-      //     if (isEditing) {
-      //       const handler = (val: any) => handleConditionAmountChange(val);
-      //       return <InputNumber min={0} defaultValue={num} onChange={handler} />;
-      //     }
-
-      //     return num;
-      //   },
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
-      //     const aBN = BigNumber.from(a.conditionAmount || '0');
-      //     const bBN = BigNumber.from(b.conditionAmount || '0');
-      //     if (aBN.gt(bBN)) {
-      //       return 1;
-      //     }
-      //     if (aBN.lt(bBN)) {
-      //       return -1;
-      //     }
-      //     return 0;
-      //   },
-      //   title: 'Condition Amount',
-      // },
-      // {
-      //   dataIndex: 'timeCondition',
-      //   render: (timeCondition: string, record: IScheduledForUser) => {
-      //     const isEditing = record.id === editingItem.id;
-
-      //     const hasTimeCondition = timeCondition && timeCondition !== '0';
-      //     const timeConditionLocal = hasTimeCondition ? moment(timeCondition) : '';
-      //     const timeConditionForTz = hasTimeCondition
-      //       ? (timeConditionLocal as any).clone().tz(record.timeConditionTZ)
-      //       : '';
-      //     const timeConditionTime = timeConditionForTz || moment().startOf('day');
-
-      //     if (isEditing) {
-      //       return (
-      //         <>
-      //           <DatePicker
-      //             format={'MMM D yyyy'}
-      //             defaultValue={timeConditionForTz as any}
-      //             onChange={handleTimeConditionDateChange}
-      //           />
-      //           <br />
-      //           <TimePicker
-      //             format={'hh:mm a'}
-      //             use12Hours={true}
-      //             defaultValue={timeConditionTime as any}
-      //             onChange={handleTimeConditionTimeChange}
-      //           />
-      //           <br />
-      //           <Select
-      //             showSearch={true}
-      //             defaultValue={record.timeConditionTZ || moment.tz.guess()}
-      //             style={{ minWidth: '120px' }}
-      //             onChange={handleTimeConditionTZChange}
-      //           >
-      //             {moment.tz.names().map((tz, index) => (
-      //               <Select.Option key={index} value={tz}>
-      //                 {tz}
-      //               </Select.Option>
-      //             ))}
-      //           </Select>
-      //         </>
-      //       );
-      //     }
-
-      //     // return moment(new Date()).format('d/M/yyyy hh:mm a');
-      //     if (hasTimeCondition) {
-      //       return (
-      //         <div>
-      //           {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {record.timeConditionTZ}
-      //           <br />
-      //           <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
-      //         </div>
-      //       );
-      //     }
-
-      //     return '-';
-      //   },
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
-      //   title: 'Time Condition',
-      // },
-      // {
-      //   dataIndex: 'gasPriceAware',
-      //   render: (aware: boolean, record: IScheduledForUser) => {
-      //     const isEditing = record.id === editingItem.id;
-
-      //     const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
-      //     return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
-      //   },
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-      //     (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
-      //   title: 'Gas Price Aware?',
-      // },
-      // {
-      //   dataIndex: 'notes',
-      //   render: (notes: string, record: IScheduledForUser) => {
-      //     const isEditing = record.id === editingItem.id;
-
-      //     if (isEditing) {
-      //       const cb = (e: any) => setEditedNotes(e.target.value);
-      //       return <TextArea defaultValue={notes} onChange={cb} />;
-      //     }
-
-      //     return notes;
-      //   },
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
-      //   title: 'Notes',
-      // },
       {
         title: 'Gas Paid',
         align: 'right' as any,
@@ -654,50 +528,322 @@ function Transactions() {
       {
         dataIndex: 'id',
         render: (id: string, record: IScheduledForUser) => {
-          if (id === editingItem.id) {
-            return (
-              <div>
-                <Button type="primary" size="small" color="green" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button size="small" color="orange" onClick={handleStopEditingItem}>
-                  Cancel
-                </Button>
-              </div>
-            );
-          }
-          const cb = () => handleStartEditingItem(record);
+          // if (id === editingItem.id) {
+          //   return (
+          //     <div>
+          //       <Button type="primary" size="small" color="green" onClick={handleSave}>
+          //         Save
+          //       </Button>
+          //       <br />
+          //       <Button size="small" color="orange" onClick={handleStopEditingItem}>
+          //         Cancel
+          //       </Button>
+          //     </div>
+          //   );
+          // }
+          const handleEdit = () => handleStartEditingItem(record);
+          const handleCancel = () => handleCancelTx(record);
+
+          const showCancel = ['Draft', 'Pending'].includes(record.statusName);
+          const showEtherscan = !['Draft', 'Pending', 'Cancelled'].includes(record.statusName);
+
+          const menu = (
+            <Menu>
+              <Menu.Item key="0" onClick={handleEdit}>
+                <EditOutlined /> Edit
+              </Menu.Item>
+              <Menu.Item key="1">
+                <Link to={`/legacy/view/${record.id}/${record.txKey}`} target="_blank">
+                  <FileTextOutlined /> Details
+                </Link>
+              </Menu.Item>
+              {showEtherscan && (
+                <Menu.Item key="2">
+                  <a
+                    href={`https://etherscan.io/tx/${record.transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExportOutlined /> Etherscan
+                  </a>
+                </Menu.Item>
+              )}
+              {showCancel && (
+                <>
+                  <Menu.Divider />
+                  <Menu.Item key="3" onClick={handleCancel}>
+                    <DeleteOutlined /> Cancel
+                  </Menu.Item>
+                </>
+              )}
+            </Menu>
+          );
+
           return (
-            <Button type="primary" size="small" color="blue" onClick={cb}>
-              Edit
-            </Button>
+            <Dropdown overlay={menu} trigger={['click']}>
+              <Actions>
+                <MoreOutlined />
+              </Actions>
+            </Dropdown>
           );
         },
         title: '',
         align: 'center' as any,
       },
     ];
-  }, [
-    editingItem.id,
-    editedConditionAsset,
-    assetOptions,
-    handleOpenAddAssetModal,
-    handleConditionAssetChange,
-    handleConditionAmountChange,
-    handleTimeConditionDateChange,
-    handleTimeConditionTimeChange,
-    handleTimeConditionTZChange,
-    handleSave,
-    handleStopEditingItem,
-    handleStartEditingItem,
-  ]);
+  }, [handleCancelTx, handleStartEditingItem]);
+
+  const expandedRowRender = useCallback(
+    (record: IScheduledForUser) => {
+      const columns = [
+        {
+          key: 'conditionAsset',
+          dataIndex: 'conditionAsset',
+          render: (conditionAsset: string, record: IScheduledForUser) => {
+            const isEditing = record.id === editingItem.id;
+            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+
+            if (isEditing && canEdit) {
+              const handler = (value: string) => handleConditionAssetChange(value);
+              return (
+                <div>
+                  <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
+                    {assetOptions.map((asset) => (
+                      <Select.Option key={asset.address} value={asset.address}>
+                        {asset.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                  <br />
+                  <Button
+                    type="ghost"
+                    style={{ border: '0px', background: 'transparent' }}
+                    onClick={handleOpenAddAssetModal}
+                  >
+                    <PlusOutlined /> Add
+                  </Button>
+                </div>
+              );
+            }
+
+            const assetName = (record.conditionAssetName || '').toUpperCase();
+
+            if (conditionAsset) {
+              return (
+                <a
+                  href={`https://etherscan.io/address/${conditionAsset}`}
+                  title={conditionAsset}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {assetName || conditionAsset}
+                </a>
+              );
+            }
+
+            return assetName || '-';
+          },
+          // sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          //   (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
+          title: 'Condition Asset',
+          align: 'center' as any,
+        },
+        {
+          key: 'conditionAmount',
+          dataIndex: 'conditionAmount',
+          render: (amount: string, record: IScheduledForUser) => {
+            const isEditing = record.id === editingItem.id;
+            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+
+            const num = amount ? bigNumberToNumber(amount as any, record.conditionAssetDecimals) : '';
+
+            if (isEditing && canEdit) {
+              const handler = (val: any) => handleConditionAmountChange(val);
+              return <InputNumber min={0} defaultValue={num} onChange={handler} />;
+            }
+
+            if (num) {
+              return formatNumber(num);
+            }
+
+            return num;
+          },
+          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
+          //   const aBN = BigNumber.from(a.conditionAmount || '0');
+          //   const bBN = BigNumber.from(b.conditionAmount || '0');
+          //   if (aBN.gt(bBN)) {
+          //     return 1;
+          //   }
+          //   if (aBN.lt(bBN)) {
+          //     return -1;
+          //   }
+          //   return 0;
+          // },
+          title: 'Condition Amount',
+          align: 'right' as any,
+        },
+        {
+          key: 'timeCondition',
+          dataIndex: 'timeCondition',
+          render: (timeCondition: string, record: IScheduledForUser) => {
+            const isEditing = record.id === editingItem.id;
+            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+
+            const hasTimeCondition = timeCondition && timeCondition !== '0';
+            const timeConditionLocal = hasTimeCondition ? moment(timeCondition) : '';
+            const timeConditionForTz = hasTimeCondition
+              ? (timeConditionLocal as any).clone().tz(record.timeConditionTZ)
+              : '';
+            const timeConditionTime = timeConditionForTz || moment().startOf('day');
+
+            if (isEditing && canEdit) {
+              return (
+                <>
+                  <DatePicker
+                    format={'MMM D yyyy'}
+                    defaultValue={timeConditionForTz as any}
+                    onChange={handleTimeConditionDateChange}
+                  />
+                  <br />
+                  <TimePicker
+                    format={'hh:mm a'}
+                    use12Hours={true}
+                    defaultValue={timeConditionTime as any}
+                    onChange={handleTimeConditionTimeChange}
+                  />
+                  <br />
+                  <Select
+                    showSearch={true}
+                    defaultValue={record.timeConditionTZ || moment.tz.guess()}
+                    style={{ minWidth: '120px' }}
+                    onChange={handleTimeConditionTZChange}
+                  >
+                    {moment.tz.names().map((tz, index) => (
+                      <Select.Option key={index} value={tz}>
+                        {tz}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </>
+              );
+            }
+
+            // return moment(new Date()).format('d/M/yyyy hh:mm a');
+            if (hasTimeCondition) {
+              return (
+                <div>
+                  {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {record.timeConditionTZ}
+                  <br />
+                  <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
+                </div>
+              );
+            }
+
+            return '-';
+          },
+          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
+          title: 'Time Condition',
+          align: 'right' as any,
+        },
+        // {
+        //   dataIndex: 'gasPriceAware',
+        //   render: (aware: boolean, record: IScheduledForUser) => {
+        //     const isEditing = record.id === editingItem.id;
+
+        //     const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
+        //     return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
+        //   },
+        //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+        //     (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
+        //   title: 'Gas Price Aware?',
+        // },
+        {
+          key: 'notes',
+          dataIndex: 'notes',
+          render: (notes: string, record: IScheduledForUser) => {
+            const isEditing = record.id === editingItem.id;
+
+            if (isEditing) {
+              const cb = (e: any) => setEditedNotes(e.target.value);
+              return <TextArea defaultValue={notes} onChange={cb} />;
+            }
+
+            return notes;
+          },
+          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
+          title: 'Notes',
+          align: 'right' as any,
+        },
+        {
+          key: 'extra',
+          dataIndex: 'id',
+          render: (id: string, record: IScheduledForUser) => {
+            const extra = [];
+            if (record.chainId != 1) {
+              extra.push(`chain id ${record.chainId}`);
+            }
+            if (!record.gasPriceAware) {
+              extra.push(`not gas price aware`);
+            }
+
+            return extra.join(', ');
+          },
+          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
+          title: 'Extra',
+          align: 'right' as any,
+        },
+        {
+          key: 'actions',
+          dataIndex: 'id',
+          render: (id: string, record: IScheduledForUser) => {
+            if (id === editingItem.id) {
+              return (
+                <div>
+                  <Button type="primary" color="green" onClick={handleSave}>
+                    Save
+                  </Button>
+                  <br />
+                  <br />
+                  <Button color="orange" onClick={handleStopEditingItem}>
+                    Cancel
+                  </Button>
+                </div>
+              );
+            }
+
+            return '';
+          },
+          title: '',
+          align: 'center' as any,
+        },
+      ];
+
+      return <Table columns={columns} dataSource={[record]} pagination={false} rowKey="id" />;
+    },
+    [
+      assetOptions,
+      editedConditionAsset,
+      editingItem.id,
+      handleConditionAmountChange,
+      handleConditionAssetChange,
+      handleOpenAddAssetModal,
+      handleSave,
+      handleStopEditingItem,
+      handleTimeConditionDateChange,
+      handleTimeConditionTZChange,
+      handleTimeConditionTimeChange,
+    ]
+  );
 
   useEffect(() => {
     refresh();
-  }, [refresh]);
+    // only execute once on load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Container>
+      <PageTitle title="Transactions" />
       <Modal
         visible={addAssetModalVisible}
         onCancel={handleDismissAddAsset}
@@ -736,6 +882,12 @@ function Transactions() {
         dataSource={items}
         rowSelection={rowSelection}
         // pagination={paginationConfig}
+        expandable={{
+          expandedRowRender,
+          expandIconColumnIndex: 1,
+          expandedRowKeys,
+          onExpandedRowsChange: handleExpandedRowKeysChange as any,
+        }}
         loading={loading}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // onChange={handleTableChange as any}
@@ -769,6 +921,18 @@ const TableHeader = styled.div`
 
   .title {
     font-weight: 300;
+  }
+`;
+
+const Actions = styled.div`
+  cursor: pointer;
+
+  &:hover {
+    color: ${(props) => props.theme.colors.accent};
+  }
+
+  .anticon {
+    font-size: 2.6rem;
   }
 `;
 

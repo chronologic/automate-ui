@@ -59,3 +59,23 @@ export function shortAddress(address?: string | null | undefined): string {
   const addr = (address || '').toUpperCase();
   return `0x${addr.substr(2, 4)}...${addr.substr(-4)}`;
 }
+
+export function formatNumber(value: number, decimals = 4): string {
+  const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return formatter.format(value);
+}
+
+export function formatCurrency(value: number, decimals = 2): string {
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return formatter.format(value);
+}

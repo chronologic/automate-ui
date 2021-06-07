@@ -116,6 +116,11 @@ const GlobalStyle = styled.div<IProps>`
   .ant-checkbox-checked:after {
     border-color: ${(props) => props.theme.colors.accent};
   }
+
+  .ant-table-row-expand-icon:focus,
+  .ant-table-row-expand-icon:hover {
+    color: ${(props) => props.theme.colors.accent};
+  }
 `;
 
 export default GlobalStyle;
