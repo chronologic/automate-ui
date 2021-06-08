@@ -15,6 +15,7 @@ function Config() {
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(1);
   const [submitted, setSubmitted] = useState(false);
+  const [completed, setCompleted] = useState(false);
 
   const sliderMarks: {
     [key: number]: {
@@ -81,6 +82,7 @@ function Config() {
 
   const handleConnect = useCallback(async () => {
     setSubmitted(true);
+    setCompleted(false);
   }, []);
 
   const handleCancel = useCallback(async () => {
@@ -91,7 +93,8 @@ function Config() {
     const isConnected = await isConnectedToAutomate(ethereum);
     if (isConnected) {
       notification.success({ message: `You're connected to Automate!` });
-      setSubmitted(false);
+      // setSubmitted(false);
+      setCompleted(true);
     } else {
       notification.error({ message: `You're not connected to Automate. Check your configuration.` });
     }
@@ -126,7 +129,7 @@ function Config() {
       <div>
         <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
         <p>
-          Out algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer wait
+          Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer wait
           times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network, this is NOT a
           guaranteed confirmation time.
         </p>
@@ -147,49 +150,58 @@ function Config() {
         Connect to Automate
       </Button>
       <Modal
-        title="Add Automate to MetaMask"
+        title={completed ? 'Congratulations!' : 'Add Automate to MetaMask'}
         visible={submitted}
-        onOk={handleConfirmConfigured}
+        onOk={completed ? handleCancel : handleConfirmConfigured}
         onCancel={handleCancel}
+        okText={completed ? 'Close' : 'OK'}
+        cancelButtonProps={{ style: { visibility: completed ? 'hidden' : 'visible' } }}
       >
-        <MetaMaskConfig>
-          <p>Almost there!</p>
-          <p>
-            Now you just need to add the Automate network configuration to your MetaMask.
-            <br />
-            To do that, just follow the instructions{' '}
-            <a
-              href="https://metamask.zendesk.com/hc/en-us/articles/360043227612-How-to-add-custom-Network-RPC-and-or-Block-Explorer"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              here
-            </a>{' '}
-            and when you get to the 'Add Network' screen, simply copy and paste all values presented below to their
-            respective inputs in MetaMask and save the connection.
-          </p>
-          <p>When you're done, click 'OK' below.</p>
-          <Form layout="vertical">
-            <Form.Item label="Network Name">
-              <CopyInput value={networkName} inputTitle="Network Name" />
-            </Form.Item>
-            <Form.Item label="New RPC URL">
-              <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
-            </Form.Item>
-            <Form.Item label="Chain ID">
-              <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
-            </Form.Item>
-            <Form.Item label="Currency Symbol">
-              <CopyInput value="ETH" inputTitle="Currency Symbol" />
-            </Form.Item>
-            <Form.Item label="Block Explorer URL">
-              <CopyInput
-                value="https://automate.chronologic.network/transactions?tx="
-                inputTitle="Block Explorer URL"
-              />
-            </Form.Item>
-          </Form>
-        </MetaMaskConfig>
+        {!completed && (
+          <MetaMaskConfig>
+            <p>Almost there!</p>
+            <p>
+              Now you just need to add the Automate network configuration to your MetaMask.
+              <br />
+              To do that, just follow the instructions{' '}
+              <a
+                href="https://metamask.zendesk.com/hc/en-us/articles/360043227612-How-to-add-custom-Network-RPC-and-or-Block-Explorer"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                here
+              </a>{' '}
+              and when you get to the 'Add Network' screen, simply copy and paste all values presented below to their
+              respective inputs in MetaMask and save the connection.
+            </p>
+            <p>When you're done, click 'OK' below.</p>
+            <Form layout="vertical">
+              <Form.Item label="Network Name">
+                <CopyInput value={networkName} inputTitle="Network Name" />
+              </Form.Item>
+              <Form.Item label="New RPC URL">
+                <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
+              </Form.Item>
+              <Form.Item label="Chain ID">
+                <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
+              </Form.Item>
+              <Form.Item label="Currency Symbol">
+                <CopyInput value="ETH" inputTitle="Currency Symbol" />
+              </Form.Item>
+              <Form.Item label="Block Explorer URL">
+                <CopyInput
+                  value="https://automate.chronologic.network/transactions?query="
+                  inputTitle="Block Explorer URL"
+                />
+              </Form.Item>
+            </Form>
+          </MetaMaskConfig>
+        )}
+        {completed && (
+          <Completed>
+            <p>You can now start saving on gas fees!</p>
+          </Completed>
+        )}
       </Modal>
     </Container>
   );
@@ -268,5 +280,7 @@ const MetaMaskConfig = styled.div`
     margin-bottom: 8px;
   }
 `;
+
+const Completed = styled.div``;
 
 export default Config;

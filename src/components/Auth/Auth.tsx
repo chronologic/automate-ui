@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import PageTitle from '../PageTitle';
 import { useAuth } from '../../hooks';
+import { ALLOW_SIGNUP } from '../../env';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
@@ -94,10 +95,12 @@ function Auth() {
         >
           Submit
         </Button>
-        <ModeSwitch>
-          <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
-          <Typography.Link onClick={handleModeSwitch}>{signup ? 'Log in' : 'Sign up'}</Typography.Link>
-        </ModeSwitch>
+        {ALLOW_SIGNUP && (
+          <ModeSwitch>
+            <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
+            <Typography.Link onClick={handleModeSwitch}>{signup ? 'Log in' : 'Sign up'}</Typography.Link>
+          </ModeSwitch>
+        )}
       </Form>
     </Container>
   );

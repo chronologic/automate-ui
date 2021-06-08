@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { useAuth } from '../../hooks';
 import { IThemeProps } from '../../types';
+import { ALLOW_SIGNUP } from '../../env';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
@@ -38,10 +39,7 @@ function HeaderMain() {
 
   return (
     <Container>
-      <Link to="/">
-        Log in
-        {/* Log in/Sign up */}
-      </Link>
+      <Link to="/">{ALLOW_SIGNUP ? 'Log in/Sign up' : 'Log in'}</Link>
     </Container>
   );
 }
