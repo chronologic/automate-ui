@@ -39,8 +39,8 @@ function getTheme(): ITheme {
   if (!theme) {
     const parsed = parseUrl(window.location.href);
 
-    if (parsed.query?.source) {
-      theme = parsed.query.source as string;
+    if (parsed.query?.utm_source) {
+      theme = parsed.query.utm_source as string;
     }
   }
 

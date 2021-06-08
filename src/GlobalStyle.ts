@@ -51,6 +51,10 @@ const GlobalStyle = styled.div<IProps>`
   .ant-typography {
     color: ${(props) => props.theme.colors.text};
   }
+  h4.ant-typography,
+  .ant-typography h4 {
+    color: ${(props) => props.theme.colors.text};
+  }
 
   .ant-layout-header,
   .ant-layout-footer {
@@ -159,6 +163,14 @@ const GlobalStyle = styled.div<IProps>`
     background-color: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.accent};
   }
+  .ant-dropdown-menu-title-content {
+    display: inline-block;
+    width: 100%;
+    a {
+      display: inline-block;
+      width: 100%;
+    }
+  }
 
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
@@ -183,9 +195,83 @@ const GlobalStyle = styled.div<IProps>`
     border-color: ${(props) => props.theme.colors.accent};
   }
 
+  .ant-table {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-table-thead > tr > th,
+  .ant-table-small .ant-table-thead > tr > th {
+    background-color: ${(props) => props.theme.colors.weak};
+    color: ${(props) => props.theme.colors.text};
+    border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-table-tbody > tr > td {
+    border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-table-footer {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+    border-color: ${(props) => props.theme.colors.border};
+  }
   .ant-table-row-expand-icon:focus,
   .ant-table-row-expand-icon:hover {
     color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-table-tbody > tr.ant-table-row:hover > td {
+    background-color: ${(props) => props.theme.colors.weak};
+  }
+  tr.ant-table-expanded-row > td,
+  tr.ant-table-expanded-row:hover > td {
+    background-color: ${(props) => props.theme.colors.weak};
+  }
+  .ant-table-row-expand-icon {
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-table-tbody > tr.ant-table-row-selected > td {
+    background-color: ${(props) => props.theme.colors.border};
+  }
+
+  .ant-pagination-item-active {
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.accent};
+    a {
+      color: ${(props) => props.theme.colors.accent};
+    }
+  }
+  .ant-pagination-item-active:focus-visible,
+  .ant-pagination-item-active:hover {
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.accent};
+    a {
+      color: ${(props) => props.theme.colors.accent};
+    }
+  }
+  .ant-pagination.mini .ant-pagination-item:not(.ant-pagination-item-active) {
+    a {
+      color: ${(props) => props.theme.colors.text};
+    }
+  }
+  .ant-pagination.mini .ant-pagination-item:focus-visible,
+  .ant-pagination.mini .ant-pagination-item:hover {
+    a {
+      color: ${(props) => props.theme.colors.accent};
+    }
+  }
+  .ant-pagination-prev button,
+  .ant-pagination-next button {
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-pagination-prev:focus-visible .ant-pagination-item-link,
+  .ant-pagination-next:focus-visible .ant-pagination-item-link,
+  .ant-pagination-prev:hover .ant-pagination-item-link,
+  .ant-pagination-next:hover .ant-pagination-item-link {
+    color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-pagination-disabled .ant-pagination-item-link,
+  .ant-pagination-disabled:hover .ant-pagination-item-link,
+  .ant-pagination-disabled:focus-visible .ant-pagination-item-link {
+    color: ${(props) => props.theme.colors.border};
   }
 
   .ant-modal {

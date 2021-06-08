@@ -39,6 +39,7 @@ import assetStorage from './assetStorage';
 import { useTransactions } from '../../hooks/useTransactions';
 import PageTitle from '../PageTitle';
 import AssetSymbol from '../AssetSymbol';
+import TxStatus from './TxStatus';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
@@ -385,59 +386,7 @@ function Transactions() {
       {
         dataIndex: 'statusName',
         render: (status: string, record: IScheduledForUser) => {
-          let res = <span />;
-          switch (status) {
-            case 'Draft': {
-              res = (
-                <span style={{ color: 'blue' }} title={status}>
-                  <FormOutlined />
-                </span>
-              );
-              break;
-            }
-            case 'Pending': {
-              res = (
-                <span style={{ color: 'orange' }} title={status}>
-                  <ClockCircleOutlined />
-                </span>
-              );
-              break;
-            }
-            case 'Completed': {
-              res = (
-                <span style={{ color: 'green' }} title={status}>
-                  <CheckCircleOutlined />
-                </span>
-              );
-              break;
-            }
-            case 'Cancelled': {
-              res = (
-                <span style={{ color: 'gray' }} title={status}>
-                  <DeleteOutlined />
-                </span>
-              );
-              break;
-            }
-            case 'Error': {
-              res = (
-                <span style={{ color: 'red' }} title={status}>
-                  <CloseSquareOutlined />
-                </span>
-              );
-              break;
-            }
-            default: {
-              res = <span title={status}>{status}</span>;
-              break;
-            }
-          }
-
-          return (
-            <a href={`https://etherscan.io/tx/${record.transactionHash}`} target="_blank" rel="noopener noreferrer">
-              {res}
-            </a>
-          );
+          return <TxStatus status={status} txHash={record.transactionHash} />;
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
         title: 'Status',

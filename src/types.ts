@@ -61,6 +61,7 @@ export interface ITheme {
     accentGradient: string;
     shadow: string;
     border: string;
+    weak: string;
   };
 }
 export interface IThemeProps {

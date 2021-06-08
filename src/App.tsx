@@ -6,7 +6,17 @@ import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { MAINTENANCE_MODE } from './env';
-import { Auth, Scheduleds, Maintenance, Header, Footer, PrivateRoute, Config, Transactions } from './components';
+import {
+  Auth,
+  Scheduleds,
+  Maintenance,
+  Header,
+  Footer,
+  PrivateRoute,
+  Config,
+  Transactions,
+  CallToAction,
+} from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
 import { useEagerConnect, useTheme } from './hooks';
@@ -28,6 +38,7 @@ class Wrapper extends React.Component {
 
 function App() {
   const { theme } = useTheme();
+  const location = useLocation();
   useEagerConnect();
 
   if (MAINTENANCE_MODE) {
@@ -60,6 +71,7 @@ function App() {
               <Route path="*" component={RouteFallback} />
             </Switch>
           </Layout.Content>
+          {/* {location.pathname.startsWith('/connect') && <CallToAction />} */}
           <Footer />
         </Route>
       </Switch>
