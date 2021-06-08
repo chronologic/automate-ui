@@ -52,11 +52,15 @@ export interface ISubmitParams {
 }
 
 export interface ITheme {
+  name: string;
   colors: {
     body: string;
     text: string;
     textAccent: string;
     accent: string;
+    accentGradient: string;
+    shadow: string;
+    border: string;
   };
 }
 export interface IThemeProps {

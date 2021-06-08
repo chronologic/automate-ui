@@ -61,12 +61,16 @@ export function shortAddress(address?: string | null | undefined): string {
 }
 
 export function formatNumber(value: number, decimals = 4): string {
-  const formatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  if (value) {
+    const formatter = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
 
-  return formatter.format(value);
+    return formatter.format(value);
+  }
+
+  return '-';
 }
 
 export function formatCurrency(value: number, decimals = 2): string {

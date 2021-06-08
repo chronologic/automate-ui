@@ -48,6 +48,9 @@ const GlobalStyle = styled.div<IProps>`
       color: ${(props) => props.theme.colors.accent};
     }
   }
+  .ant-typography {
+    color: ${(props) => props.theme.colors.text};
+  }
 
   .ant-layout-header,
   .ant-layout-footer {
@@ -58,37 +61,62 @@ const GlobalStyle = styled.div<IProps>`
     line-height: initial;
   }
 
-  .ant-btn {
+  .ant-form-item-label > label {
     color: ${(props) => props.theme.colors.text};
+  }
+
+  .ant-btn {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+    border-color: ${(props) => props.theme.colors.border};
   }
   .ant-btn:hover,
   .ant-btn:focus {
     border-color: ${(props) => props.theme.colors.accent};
+    background-color: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.accent};
   }
-
   .ant-btn.ant-btn-primary:not([disabled]) {
     background-color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
     color: ${(props) => props.theme.colors.textAccent};
   }
-
   .ant-btn-ghost:hover {
     color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
   }
-
   .ant-btn-ghost.primary {
     color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
   }
+  .ant-btn-primary[disabled],
+  .ant-btn-primary[disabled]:hover,
+  .ant-btn-primary[disabled]:focus,
+  .ant-btn-primary[disabled]:active {
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.border};
+    color: ${(props) => props.theme.colors.border};
+  }
 
+  .ant-input {
+    color: ${(props) => props.theme.colors.text};
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.border};
+  }
   .ant-input:hover {
     border-color: ${(props) => props.theme.colors.accent};
   }
   .ant-input:focus {
     border-color: ${(props) => props.theme.colors.accent};
     box-shadow: none;
+  }
+  .ant-input[disabled] {
+    color: ${(props) => props.theme.colors.border};
+    background-color: ${(props) => props.theme.colors.body};
+    border-color: ${(props) => props.theme.colors.border};
+    &::placeholder {
+      color: ${(props) => props.theme.colors.border};
+    }
   }
   .ant-input-search .ant-input:hover,
   .ant-input-search .ant-input:focus {
@@ -98,13 +126,38 @@ const GlobalStyle = styled.div<IProps>`
   .ant-input-search .ant-input:focus + .ant-input-group-addon .ant-input-search-button:not(.ant-btn-primary) {
     border-left-color: ${(props) => props.theme.colors.accent};
   }
+  .ant-input-search
+    > .ant-input-group
+    > .ant-input-group-addon:last-child
+    .ant-input-search-button:not(.ant-btn-primary) {
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-input-group-addon {
+    color: ${(props) => props.theme.colors.text};
+  }
 
   .ant-dropdown-menu {
     background-color: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.text};
+    box-shadow: ${(props) => props.theme.colors.shadow};
+
     a {
       color: ${(props) => props.theme.colors.text};
     }
+  }
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-dropdown-menu-item-divider,
+  .ant-dropdown-menu-submenu-title-divider {
+    background-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-dropdown-menu-item:hover,
+  .ant-dropdown-menu-submenu-title:hover,
+  .ant-dropdown-menu-item:hover a {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.accent};
   }
 
   .ant-slider-track,
@@ -133,6 +186,26 @@ const GlobalStyle = styled.div<IProps>`
   .ant-table-row-expand-icon:focus,
   .ant-table-row-expand-icon:hover {
     color: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-modal {
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-modal-content {
+    background-color: ${(props) => props.theme.colors.body};
+    box-shadow: ${(props) => props.theme.colors.shadow};
+  }
+  .ant-modal-header {
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+    border-color: ${(props) => props.theme.colors.border};
+
+    .ant-modal-title {
+      color: ${(props) => props.theme.colors.text};
+    }
+  }
+  .ant-modal-footer {
+    border-color: ${(props) => props.theme.colors.border};
   }
 `;
 

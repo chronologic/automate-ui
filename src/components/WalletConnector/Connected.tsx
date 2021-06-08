@@ -45,7 +45,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${(props) => props.theme.colors.border};
   border-radius: 4px;
 `;
 

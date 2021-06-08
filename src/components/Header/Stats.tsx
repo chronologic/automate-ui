@@ -45,7 +45,7 @@ function Stats() {
 }
 
 const Container = styled.div`
-  background-color: ${(props: IThemeProps) => props.theme.colors.accent};
+  background: ${(props: IThemeProps) => props.theme.colors.accentGradient};
   color: ${(props: IThemeProps) => props.theme.colors.textAccent};
   display: flex;
   flex-direction: row;

@@ -38,6 +38,7 @@ import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 import { useTransactions } from '../../hooks/useTransactions';
 import PageTitle from '../PageTitle';
+import AssetSymbol from '../AssetSymbol';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
@@ -473,16 +474,16 @@ function Transactions() {
             return (
               <a
                 href={`https://etherscan.io/address/${record.assetContract}`}
-                title={record.assetContract}
+                title={name || record.assetContract}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {name}
+                <AssetSymbol name={name} address={record.assetContract} />
               </a>
             );
           }
 
-          return name;
+          return <AssetSymbol name={name} address={record.assetContract} />;
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset',
@@ -510,7 +511,7 @@ function Transactions() {
       },
       {
         dataIndex: 'gasPrice',
-        render: (gasPrice: any) => bigNumberToNumber(gasPrice, 9),
+        render: (gasPrice: any) => formatNumber(bigNumberToNumber(gasPrice, 9), 0),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
           BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
         title: 'Gas Price',
@@ -632,16 +633,16 @@ function Transactions() {
               return (
                 <a
                   href={`https://etherscan.io/address/${conditionAsset}`}
-                  title={conditionAsset}
+                  title={assetName || conditionAsset}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {assetName || conditionAsset}
+                  <AssetSymbol name={assetName} address={conditionAsset} />
                 </a>
               );
             }
 
-            return assetName || '-';
+            return <AssetSymbol name={assetName} address={conditionAsset} />;
           },
           // sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
           //   (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
@@ -662,11 +663,7 @@ function Transactions() {
               return <InputNumber min={0} defaultValue={num} onChange={handler} />;
             }
 
-            if (num) {
-              return formatNumber(num);
-            }
-
-            return num;
+            return formatNumber(num || 0);
           },
           // sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
           //   const aBN = BigNumber.from(a.conditionAmount || '0');
@@ -779,6 +776,7 @@ function Transactions() {
           dataIndex: 'id',
           render: (id: string, record: IScheduledForUser) => {
             const extra = [];
+            // eslint-disable-next-line eqeqeq
             if (record.chainId != 1) {
               extra.push(`chain id ${record.chainId}`);
             }
