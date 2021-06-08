@@ -1,4 +1,5 @@
-//tslint:disable
+// tslint:disable
+/* eslint-disable */
 
 // Source:
 // https://github.com/MetaMask/metamask-extension/blob/554f79c0e2ec8f3ddce81ab7aae9dc67ba057ac9/ui/lib/blockies.js
@@ -28,19 +29,14 @@ function byte2(w) {
 }
 
 function byte4(w) {
-  return String.fromCharCode(
-    (w >> 24) & 255,
-    (w >> 16) & 255,
-    (w >> 8) & 255,
-    w & 255
-  );
+  return String.fromCharCode((w >> 24) & 255, (w >> 16) & 255, (w >> 8) & 255, w & 255);
 }
 
 function byte2lsb(w) {
   return String.fromCharCode(w & 255, (w >> 8) & 255);
 }
 
-var PNG = function(width, height, depth) {
+var PNG = function (width, height, depth) {
   this.width = width;
   this.height = height;
   this.depth = depth;
@@ -49,8 +45,7 @@ var PNG = function(width, height, depth) {
   this.pix_size = height * (width + 1);
 
   // deflate header, pix_size, block headers, adler32 checksum
-  this.data_size =
-    2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
+  this.data_size = 2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
 
   // offsets and sizes of Png chunks
   this.ihdr_offs = 0; // IHDR offset and size
@@ -77,15 +72,7 @@ var PNG = function(width, height, depth) {
   }
 
   // initialize non-zero elements
-  write(
-    this.buffer,
-    this.ihdr_offs,
-    byte4(this.ihdr_size - 12),
-    'IHDR',
-    byte4(width),
-    byte4(height),
-    '\x08\x03'
-  );
+  write(this.buffer, this.ihdr_offs, byte4(this.ihdr_size - 12), 'IHDR', byte4(width), byte4(height), '\x08\x03');
   write(this.buffer, this.plte_offs, byte4(this.plte_size - 12), 'PLTE');
   write(this.buffer, this.trns_offs, byte4(this.trns_size - 12), 'tRNS');
   write(this.buffer, this.idat_offs, byte4(this.idat_size - 12), 'IDAT');
@@ -107,13 +94,7 @@ var PNG = function(width, height, depth) {
       size = this.pix_size - (i << 16) - i;
       bits = '\x01';
     }
-    write(
-      this.buffer,
-      this.idat_offs + 8 + 2 + (i << 16) + (i << 2),
-      bits,
-      byte2lsb(size),
-      byte2lsb(~size)
-    );
+    write(this.buffer, this.idat_offs + 8 + 2 + (i << 16) + (i << 2), bits, byte2lsb(size), byte2lsb(~size));
   }
 
   /* Create crc32 lookup table */
@@ -130,14 +111,14 @@ var PNG = function(width, height, depth) {
   }
 
   // compute the index into a png for a given pixel
-  this.index = function(x, y) {
+  this.index = function (x, y) {
     var i = y * (this.width + 1) + x + 1;
     var j = this.idat_offs + 8 + 2 + 5 * Math.floor(i / 0xffff + 1) + i;
     return j;
   };
 
   // convert a color and build up the palette
-  this.color = function(red, green, blue, alpha) {
+  this.color = function (red, green, blue, alpha) {
     alpha = alpha >= 0 ? alpha : 255;
     var color = (((((alpha << 8) | red) << 8) | green) << 8) | blue;
 
@@ -149,9 +130,7 @@ var PNG = function(width, height, depth) {
       this.buffer[ndx + 0] = String.fromCharCode(red);
       this.buffer[ndx + 1] = String.fromCharCode(green);
       this.buffer[ndx + 2] = String.fromCharCode(blue);
-      this.buffer[this.trns_offs + 8 + this.pindex] = String.fromCharCode(
-        alpha
-      );
+      this.buffer[this.trns_offs + 8 + this.pindex] = String.fromCharCode(alpha);
 
       this.palette[color] = String.fromCharCode(this.pindex++);
     }
@@ -159,11 +138,10 @@ var PNG = function(width, height, depth) {
   };
 
   // output a PNG string, Base64 encoded
-  this.getBase64 = function() {
+  this.getBase64 = function () {
     var s = this.getDump();
 
-    var ch =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    var ch = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     var c1, c2, c3, e1, e2, e3, e4;
     var l = s.length;
     var i = 0;
@@ -191,7 +169,7 @@ var PNG = function(width, height, depth) {
   };
 
   // output a PNG string
-  this.getDump = function() {
+  this.getDump = function () {
     // compute adler32 of output pixels + row filter bytes
     var BASE = 65521; /* largest prime smaller than 65536 */
     var NMAX = 5552; /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
@@ -212,19 +190,13 @@ var PNG = function(width, height, depth) {
     }
     s1 %= BASE;
     s2 %= BASE;
-    write(
-      this.buffer,
-      this.idat_offs + this.idat_size - 8,
-      byte4((s2 << 16) | s1)
-    );
+    write(this.buffer, this.idat_offs + this.idat_size - 8, byte4((s2 << 16) | s1));
 
     // compute crc32 of the PNG chunks
     function crc32(png, offs, size) {
       var crc = -1;
       for (var i = 4; i < size - 4; i += 1) {
-        crc =
-          _crc32[(crc ^ png[offs + i].charCodeAt(0)) & 0xff] ^
-          ((crc >> 8) & 0x00ffffff);
+        crc = _crc32[(crc ^ png[offs + i].charCodeAt(0)) & 0xff] ^ ((crc >> 8) & 0x00ffffff);
       }
       write(png, offs + size - 4, byte4(crc ^ -1));
     }
@@ -239,7 +211,7 @@ var PNG = function(width, height, depth) {
     return '\x89PNG\r\n\x1A\n' + this.buffer.join('');
   };
 
-  this.fillRect = function(x, y, w, h, color) {
+  this.fillRect = function (x, y, w, h, color) {
     for (var i = 0; i < w; i++) {
       for (var j = 0; j < h; j++) {
         this.buffer[this.index(x + i, y + j)] = color;
@@ -294,8 +266,7 @@ function seedrand(seed) {
     randseed[i] = 0;
   }
   for (var i = 0; i < seed.length; i++) {
-    randseed[i % 4] =
-      (randseed[i % 4] << 5) - randseed[i % 4] + seed.charCodeAt(i);
+    randseed[i % 4] = (randseed[i % 4] << 5) - randseed[i % 4] + seed.charCodeAt(i);
   }
 }
 
@@ -362,7 +333,7 @@ function buildOpts(opts) {
       scale: 16,
       color: createColor(),
       bgcolor: createColor(),
-      spotcolor: createColor()
+      spotcolor: createColor(),
     },
     opts
   );
@@ -386,13 +357,7 @@ export function toDataUrl(address) {
     if (imageData[i]) {
       // if data is 2, choose spot color, if 1 choose foreground
       const pngColor = imageData[i] == 1 ? color : spotcolor;
-      p.fillRect(
-        col * opts.scale,
-        row * opts.scale,
-        opts.scale,
-        opts.scale,
-        pngColor
-      );
+      p.fillRect(col * opts.scale, row * opts.scale, opts.scale, opts.scale, pngColor);
     }
   }
   return `data:image/png;base64,${p.getBase64()}`;

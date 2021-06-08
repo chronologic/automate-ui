@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
-import { IAssetState } from 'src/components/Asset/ConditionalAsset';
+
+import { IAssetState } from '../types';
 import { ERC20 } from './erc20';
 
 export const ETH = { name: 'ETH', symbol: 'ETH', decimals: 18 };
@@ -17,7 +18,7 @@ export class TokenAPI {
     if (address === '') {
       return ETH;
     }
-    const token = new ethers.Contract(address, ERC20, ethers.getDefaultProvider(ethers.utils.getNetwork(chainId)));
+    const token = new ethers.Contract(address, ERC20, ethers.getDefaultProvider(ethers.providers.getNetwork(chainId)));
     let name = '';
     try {
       name = await token.name();
@@ -68,7 +69,7 @@ export class TokenAPI {
       decimals,
       name,
       symbol,
-      validationError
+      validationError,
     };
   }
 }

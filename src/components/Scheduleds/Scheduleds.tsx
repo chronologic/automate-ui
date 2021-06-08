@@ -1,26 +1,26 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseSquareOutlined,
   DeleteOutlined,
   FormOutlined,
-  PlusOutlined
+  PlusOutlined,
 } from '@ant-design/icons';
 import { Button, Checkbox, DatePicker, Input, InputNumber, Layout, Modal, Select, Table, TimePicker } from 'antd';
-import { ethers } from 'ethers';
-import { BigNumber } from 'ethers/utils';
+import { BigNumber } from 'ethers';
 import uniqBy from 'lodash/uniqBy';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 import queryString from 'query-string';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { IScheduledForUser, SentinelAPI } from '../../api/SentinelAPI';
+import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
 import { bigNumberToNumber, formatLongId, normalizeBigNumber, numberToBn } from '../../utils';
+import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 
-const queryParams = queryString.parseUrl(location.href);
+const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
 
 const { TextArea } = Input;
@@ -76,21 +76,21 @@ function Scheduleds() {
           { address: '', name: 'ETH', decimals: 18 } as IAssetStorageItem,
           ...[
             ...assetStorage.getItems(),
-            ...localItems.map(item => {
+            ...localItems.map((item) => {
               return {
                 address: item.conditionAsset,
                 decimals: item.conditionAssetDecimals,
-                name: item.conditionAssetName
+                name: item.conditionAssetName,
               };
             }),
-            ...localItems.map(item => {
+            ...localItems.map((item) => {
               return {
                 address: item.assetContract,
                 decimals: item.assetDecimals,
-                name: item.assetName
+                name: item.assetName,
               };
-            })
-          ].filter(item => item.address && item.decimals && item.name)
+            }),
+          ].filter((item) => item.address && item.decimals && item.name),
         ],
         'address'
       );
@@ -115,7 +115,7 @@ function Scheduleds() {
   }, []);
 
   const handleConditionAmountChange = useCallback(
-    amount => {
+    (amount) => {
       const newAmount = amount ? numberToBn(amount, editedConditionDecimals).toString() : '';
       setEditedConditionAmount(newAmount);
     },
@@ -124,14 +124,18 @@ function Scheduleds() {
 
   const handleConditionAssetChange = useCallback(
     (contractAddress: string, newAsset?: IAssetStorageItem) => {
-      const asset = newAsset || assetOptions.find(a => a.address === contractAddress);
+      const asset = newAsset || assetOptions.find((a) => a.address === contractAddress);
       setEditedConditionAsset(contractAddress);
       const oldDecimals = editedConditionDecimals;
       const newDecimals = asset?.decimals || 18;
       setEditedConditionDecimals(newDecimals);
 
       if (newDecimals !== oldDecimals) {
-        const newAmount = normalizeBigNumber(new BigNumber(editedConditionAmount), oldDecimals, newDecimals).toString();
+        const newAmount = normalizeBigNumber(
+          BigNumber.from(editedConditionAmount),
+          oldDecimals,
+          newDecimals
+        ).toString();
         setEditedConditionAmount(newAmount);
       }
     },
@@ -139,7 +143,7 @@ function Scheduleds() {
   );
 
   const handleTimeConditionDateChange = useCallback(
-    date => {
+    (date) => {
       setEditedTimeConditionDate(date);
       const c = console;
       c.log(editedTimeConditionTime, date, editedTimeConditionTZ);
@@ -161,7 +165,7 @@ function Scheduleds() {
   );
 
   const handleTimeConditionTimeChange = useCallback(
-    time => {
+    (time) => {
       setEditedTimeConditionTime(time);
       // const c = console;
       // c.log(editedTimeConditionDate, time, editedTimeConditionTZ);
@@ -183,17 +187,14 @@ function Scheduleds() {
   );
 
   const handleTimeConditionTZChange = useCallback(
-    tz => {
+    (tz) => {
       setEditedTimeConditionTZ(tz);
       if (!editedTimeConditionTime || !tz || !editedTimeConditionDate) {
         setEditedTimeCondition(0);
       } else {
         const timeStr = moment(editedTimeConditionTime).format('HH:mm');
         const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
-        const newDate = moment
-          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', tz)
-          .toDate()
-          .getTime();
+        const newDate = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', tz).toDate().getTime();
         // const c = console;
         // c.log(newDate, new Date(newDate));
         setEditedTimeCondition(newDate);
@@ -210,7 +211,7 @@ function Scheduleds() {
       editedGasPriceAware,
       editedNotes,
       editedTimeCondition,
-      editedTimeConditionTZ
+      editedTimeConditionTZ,
     });
 
     try {
@@ -227,10 +228,10 @@ function Scheduleds() {
           paymentRefundAddress: '',
           signedTransaction: editingItem.signedTransaction,
           timeCondition: editedTimeCondition,
-          timeConditionTZ: editedTimeConditionTZ
+          timeConditionTZ: editedTimeConditionTZ,
         },
         {
-          apiKey
+          apiKey,
         }
       );
       setEditingItem({} as any);
@@ -245,33 +246,39 @@ function Scheduleds() {
     editedGasPriceAware,
     editedNotes,
     editedTimeCondition,
-    editedTimeConditionTZ
+    editedTimeConditionTZ,
+    editingItem.assetType,
+    editingItem.signedTransaction,
+    refresh,
   ]);
 
-  const handleFetchAsset = useCallback(async (e: any) => {
-    try {
-      setFetchingAsset(true);
-      const inputAddress = e.target.value || '';
+  const handleFetchAsset = useCallback(
+    async (e: any) => {
+      try {
+        setFetchingAsset(true);
+        const inputAddress = e.target.value || '';
 
-      const { address, decimals, symbol, name, validationError } = await TokenAPI.resolveToken(
-        inputAddress,
-        editingItem.chainId
-      );
+        const { address, decimals, symbol, name, validationError } = await TokenAPI.resolveToken(
+          inputAddress,
+          editingItem.chainId
+        );
 
-      setAddAssetAddress(address);
-      setAddAssetError(validationError);
-      setAddAssetDecimals(decimals);
-      setAddAssetName(symbol || name);
-    } finally {
-      setFetchingAsset(false);
-    }
-  }, []);
+        setAddAssetAddress(address);
+        setAddAssetError(validationError);
+        setAddAssetDecimals(decimals);
+        setAddAssetName(symbol || name);
+      } finally {
+        setFetchingAsset(false);
+      }
+    },
+    [editingItem.chainId]
+  );
 
   const handleAddAsset = useCallback(() => {
     const newAsset: IAssetStorageItem = {
       address: addAssetAddress,
       decimals: addAssetDecimals,
-      name: addAssetName
+      name: addAssetName,
     };
     if (addAssetName) {
       assetStorage.add(newAsset);
@@ -292,12 +299,12 @@ function Scheduleds() {
       {
         dataIndex: 'id',
         render: (id: string, record: IScheduledForUser) => (
-          <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank">
+          <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
             {formatLongId(id)}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
-        title: 'ID'
+        title: 'ID',
       },
       {
         dataIndex: 'statusName',
@@ -351,33 +358,33 @@ function Scheduleds() {
           }
 
           return (
-            <a href={`https://etherscan.io/tx/${record.transactionHash}`} target="_blank">
+            <a href={`https://etherscan.io/tx/${record.transactionHash}`} target="_blank" rel="noopener noreferrer">
               {res}
             </a>
           );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
-        title: 'Status'
+        title: 'Status',
       },
       {
         dataIndex: 'from',
         render: (from: string) => (
-          <a href={`https://etherscan.io/address/${from}`} title={from} target="_blank">
+          <a href={`https://etherscan.io/address/${from}`} title={from} target="_blank" rel="noopener noreferrer">
             {formatLongId(from)}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
-        title: 'From'
+        title: 'From',
       },
       {
         dataIndex: 'to',
         render: (to: string) => (
-          <a href={`https://etherscan.io/address/${to}`} title={to} target="_blank">
+          <a href={`https://etherscan.io/address/${to}`} title={to} target="_blank" rel="noopener noreferrer">
             {formatLongId(to || '')}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
-        title: 'To'
+        title: 'To',
       },
       {
         dataIndex: 'assetName',
@@ -390,6 +397,7 @@ function Scheduleds() {
                 href={`https://etherscan.io/address/${record.assetContract}`}
                 title={record.assetContract}
                 target="_blank"
+                rel="noopener noreferrer"
               >
                 {name}
               </a>
@@ -399,32 +407,32 @@ function Scheduleds() {
           return name;
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
-        title: 'Asset'
+        title: 'Asset',
       },
       {
         dataIndex: 'assetAmount',
         render: (assetAmount: string) => assetAmount,
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetAmount || 0) - (b.assetAmount || 0),
-        title: 'Amount'
+        title: 'Amount',
       },
       {
         dataIndex: 'chainId',
         render: (chainId: string) => chainId,
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.chainId - b.chainId,
-        title: 'Chain ID'
+        title: 'Chain ID',
       },
       {
         dataIndex: 'nonce',
         render: (nonce: string) => nonce,
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.nonce - b.nonce,
-        title: 'Nonce'
+        title: 'Nonce',
       },
       {
         dataIndex: 'gasPrice',
         render: (gasPrice: any) => bigNumberToNumber(gasPrice, 9),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          new ethers.utils.BigNumber(a.gasPrice || '0').gte(new ethers.utils.BigNumber(b.gasPrice || '0')) as any,
-        title: 'Gas Price'
+          BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
+        title: 'Gas Price',
       },
       {
         dataIndex: 'conditionAsset',
@@ -436,7 +444,7 @@ function Scheduleds() {
             return (
               <div>
                 <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
-                  {assetOptions.map(asset => (
+                  {assetOptions.map((asset) => (
                     <Select.Option key={asset.address} value={asset.address}>
                       {asset.name}
                     </Select.Option>
@@ -458,7 +466,12 @@ function Scheduleds() {
 
           if (conditionAsset) {
             return (
-              <a href={`https://etherscan.io/address/${conditionAsset}`} title={conditionAsset} target="_blank">
+              <a
+                href={`https://etherscan.io/address/${conditionAsset}`}
+                title={conditionAsset}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {assetName || conditionAsset}
               </a>
             );
@@ -468,7 +481,7 @@ function Scheduleds() {
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
           (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
-        title: 'Condition Asset'
+        title: 'Condition Asset',
       },
       {
         dataIndex: 'conditionAmount',
@@ -485,8 +498,8 @@ function Scheduleds() {
           return num;
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
-          const aBN = new ethers.utils.BigNumber(a.conditionAmount || '0');
-          const bBN = new ethers.utils.BigNumber(b.conditionAmount || '0');
+          const aBN = BigNumber.from(a.conditionAmount || '0');
+          const bBN = BigNumber.from(b.conditionAmount || '0');
           if (aBN.gt(bBN)) {
             return 1;
           }
@@ -495,7 +508,7 @@ function Scheduleds() {
           }
           return 0;
         },
-        title: 'Condition Amount'
+        title: 'Condition Amount',
       },
       {
         dataIndex: 'timeCondition',
@@ -555,7 +568,7 @@ function Scheduleds() {
           return '-';
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
-        title: 'Time Condition'
+        title: 'Time Condition',
       },
       {
         dataIndex: 'gasPriceAware',
@@ -567,7 +580,7 @@ function Scheduleds() {
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
           (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
-        title: 'Gas Price Aware?'
+        title: 'Gas Price Aware?',
       },
       {
         dataIndex: 'notes',
@@ -582,7 +595,7 @@ function Scheduleds() {
           return notes;
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
-        title: 'Notes'
+        title: 'Notes',
       },
       {
         dataIndex: 'id',
@@ -606,24 +619,27 @@ function Scheduleds() {
             </Button>
           );
         },
-        title: ''
-      }
+        title: '',
+      },
     ];
   }, [
-    editingItem,
-    assetOptions,
+    editingItem.id,
     editedConditionAsset,
+    assetOptions,
     handleOpenAddAssetModal,
     handleConditionAssetChange,
     handleConditionAmountChange,
     handleTimeConditionDateChange,
     handleTimeConditionTimeChange,
     handleTimeConditionTZChange,
-    handleSave
+    handleSave,
+    handleStopEditingItem,
+    handleStartEditingItem,
   ]);
 
   useEffect(() => {
     refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -634,7 +650,7 @@ function Scheduleds() {
         onOk={handleAddAsset}
         confirmLoading={fetchingAsset}
         okButtonProps={{
-          disabled: !addAssetName || !!addAssetError
+          disabled: !addAssetName || !!addAssetError,
         }}
       >
         <br />
@@ -652,7 +668,7 @@ function Scheduleds() {
         size="small"
         footer={
           (() => {
-            '';
+            ('');
           }) as any
         }
         rowKey="id"

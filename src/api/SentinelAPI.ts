@@ -1,24 +1,12 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
-import { BigNumber, Transaction } from 'ethers/utils';
+import { BigNumber, Transaction } from 'ethers';
 import queryString from 'query-string';
 
-import { AssetType, IAsset, IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
+import { AssetType, IAsset, IDecodedTransaction, IError, IScheduledForUser, PolkadotChainId, Status } from '../types';
+import { API_URL } from '../env';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
-
-export enum Status {
-  Pending,
-  Cancelled,
-  Completed,
-  Error,
-  StaleNonce,
-  PendingConfirmations,
-  PendingPayment,
-  PendingPaymentConfirmations,
-  PaymentExpired,
-  Draft
-}
 
 export interface IScheduleRequest {
   assetType: AssetType;
@@ -71,40 +59,6 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
   chainId?: number;
 }
 
-export interface IScheduledForUser {
-  id: string;
-  assetType: AssetType;
-  signedTransaction: string;
-  conditionAsset: string;
-  conditionAssetName: string;
-  conditionAssetDecimals: number;
-  conditionAmount: string;
-  status: Status;
-  statusName: string;
-  transactionHash: string;
-  error: string;
-  from: string;
-  to: string;
-  nonce: number;
-  chainId: number;
-  conditionBlock: number;
-  timeCondition: number;
-  timeConditionTZ: string;
-  gasPrice: string;
-  gasPriceAware: boolean;
-  executionAttempts: number;
-  lastExecutionAttempt: string;
-  assetName: string;
-  assetDecimals: number;
-  assetAmount: number;
-  assetValue: number;
-  assetContract: string;
-  createdAt: string;
-  executedAt: string;
-  txKey: string;
-  notes: string;
-}
-
 export interface IScheduleParams {
   apiKey: string;
   draft?: boolean;
@@ -122,7 +76,7 @@ export class SentinelAPI {
     } catch (e) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Schedule API error']
+        errors: e.response ? e.response.data.errors : ['Schedule API error'],
       };
     }
   }
@@ -130,7 +84,7 @@ export class SentinelAPI {
   public static async get(request: IScheduleAccessKey): Promise<IScheduledTransaction | IError> {
     try {
       const response = await axios.get<IScheduleResponse>(this.API_URL, {
-        params: request
+        params: request,
       });
       switch (response.data.assetType) {
         case AssetType.Ethereum: {
@@ -146,12 +100,12 @@ export class SentinelAPI {
           const conditionalAsset = {
             ...conditionalAssetInfo,
             address: response.data.conditionAsset,
-            amount
+            amount,
           };
 
           return {
             ...response.data,
-            conditionalAsset
+            conditionalAsset,
           };
         }
         case AssetType.Polkadot: {
@@ -159,14 +113,14 @@ export class SentinelAPI {
 
           return {
             ...response.data,
-            ...parsed
+            ...parsed,
           } as any;
         }
       }
     } catch (e) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Scheduled API read error']
+        errors: e.response ? e.response.data.errors : ['Scheduled API read error'],
       };
     }
   }
@@ -208,7 +162,7 @@ export class SentinelAPI {
       return { errors: ['Unable to decode signed transaction'] } as IError;
     }
 
-    const chainName = ethers.utils.getNetwork(decodedTransaction.chainId).name;
+    const chainName = ethers.providers.getNetwork(decodedTransaction.chainId).name;
 
     let signedRecipient = decodedTransaction.to!;
     let signedAmount = TokenAPI.withDecimals(decodedTransaction.value.toString());
@@ -233,14 +187,14 @@ export class SentinelAPI {
     const signedChain = {
       baseAssetName: 'ETH',
       chainId: decodedTransaction.chainId,
-      chainName
+      chainName,
     };
 
     const signedAsset = {
       address: signedAddress,
       amount: signedAmount,
       decimals: signedAssetDecimals,
-      name: signedAssetName
+      name: signedAssetName,
     };
 
     const signedSender = decodedTransaction.from!;
@@ -251,7 +205,7 @@ export class SentinelAPI {
       // tslint:disable-next-line:no-empty
     } catch (e) {}
 
-    let senderBalance = new BigNumber(0);
+    let senderBalance = BigNumber.from(0);
     try {
       senderBalance = await this.getProvider(decodedTransaction.chainId).getBalance(decodedTransaction.from!);
       // tslint:disable-next-line:no-empty
@@ -271,7 +225,7 @@ export class SentinelAPI {
       signedGasPrice,
       signedNonce,
       signedRecipient,
-      signedSender
+      signedSender,
     };
   }
 
@@ -282,7 +236,7 @@ export class SentinelAPI {
     } catch (e) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Cancel API error']
+        errors: e.response ? e.response.data.errors : ['Cancel API error'],
       };
     }
   }
@@ -292,18 +246,18 @@ export class SentinelAPI {
 
     const items = response.data.items as IScheduledForUser[];
 
-    return items.map(i => {
+    return items.map((i) => {
       i.statusName = Status[i.status];
 
       return i;
     });
   }
 
-  private static API_URL: string = process.env.REACT_APP_API_URL + '/scheduled';
+  private static API_URL: string = API_URL + '/scheduled';
 
-  private static API_URL_LIST: string = process.env.REACT_APP_API_URL + '/scheduleds';
+  private static API_URL_LIST: string = API_URL + '/scheduleds';
 
   private static getProvider(chainId: number) {
-    return ethers.getDefaultProvider(ethers.utils.getNetwork(chainId));
+    return ethers.getDefaultProvider(ethers.providers.getNetwork(chainId));
   }
 }

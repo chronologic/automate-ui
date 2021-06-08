@@ -1,5 +1,4 @@
-// tslint:disable: no-console
-import { BigNumber, parseUnits } from 'ethers/utils';
+import { BigNumber, utils } from 'ethers';
 
 export function bigNumberToString(num: BigNumber, decimals = 18, precision = 6): string {
   let str = num.toString();
@@ -30,7 +29,7 @@ export function numberToBn(num: number, decimals = 18): BigNumber {
     numStr = numStr.substring(0, decimalPointIndex + decimals + 1);
   }
 
-  return parseUnits(`${numStr}`, decimals);
+  return utils.parseUnits(`${numStr}`, decimals);
 }
 
 export function formatLongId(id: string): string {
@@ -41,12 +40,61 @@ export function normalizeBigNumber(bn: BigNumber, decimalsIn: number, decimalsOu
   const decimalsDiff = decimalsOut - decimalsIn;
 
   if (decimalsDiff > 0) {
-    return new BigNumber(bn.toString() + '0'.repeat(decimalsDiff));
+    return BigNumber.from(bn.toString() + '0'.repeat(decimalsDiff));
   }
   if (decimalsDiff < 0) {
     const bnString = bn.toString();
-    return new BigNumber(bnString.substring(0, bnString.length + decimalsDiff) || '0');
+    return BigNumber.from(bnString.substring(0, bnString.length + decimalsDiff) || '0');
   }
 
   return bn;
+}
+
+export function isTruthy(value: string): boolean {
+  // eslint-disable-next-line eqeqeq
+  return value === 'true' || value == '1';
+}
+
+export function shortAddress(address?: string | null | undefined): string {
+  const addr = (address || '').toUpperCase();
+  return `0x${addr.substr(2, 4)}...${addr.substr(-4)}`;
+}
+
+export function formatNumber(value: number, decimals = 4): string {
+  const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return formatter.format(value);
+}
+
+export function formatCurrency(value: number, decimals = 2): string {
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+
+  return formatter.format(value);
+}
+
+export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
+  try {
+    const res = await ethereum?.request({
+      method: 'eth_call',
+      params: [
+        {
+          from: '0x0000000000000000000000000000000000000000',
+          // md5 hash of 'automate'
+          to: '0x00000000e7fdc80c0728d856260f92fde10af019',
+        },
+      ],
+    });
+
+    return res.includes('automate');
+  } catch (e) {
+    return false;
+  }
 }

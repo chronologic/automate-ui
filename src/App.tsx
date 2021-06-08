@@ -1,54 +1,105 @@
 import 'antd/dist/antd.css';
-import * as React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import React, { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Route, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Spin, Layout, Typography } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 
-import Auth from './components/Auth/Auth';
-import Header from './components/Header/Header';
-import Schedule from './components/Schedule/Schedule';
-import Scheduleds from './components/Scheduleds';
-import View from './components/View/View';
-// import Maintenance from './Maintenance';
+import { MAINTENANCE_MODE } from './env';
+import { Auth, Scheduleds, Maintenance, Header, Footer, PrivateRoute, Config, Transactions } from './components';
+import { Providers } from './Providers';
+import GlobalStyle from './GlobalStyle';
+import { useEagerConnect, useTheme } from './hooks';
 
-interface IAppState {
-  updateCounter: number;
-}
+const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
+const LegacyComponent = lazy(() => import('./legacy/Legacy'));
 
-class App extends React.Component<{}, IAppState> {
-  public state = {
-    updateCounter: 0
-  };
-
-  constructor(props: {}) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  public handleChange() {
-    this.setState(state => ({
-      updateCounter: state.updateCounter + 1
-    }));
-  }
-
+class Wrapper extends React.Component {
   public render() {
-    const { updateCounter } = this.state;
-    const renderScheduleRoute = () => <Schedule onChange={this.handleChange} />;
-    const renderViewRoute = (props: any) => <View {...props} onChange={this.handleChange} />;
-
     return (
-      <Router>
-        <div className="bx--grid">
-          <Header updateCounter={updateCounter} />
-          <Route exact={true} path="/" render={renderScheduleRoute} />
-          <Route path="/view/:id/:key" render={renderViewRoute} />
-          <Route path="/scheduleds" component={Scheduleds} />
-          <Route path="/auth" component={Auth} />
-        </div>
-      </Router>
+      <Providers>
+        <Router>
+          <App />
+        </Router>
+      </Providers>
     );
   }
-  // public render() {
-  //   return <Maintenance />;
-  // }
 }
 
-export default App;
+function App() {
+  const { theme } = useTheme();
+  useEagerConnect();
+
+  if (MAINTENANCE_MODE) {
+    return <Maintenance />;
+  }
+
+  return (
+    <Suspense
+      fallback={
+        <LoaderWrapper>
+          <Spin indicator={antIcon} />
+        </LoaderWrapper>
+      }
+    >
+      <Switch>
+        <Route path="/legacy" render={() => <LegacyComponent />} />
+        <Route path="*">
+          <GlobalStyle theme={theme} />
+          <Header />
+          <Layout.Content>
+            <Switch>
+              <PrivateRoute path="/transactions">
+                <Transactions />
+              </PrivateRoute>
+              <PrivateRoute path="/connect">
+                <Config />
+              </PrivateRoute>
+              <Route path="/scheduleds" component={Scheduleds} />
+              <Route exact={true} path="/" component={Auth} />
+              <Route path="*" component={RouteFallback} />
+            </Switch>
+          </Layout.Content>
+          <Footer />
+        </Route>
+      </Switch>
+      {/* <Header updateCounter={updateCounter} /> */}
+    </Suspense>
+  );
+}
+
+function RouteFallback() {
+  const history = useHistory();
+  const location = useLocation();
+
+  if (location.pathname.match(/\/view\/[a-z0-9]+/i)) {
+    history.replace(`/legacy${location.pathname}`);
+  }
+
+  return (
+    <NotFound>
+      <Typography.Title className="message">Not found</Typography.Title>
+    </NotFound>
+  );
+}
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
+
+const NotFound = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  .message {
+    font-weight: 300;
+  }
+`;
+
+export default Wrapper;

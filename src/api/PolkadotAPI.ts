@@ -1,6 +1,8 @@
 import axios from 'axios';
-import { BigNumber } from 'ethers/utils';
-import { IDecodedTransaction, IError, PolkadotChainId } from 'src/models';
+import { BigNumber } from 'ethers';
+import { IDecodedTransaction, IError, PolkadotChainId } from '../types';
+
+import { API_URL } from '../env';
 
 interface IPolkadotTx {
   signer: string;
@@ -17,18 +19,16 @@ interface IPolkadotTx {
 
 export const DOT = { name: 'DOT', decimals: 12 };
 
-const API_URL: string = process.env.REACT_APP_API_URL + '/polkadot';
-
 const api = axios.create({
-  baseURL: API_URL
+  baseURL: API_URL + '/polkadot',
 });
 
 const getBalance = async (address: string, chainId: PolkadotChainId) => {
   const res = await api.get('balance', {
     params: {
       address,
-      chainId
-    }
+      chainId,
+    },
   });
 
   return (res as any).balance as string;
@@ -42,30 +42,30 @@ const parseTx: (tx: string, chainId: PolkadotChainId) => Promise<IDecodedTransac
     const { data: parsed } = await api.get<IPolkadotTx>('parseTx', {
       params: {
         chainId,
-        tx
-      }
+        tx,
+      },
     });
     const decoded: IDecodedTransaction = {
-      maxTxCost: new BigNumber(0),
-      senderBalance: new BigNumber(0),
+      maxTxCost: BigNumber.from(0),
+      senderBalance: BigNumber.from(0),
       senderNonce: parsed.accountNonce,
       signedAsset: {
         address: '',
         amount: parsed.value || '0',
         decimals: parsed.decimals || 18,
         name: parsed.assetName,
-        symbol: parsed.assetName
+        symbol: parsed.assetName,
       },
       signedChain: {
         chainId: parsed.chainId,
-        chainName: parsed.chainName
+        chainName: parsed.chainName,
       },
-      signedGasLimit: new BigNumber(0),
-      signedGasPrice: new BigNumber(0),
+      signedGasLimit: BigNumber.from(0),
+      signedGasPrice: BigNumber.from(0),
       signedNonce: parsed.nonce,
       signedRecipient: parsed.dest || '',
       signedSender: parsed.signer,
-      transactionHash: parsed.hash
+      transactionHash: parsed.hash,
     };
 
     return decoded;
@@ -78,15 +78,17 @@ const getNextNonce = async (address: string, chainId: PolkadotChainId) => {
   const res = await api.get('nextNonce', {
     params: {
       address,
-      chainId
-    }
+      chainId,
+    },
   });
 
   return (res as any).nonce as number;
 };
 
-export default {
+const toExport = {
   getBalance,
   getNextNonce,
-  parseTx
+  parseTx,
 };
+
+export default toExport;
