@@ -51,8 +51,12 @@ const GlobalStyle = styled.div<IProps>`
   .ant-typography {
     color: ${(props) => props.theme.colors.text};
   }
+  h5.ant-typography,
+  .ant-typography h5,
   h4.ant-typography,
-  .ant-typography h4 {
+  .ant-typography h4,
+  h3.ant-typography,
+  .ant-typography h3 {
     color: ${(props) => props.theme.colors.text};
   }
 
