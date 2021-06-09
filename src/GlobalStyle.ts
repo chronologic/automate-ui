@@ -144,6 +144,13 @@ const GlobalStyle = styled.div<IProps>`
     color: ${(props) => props.theme.colors.text};
   }
 
+  .ant-form-item-has-error .ant-input,
+  .ant-form-item-has-error .ant-input-affix-wrapper,
+  .ant-form-item-has-error .ant-input:hover,
+  .ant-form-item-has-error .ant-input-affix-wrapper:hover {
+    background-color: ${(props) => props.theme.colors.body};
+  }
+
   .ant-dropdown-menu {
     background-color: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.text};
