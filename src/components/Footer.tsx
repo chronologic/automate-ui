@@ -9,7 +9,7 @@ function Footer() {
       <Wrapper>
         <Container>
           <Column>
-            <a href="https://blog.chronologic.network/tagged/automate" target="_blank" rel="noopener noreferrer">
+            <a href="https://blog.chronologic.network/automate/home" target="_blank" rel="noopener noreferrer">
               What is Automate?
             </a>
             <a href="https://app.chronologic.network" target="_blank" rel="noopener noreferrer">

@@ -1,40 +1,31 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Alert } from 'antd';
 import styled from 'styled-components';
 
-import { useEthers } from '../../hooks';
-import { isConnectedToAutomate } from '../../utils';
+import { useAutomateConnection } from '../../hooks';
 
 function ConnectionStatus() {
   const history = useHistory();
-  const { ethereum } = useEthers();
-  const [connectedToAutomate, setConnectedToAutomate] = useState(false);
+  const { connected, checkConnection } = useAutomateConnection();
 
   const handleClick = useCallback(() => {
     history.push('/connect');
   }, [history]);
 
   useEffect(() => {
-    checkConnection();
     let intervalId = setInterval(checkConnection, 5000);
-
-    async function checkConnection() {
-      const connectedToAutomate = await isConnectedToAutomate(ethereum);
-
-      setConnectedToAutomate(connectedToAutomate);
-    }
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [ethereum]);
+  }, [checkConnection]);
 
   return (
     <Container onClick={handleClick}>
       <Alert
-        type={connectedToAutomate ? 'success' : 'error'}
-        message={connectedToAutomate ? "You're connected to Automate" : "You're not connected to Automate"}
+        type={connected ? 'success' : 'error'}
+        message={connected ? "You're connected to Automate" : "You're not connected to Automate"}
         banner
       />
     </Container>

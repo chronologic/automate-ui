@@ -4,14 +4,13 @@ import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
 import { CHAIN_ID } from '../../env';
-import { useAuth, useEthers } from '../../hooks';
-import { isConnectedToAutomate } from '../../utils';
+import { useAuth, useAutomateConnection } from '../../hooks';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 
 function Config() {
   const wallet = useWallet();
-  const { ethereum } = useEthers();
+  const { checkConnection } = useAutomateConnection();
   const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
@@ -95,7 +94,7 @@ function Config() {
     if (!(wallet.status === 'connected')) {
       await wallet.connect('injected');
     }
-    const isConnected = await isConnectedToAutomate((window as any).ethereum);
+    const isConnected = await checkConnection();
     if (isConnected) {
       notification.success({ message: `You're connected to Automate!` });
       // setSubmitted(false);
@@ -103,7 +102,7 @@ function Config() {
     } else {
       notification.error({ message: `You're not connected to Automate. Check your configuration.` });
     }
-  }, [wallet]);
+  }, [checkConnection, wallet]);
 
   return (
     <Container>

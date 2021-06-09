@@ -6,6 +6,7 @@ import { Wallet } from 'use-wallet';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 import { shortAddress } from '../../utils';
+import { useAutomateConnection } from '../../hooks';
 
 interface IProps {
   wallet: Wallet<unknown>;
@@ -14,6 +15,7 @@ interface IProps {
 const { Text } = Typography;
 
 function Connected({ wallet }: IProps) {
+  const { connected } = useAutomateConnection();
   const handleDisconnect = useCallback(() => wallet.reset(), [wallet]);
 
   const menu = (
@@ -32,7 +34,7 @@ function Connected({ wallet }: IProps) {
           <Text title={wallet.account || ''} className="address">
             {shortAddress(wallet.account)}
           </Text>
-          <Text className="network">Ethereum</Text>
+          <Text className="network">{connected ? 'Automate' : 'Ethereum'}</Text>
         </Content>
       </Container>
     </Dropdown>
