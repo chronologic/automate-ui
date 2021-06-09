@@ -214,7 +214,7 @@ function Config() {
 
 const Container = styled.div`
   height: 100%;
-  padding: 60px 20px 20px 20px;
+  padding: 60px 20px 50px 20px;
   width: 100%;
   max-width: 540px;
   margin: 0 auto;

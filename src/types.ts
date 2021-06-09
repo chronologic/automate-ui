@@ -63,6 +63,13 @@ export interface ITheme {
     border: string;
     weak: string;
   };
+  assets: {
+    logoMain: string;
+    logoPartner?: string;
+  };
+  urls?: {
+    partnerHomepage: string;
+  };
 }
 export interface IThemeProps {
   theme: ITheme;

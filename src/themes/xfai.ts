@@ -13,6 +13,13 @@ const theme: ITheme = {
     border: '#3e3e3e',
     weak: '#232323',
   },
+  assets: {
+    logoMain: '/assets/themes/xfai__logo_main.svg',
+    logoPartner: '/assets/themes/xfai__logo_partner.svg',
+  },
+  urls: {
+    partnerHomepage: 'https://xfai.com',
+  },
 };
 
 export default theme;

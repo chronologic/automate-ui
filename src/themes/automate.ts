@@ -12,6 +12,9 @@ const theme: ITheme = {
     border: '#d9d9d9',
     weak: '#fafafa',
   },
+  assets: {
+    logoMain: '/assets/themes/automate__logo_main.svg',
+  },
 };
 
 export default theme;

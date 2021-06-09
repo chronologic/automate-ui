@@ -71,7 +71,7 @@ function App() {
               <Route path="*" component={RouteFallback} />
             </Switch>
           </Layout.Content>
-          {/* {location.pathname.startsWith('/connect') && <CallToAction />} */}
+          {location.pathname.startsWith('/connect') && <CallToAction />}
           <Footer />
         </Route>
       </Switch>
