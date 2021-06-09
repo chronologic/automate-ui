@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Form, Modal, Button, Checkbox, Typography, Slider, notification } from 'antd';
 import styled from 'styled-components';
+import { useWallet } from 'use-wallet';
 
 import { CHAIN_ID } from '../../env';
 import { useAuth, useEthers } from '../../hooks';
@@ -9,6 +10,7 @@ import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 
 function Config() {
+  const wallet = useWallet();
   const { ethereum } = useEthers();
   const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
@@ -90,7 +92,10 @@ function Config() {
   }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
-    const isConnected = await isConnectedToAutomate(ethereum);
+    if (!(wallet.status === 'connected')) {
+      await wallet.connect('injected');
+    }
+    const isConnected = await isConnectedToAutomate((window as any).ethereum);
     if (isConnected) {
       notification.success({ message: `You're connected to Automate!` });
       // setSubmitted(false);
@@ -98,7 +103,7 @@ function Config() {
     } else {
       notification.error({ message: `You're not connected to Automate. Check your configuration.` });
     }
-  }, [ethereum]);
+  }, [wallet]);
 
   return (
     <Container>
