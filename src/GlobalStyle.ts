@@ -242,6 +242,9 @@ const GlobalStyle = styled.div<IProps>`
   .ant-table-tbody > tr.ant-table-row-selected > td {
     background-color: ${(props) => props.theme.colors.border};
   }
+  td.ant-table-column-sort {
+    background-color: ${(props) => props.theme.colors.weak};
+  }
 
   .ant-pagination-item-active {
     background-color: ${(props) => props.theme.colors.body};

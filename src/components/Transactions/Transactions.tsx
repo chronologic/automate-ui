@@ -32,7 +32,14 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, formatLongId, formatNumber, normalizeBigNumber, numberToBn } from '../../utils';
+import {
+  bigNumberToNumber,
+  formatCurrency,
+  formatLongId,
+  formatNumber,
+  normalizeBigNumber,
+  numberToBn,
+} from '../../utils';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
@@ -812,9 +819,17 @@ function Transactions() {
         <br />
       </Modal>
       <TableHeader>
-        <Typography.Title className="title" level={4}>
+        <Typography.Title className="title" level={5}>
           Transaction list
         </Typography.Title>
+        <div className="savingsContainer">
+          <Typography.Title className="title" level={5}>
+            Total gas savings:
+          </Typography.Title>
+          <Typography.Title className="title savings" level={3}>
+            {formatCurrency(0)}
+          </Typography.Title>
+        </div>
       </TableHeader>
       <Table
         className="table"
@@ -866,8 +881,18 @@ const TableHeader = styled.div`
   justify-content: space-between;
   margin-bottom: 32px;
 
-  .title {
+  .title.title {
     font-weight: 300;
+    margin-top: 0;
+  }
+  .savingsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+  }
+  .savings {
+    margin-left: 8px;
+    color: ${(props) => props.theme.colors.accent};
   }
 `;
 
