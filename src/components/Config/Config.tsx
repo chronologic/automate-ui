@@ -97,7 +97,7 @@ function Config() {
     const isConnected = await checkConnection();
     if (isConnected) {
       notification.success({ message: `You're connected to Automate!` });
-      // setSubmitted(false);
+      setSubmitted(false);
       setCompleted(true);
     } else {
       notification.error({ message: `You're not connected to Automate. Check your configuration.` });
@@ -108,104 +108,108 @@ function Config() {
     <Container>
       <PageTitle title="Connect" />
       <Typography.Title level={3} className="title">
-        Connection Settings
+        {completed ? 'Congratulations!' : 'Connection Settings'}
       </Typography.Title>
-      <Checkboxes>
-        <CheckboxSection>
-          <Checkbox checked={gasPriceAware} disabled={submitted} onChange={(e) => setGasPriceAware(e.target.checked)}>
-            <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
-          </Checkbox>
-          <p>
-            Once the network gas price falls below the gas cost specified in the transaction, it will be broadcast to
-            the network.
-          </p>
-        </CheckboxSection>
-        <CheckboxSection>
-          <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
-            <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
-          </Checkbox>
-          <p>
-            No transaction will be broadcast to the Ethereum network until you go to the Transaction list and specify
-            additional conditions.
-          </p>
-        </CheckboxSection>
-      </Checkboxes>
-      <div>
-        <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
-        <p>
-          Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer wait
-          times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network, this is NOT a
-          guaranteed confirmation time.
-        </p>
-        <SliderContainer>
-          <Slider
-            marks={sliderMarks}
-            step={1}
-            value={confirmationTime}
-            min={0}
-            max={3}
-            disabled={submitted}
-            tooltipVisible={false}
-            onChange={setConfirmationTime}
-          />
-        </SliderContainer>
-      </div>
-      <Button type="primary" size="large" onClick={handleConnect}>
-        Connect to Automate
-      </Button>
-      <Modal
-        title={completed ? 'Congratulations!' : 'Add Automate to MetaMask'}
-        visible={submitted}
-        onOk={completed ? handleCancel : handleConfirmConfigured}
-        onCancel={handleCancel}
-        okText={completed ? 'Close' : 'OK'}
-        cancelButtonProps={{ style: { visibility: completed ? 'hidden' : 'visible' } }}
-      >
-        {!completed && (
-          <MetaMaskConfig>
-            <p>Almost there!</p>
-            <p>
-              Now you just need to add the Automate network configuration to your MetaMask.
-              <br />
-              To do that, just follow the instructions{' '}
-              <a
-                href="https://metamask.zendesk.com/hc/en-us/articles/360043227612-How-to-add-custom-Network-RPC-and-or-Block-Explorer"
-                rel="noopener noreferrer"
-                target="_blank"
+      {completed && (
+        <Completed>
+          <p>You can now start saving on gas fees! Click one of the links below to proceed.</p>
+        </Completed>
+      )}
+      {!completed && (
+        <>
+          <Checkboxes>
+            <CheckboxSection>
+              <Checkbox
+                checked={gasPriceAware}
+                disabled={submitted}
+                onChange={(e) => setGasPriceAware(e.target.checked)}
               >
-                here
-              </a>{' '}
-              and when you get to the 'Add Network' screen, simply copy and paste all values presented below to their
-              respective inputs in MetaMask and save the connection.
+                <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
+              </Checkbox>
+              <p>
+                Once the network gas price falls below the gas cost specified in the transaction, it will be broadcast
+                to the network.
+              </p>
+            </CheckboxSection>
+            <CheckboxSection>
+              <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
+                <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
+              </Checkbox>
+              <p>
+                No transaction will be broadcast to the Ethereum network until you go to the Transaction list and
+                specify additional conditions.
+              </p>
+            </CheckboxSection>
+          </Checkboxes>
+          <div>
+            <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
+            <p>
+              Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer wait
+              times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network, this is
+              NOT a guaranteed confirmation time.
             </p>
-            <p>When you're done, click 'OK' below.</p>
-            <Form layout="vertical">
-              <Form.Item label="Network Name">
-                <CopyInput value={networkName} inputTitle="Network Name" />
-              </Form.Item>
-              <Form.Item label="New RPC URL">
-                <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
-              </Form.Item>
-              <Form.Item label="Chain ID">
-                <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
-              </Form.Item>
-              <Form.Item label="Currency Symbol">
-                <CopyInput value="ETH" inputTitle="Currency Symbol" />
-              </Form.Item>
-              <Form.Item label="Block Explorer URL">
-                <CopyInput
-                  value="https://automate.chronologic.network/transactions?query="
-                  inputTitle="Block Explorer URL"
-                />
-              </Form.Item>
-            </Form>
-          </MetaMaskConfig>
-        )}
-        {completed && (
-          <Completed>
-            <p>You can now start saving on gas fees!</p>
-          </Completed>
-        )}
+            <SliderContainer>
+              <Slider
+                marks={sliderMarks}
+                step={1}
+                value={confirmationTime}
+                min={0}
+                max={3}
+                disabled={submitted}
+                tooltipVisible={false}
+                onChange={setConfirmationTime}
+              />
+            </SliderContainer>
+          </div>
+          <Button type="primary" size="large" onClick={handleConnect}>
+            Connect to Automate
+          </Button>
+        </>
+      )}
+      <Modal
+        title="Add Automate to MetaMask"
+        visible={submitted}
+        onOk={handleConfirmConfigured}
+        onCancel={handleCancel}
+      >
+        <MetaMaskConfig>
+          <p>Almost there!</p>
+          <p>
+            Now you just need to add the Automate network configuration to your MetaMask.
+            <br />
+            To do that, just follow the instructions{' '}
+            <a
+              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              here
+            </a>{' '}
+            and when you get to the 'Add Network' screen, simply copy and paste all values presented below to their
+            respective inputs in MetaMask and save the connection.
+          </p>
+          <p>When you're done, click 'OK' below.</p>
+          <Form layout="vertical">
+            <Form.Item label="Network Name">
+              <CopyInput value={networkName} inputTitle="Network Name" />
+            </Form.Item>
+            <Form.Item label="New RPC URL">
+              <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
+            </Form.Item>
+            <Form.Item label="Chain ID">
+              <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
+            </Form.Item>
+            <Form.Item label="Currency Symbol">
+              <CopyInput value="ETH" inputTitle="Currency Symbol" />
+            </Form.Item>
+            <Form.Item label="Block Explorer URL">
+              <CopyInput
+                value="https://automate.chronologic.network/transactions?query="
+                inputTitle="Block Explorer URL"
+              />
+            </Form.Item>
+          </Form>
+        </MetaMaskConfig>
       </Modal>
     </Container>
   );
