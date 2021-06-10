@@ -100,7 +100,22 @@ function Config() {
       setSubmitted(false);
       setCompleted(true);
     } else {
-      notification.error({ message: `You're not connected to Automate. Check your configuration.` });
+      notification.error({
+        message: (
+          <span>
+            You're not connected to Automate. Make sure you followed the
+            <br />
+            <a
+              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              setup instructions
+            </a>{' '}
+            correctly.
+          </span>
+        ),
+      });
     }
   }, [checkConnection, wallet]);
 
