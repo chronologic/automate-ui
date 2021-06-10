@@ -2,38 +2,37 @@
 
 # Automate UI
 
-⏱️ This contains UI project for Automate project.
+⏱️ This repositery contains UI source code for [Automate](https://blog.chronologic.network/automate/home).
 
-API project here https://github.com/chronologic/automate-api
+API source code can be found [here](https://github.com/chronologic/automate-api)
 
-📌 __LIVE version available here__ [https://automate.chronologic.network/](https://automate.chronologic.network/)
+📌 **LIVE version is available here** [https://automate.chronologic.network/](https://automate.chronologic.network/)
 
-__ProductHunt:__[here](https://www.producthunt.com/posts/automate-1)
+**ProductHunt is** [here](https://www.producthunt.com/posts/automate-1)
 
-❓ __Tutorials and help:__ [here](https://blog.chronologic.network/automate/home)
+❓ **Tutorials and help are** [here](https://blog.chronologic.network/automate/home)
 
-## How to start
+## Running the project
 
-`yarn install`
+Install with `npm install`
 
-To start the TS and SCSS watcher for development
+Start development instance with `npm start`
 
-`yarn start`
+Create production build with `npm run build`
 
-To create a production build
+## Environment variables
 
-`yarn build`
+This repo uses [`dotenv`](https://www.npmjs.com/package/dotenv) to load environment variables.
 
-## Development
+For development, a `.env` file should be created based on the `.env.example` template file. The `.env` file should never be commited.
 
-UI uses `.env.development` to set `REACT_APP_API_URL=http://localhost:3001` which is expected URL of API project.
+In production, environment variables can be injected directly.
 
-## Stack
+Below is a list of possible environment variables.
 
-Typescript
-React
-Carbon Components
-
-Created with `create-react-app --scripts-version=react-scripts-ts`
-
-HOWTO instructions here https://github.com/Microsoft/TypeScript-React-Starter/blob/master/README-CRA.md
+| Name                     | Type      | Default | Description                                                   |
+| ------------------------ | --------- | ------- | ------------------------------------------------------------- |
+| `REACT_APP_CHAIN_ID`     | `number`  | `1`     | Ethereum chain ID (`1` = mainnet)                             |
+| `REACT_APP_API_URL`      | `string`  |         | URL of the [API](https://github.com/chronologic/automate-api) |
+| `DATABASE_URL`           | `string`  |         | PostgreSQL connection string                                  |
+| `REACT_APP_ALLOW_SIGNUP` | `boolean` |         | Whether to allow new users to sign up                         |
