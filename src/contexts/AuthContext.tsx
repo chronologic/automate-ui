@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     setUser(user);
     const userWithExpiration: IUserWithExpiration = {
       ...user,
-      expirationDate: user.expirationDate || moment().add(1, 'day').toISOString(),
+      expirationDate: user.expirationDate || moment().add(30, 'days').toISOString(),
     };
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(userWithExpiration));
   }, []);
