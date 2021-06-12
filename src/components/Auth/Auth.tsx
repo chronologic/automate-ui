@@ -36,7 +36,6 @@ function Auth() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('REDIRECT');
       history.push('/connect');
     }
   }, [history, isAuthenticated]);

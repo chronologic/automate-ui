@@ -32,7 +32,7 @@ export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
 
   return <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>;
 };
-
+// TODO: make utm_source theme override ls theme if no user in ls
 function getTheme(): ITheme {
   let theme = localStorage.getItem(themeStorageKey) as string;
 

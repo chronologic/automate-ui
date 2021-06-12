@@ -72,16 +72,25 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     setUser(defaultUser);
   }, []);
 
+  // TODO: move the interval to 'onAuthenticated' to ensure proper check
   useEffect(() => {
     let user: IUserWithExpiration | null = JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || 'null');
-    let logoutTimeout: NodeJS.Timeout;
+    let logoutCheckInterval: NodeJS.Timeout;
     if (user && user.expirationDate) {
       const timeToExpiration = new Date(user.expirationDate).getTime() - new Date().getTime();
 
       if (timeToExpiration <= 0) {
         user = null;
       } else {
-        logoutTimeout = setTimeout(onLogout, timeToExpiration);
+        const MINUTE_MILLIS = 60 * 1000;
+        logoutCheckInterval = setInterval(() => {
+          if (user && user.expirationDate) {
+            const timeToExpiration = new Date(user.expirationDate).getTime() - new Date().getTime();
+            if (timeToExpiration <= 0) {
+              onLogout();
+            }
+          }
+        }, MINUTE_MILLIS);
       }
     }
     if (user) {
@@ -93,7 +102,7 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     setInitialized(true);
 
     return () => {
-      clearTimeout(logoutTimeout);
+      clearInterval(logoutCheckInterval);
     };
   }, [onAuthenticated, onLogout]);
 
