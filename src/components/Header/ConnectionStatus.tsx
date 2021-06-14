@@ -16,6 +16,8 @@ function ConnectionStatus() {
   useEffect(() => {
     let intervalId = setInterval(checkConnection, 5000);
 
+    checkConnection();
+
     return () => {
       clearInterval(intervalId);
     };
