@@ -17,6 +17,7 @@ interface IProps {
 }
 
 const USER_STORAGE_KEY = 'user';
+const MINUTE_MILLIS = 60 * 1000;
 
 const defaultUser: IUser = {
   login: '',
@@ -39,6 +40,13 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     login: '',
     apiKey: '',
   });
+
+  const onLogout = useCallback(() => {
+    localStorage.removeItem(USER_STORAGE_KEY);
+    setIsAuthenticated(false);
+    setUser(defaultUser);
+  }, []);
+
   const onAuthenticated = useCallback((user: IUserWithExpiration) => {
     setIsAuthenticated(true);
     setUser(user);
@@ -66,34 +74,10 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     [onAuthenticated]
   );
 
-  const onLogout = useCallback(() => {
-    localStorage.removeItem(USER_STORAGE_KEY);
-    setIsAuthenticated(false);
-    setUser(defaultUser);
-  }, []);
-
-  // TODO: move the interval to 'onAuthenticated' to ensure proper check
   useEffect(() => {
     let user: IUserWithExpiration | null = JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || 'null');
     let logoutCheckInterval: NodeJS.Timeout;
-    if (user && user.expirationDate) {
-      const timeToExpiration = new Date(user.expirationDate).getTime() - new Date().getTime();
-
-      if (timeToExpiration <= 0) {
-        user = null;
-      } else {
-        const MINUTE_MILLIS = 60 * 1000;
-        logoutCheckInterval = setInterval(() => {
-          if (user && user.expirationDate) {
-            const timeToExpiration = new Date(user.expirationDate).getTime() - new Date().getTime();
-            if (timeToExpiration <= 0) {
-              onLogout();
-            }
-          }
-        }, MINUTE_MILLIS);
-      }
-    }
-    if (user) {
+    if (user && !isSessionExpired(user)) {
       onAuthenticated(user);
     } else {
       onLogout();
@@ -106,9 +90,33 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     };
   }, [onAuthenticated, onLogout]);
 
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    function logoutIfSessionExpired() {
+      const hasExpiration = !!(user as IUserWithExpiration).expirationDate;
+      if (hasExpiration) {
+        if (isSessionExpired(user)) {
+          onLogout();
+        } else {
+          timeoutId = setTimeout(logoutIfSessionExpired, MINUTE_MILLIS);
+        }
+      }
+    }
+
+    logoutIfSessionExpired();
+
+    return () => clearTimeout(timeoutId);
+  }, [onLogout, user]);
+
   return (
     <AuthContext.Provider value={{ user, isAuthenticated, authenticating, onAuthenticate, onLogout }}>
       {initialized && children}
     </AuthContext.Provider>
   );
 };
+
+function isSessionExpired(user: IUserWithExpiration): boolean {
+  const timeToExpiration = new Date(user.expirationDate!).getTime() - new Date().getTime();
+
+  return timeToExpiration <= MINUTE_MILLIS;
+}
