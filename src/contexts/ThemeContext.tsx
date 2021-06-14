@@ -1,54 +1,59 @@
-import React, { createContext } from 'react';
+import React, { createContext, useCallback, useState } from 'react';
 import { parseUrl } from 'query-string';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
 import { ITheme } from '../types';
 import themes from '../themes';
 
-const defaultTheme = 'automate';
+const defaultThemeName = 'automate';
 const themeStorageKey = 'theme';
 
 export interface IThemeContext {
   theme: ITheme;
+  setTheme: (name: string) => void;
 }
 
 interface IProps {
   children: React.ReactNode;
 }
 
-const theme = getTheme();
+const initialTheme = _getTheme();
 
 export const ThemeContext = createContext<IThemeContext>({
-  theme,
+  theme: initialTheme,
+  setTheme: () => {},
 });
 
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
-  // const [theme, setTheme] = useState(themes[defaultTheme]);
+  const [theme, setNewTheme] = useState(initialTheme);
+  const setTheme = useCallback((name: string) => {
+    const newTheme = _setTheme(name, initialTheme.name);
+    setNewTheme(newTheme);
+  }, []);
 
-  // useEffect(() => {
-  //   const currentTheme = getTheme();
-  //   setTheme(currentTheme);
-  // }, []);
-
-  return <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>;
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <StyledThemeProvider theme={theme}>{children}</StyledThemeProvider>
+    </ThemeContext.Provider>
+  );
 };
-// TODO: make utm_source theme override ls theme if no user in ls
-function getTheme(): ITheme {
-  let theme = localStorage.getItem(themeStorageKey) as string;
 
-  if (!theme) {
-    const parsed = parseUrl(window.location.href);
+function _getTheme(): ITheme {
+  let themeName = localStorage.getItem(themeStorageKey) as string;
 
-    if (parsed.query?.utm_source) {
-      theme = parsed.query.utm_source as string;
-    }
+  const parsed = parseUrl(window.location.href);
+
+  if (parsed.query?.utm_source) {
+    themeName = parsed.query.utm_source as string;
   }
 
-  if (!(themes as any)[theme]) {
-    theme = defaultTheme;
-  }
+  return _setTheme(themeName);
+}
 
-  localStorage.setItem(themeStorageKey, theme as string);
+function _setTheme(name: string, fallbackThemeName?: string): ITheme {
+  const theme: ITheme = (themes as any)[name || fallbackThemeName || defaultThemeName];
 
-  return (themes as any)[theme];
+  localStorage.setItem(themeStorageKey, theme.name);
+
+  return theme;
 }

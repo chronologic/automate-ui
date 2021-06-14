@@ -78,6 +78,7 @@ export interface IThemeProps {
 export interface IUser {
   login: string;
   apiKey: string;
+  source?: string;
 }
 
 export interface IUserWithExpiration extends IUser {
