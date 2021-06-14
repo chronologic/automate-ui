@@ -81,5 +81,5 @@ export function formatCurrency(value: number, decimals = 2): string {
     maximumFractionDigits: decimals,
   });
 
-  return formatter.format(value);
+  return formatter.format(value || 0);
 }

@@ -245,6 +245,9 @@ const GlobalStyle = styled.div<IProps>`
   td.ant-table-column-sort {
     background-color: ${(props) => props.theme.colors.weak};
   }
+  .ant-table-column-sorter {
+    margin-left: 4px;
+  }
 
   .ant-pagination-item-active {
     background-color: ${(props) => props.theme.colors.body};

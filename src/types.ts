@@ -130,4 +130,6 @@ export interface IScheduledForUser {
   executedAt: string;
   txKey: string;
   notes: string;
+  gasPaid: number;
+  gasSaved: number;
 }

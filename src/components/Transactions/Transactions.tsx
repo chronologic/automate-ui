@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseSquareOutlined,
   DeleteOutlined,
-  FormOutlined,
   PlusOutlined,
   MoreOutlined,
   EditOutlined,
   ExportOutlined,
   FileTextOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import {
   Button,
@@ -23,6 +20,7 @@ import {
   Table,
   TimePicker,
   Typography,
+  Tooltip,
 } from 'antd';
 import { BigNumber } from 'ethers';
 import uniqBy from 'lodash/uniqBy';
@@ -87,6 +85,10 @@ function Transactions() {
   const [addAssetError, setAddAssetError] = useState('');
   const [fetchingAsset, setFetchingAsset] = useState(false);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
+
+  const totalGasSavings = useMemo(() => {
+    return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
+  }, [items]);
 
   const handleStartEditingItem = useCallback(
     (record: IScheduledForUser) => {
@@ -475,10 +477,44 @@ function Transactions() {
       },
 
       {
+        dataIndex: 'gasPaid',
+        render: (gasPaid: number, record: IScheduledForUser) => {
+          let info = <div />;
+          if (!['Completed'].includes(record.statusName)) {
+            info = (
+              <Tooltip title="Estimated value">
+                <InfoCircleOutlined />
+              </Tooltip>
+            );
+          }
+          return (
+            <div>
+              {info} {formatCurrency(gasPaid)}
+            </div>
+          );
+        },
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.gasPaid || 0) - (b.gasPaid || 0),
         title: 'Gas Paid',
         align: 'right' as any,
       },
       {
+        dataIndex: 'gasSaved',
+        render: (gasSaved: number, record: IScheduledForUser) => {
+          let info = <div />;
+          if (!['Completed'].includes(record.statusName)) {
+            info = (
+              <Tooltip title="Estimated value">
+                <InfoCircleOutlined />
+              </Tooltip>
+            );
+          }
+          return (
+            <div>
+              {info} {formatCurrency(gasSaved)}
+            </div>
+          );
+        },
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.gasSaved || 0) - (b.gasSaved || 0),
         title: 'Gas Saved',
         align: 'right' as any,
       },
@@ -827,7 +863,7 @@ function Transactions() {
             Total gas savings:
           </Typography.Title>
           <Typography.Title className="title savings" level={3}>
-            {formatCurrency(0)}
+            {formatCurrency(totalGasSavings)}
           </Typography.Title>
         </div>
       </TableHeader>
