@@ -22,6 +22,13 @@ const coingeckoApi = axios.create({ baseURL: 'https://api.coingecko.com/api/v3' 
 
 initCache();
 
+const xfitToken = '0x4aa41bC1649C9C3177eD16CaaA11482295fC7441';
+const xfai = '0xd622dbd384d8c682f1dfe2ec18809c6bcd09bd40';
+
+const mapping: { [key: string]: string } = {
+  [xfai]: xfitToken,
+};
+
 export default function AssetSymbol({ name, address }: IProps) {
   const [url, setUrl] = useState('');
   const [error, setError] = useState(false);
@@ -30,7 +37,8 @@ export default function AssetSymbol({ name, address }: IProps) {
     getUrl();
 
     async function getUrl() {
-      const url = await getAssetUrl((name || '').toLowerCase(), address);
+      const _address = mapping[address.toLowerCase()] || address;
+      const url = await getAssetUrl((name || '').toLowerCase(), _address);
       setUrl(url);
     }
   }, [address, name]);
@@ -77,7 +85,7 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
       if (address) {
         updateCache(address, url);
       }
-      if (name && name !== '_' && name !== '-') {
+      if (isNotEmpty(name)) {
         updateCache(name, url);
       }
 
@@ -91,7 +99,7 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
   if (address) {
     cache[address] = promise;
   }
-  if (name && name !== '_' && name !== '-') {
+  if (isNotEmpty(name)) {
     cache[name] = cache[address];
   }
 
@@ -101,4 +109,8 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
 function updateCache(key: string, value: string): void {
   rawCache[key] = value;
   localStorage.setItem(cacheStorageKey, JSON.stringify(rawCache));
+}
+
+function isNotEmpty(value: string): boolean {
+  return !!value && value !== '_' && value !== '-';
 }
