@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { MOBILE_SCREEN_THRESHOLD } from '../constants';
 import { IThemeProps } from '../types';
 
 function Footer() {
@@ -72,6 +73,11 @@ const Container = styled.div`
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const Column = styled.div`
@@ -82,6 +88,10 @@ const Column = styled.div`
     margin-bottom: 16px;
     text-transform: uppercase;
     font-weight: 300;
+  }
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    text-align: center;
   }
 `;
 
