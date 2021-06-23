@@ -1,15 +1,21 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, Dropdown } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { useAuth } from '../../hooks';
+import { useAuth, useScreen } from '../../hooks';
 import { IThemeProps } from '../../types';
 import { ALLOW_SIGNUP } from '../../env';
 import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
+  const { isMobile } = useScreen();
+
+  const loginShort = useMemo(() => {
+    return user.login.split('@')[0] || user.login.substr(0, 10);
+  }, [user.login]);
 
   if (isAuthenticated) {
     const menu = (
@@ -31,7 +37,7 @@ function HeaderMain() {
       <Container>
         <Dropdown overlay={menu} trigger={['click']}>
           <Login>
-            <span>{user.login}</span> <DownOutlined />
+            <span>{isMobile ? loginShort : user.login}</span> <DownOutlined />
           </Login>
         </Dropdown>
       </Container>
