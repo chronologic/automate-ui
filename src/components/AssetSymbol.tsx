@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 
+import { isEmptyName, shortAddress } from '../utils';
+
 interface IRawCache {
   [key: string]: string;
 }
@@ -13,6 +15,7 @@ interface ICache {
 interface IProps {
   name: string;
   address: string;
+  chars?: number;
 }
 
 const cacheStorageKey = 'assetImages';
@@ -29,7 +32,7 @@ const mapping: { [key: string]: string } = {
   [xfai]: xfitToken,
 };
 
-export default function AssetSymbol({ name, address }: IProps) {
+export default function AssetSymbol({ name, address, chars }: IProps) {
   const [url, setUrl] = useState('');
   const [error, setError] = useState(false);
 
@@ -43,11 +46,14 @@ export default function AssetSymbol({ name, address }: IProps) {
     }
   }, [address, name]);
 
+  const _name = isEmptyName(name) ? '' : name;
+  const title = _name || address;
+
   return (
     <Content>
-      {(url && !error && (
-        <img src={url} alt={name || address} title={name || address} onError={() => setError(true)} />
-      )) || <span>{name || '_'}</span>}
+      {(url && !error && <img src={url} alt={title} title={title} onError={() => setError(true)} />) || (
+        <span>{_name || shortAddress(address, chars)}</span>
+      )}
     </Content>
   );
 }
@@ -85,7 +91,7 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
       if (address) {
         updateCache(address, url);
       }
-      if (isNotEmpty(name)) {
+      if (!isEmptyName(name)) {
         updateCache(name, url);
       }
 
@@ -99,7 +105,7 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
   if (address) {
     cache[address] = promise;
   }
-  if (isNotEmpty(name)) {
+  if (!isEmptyName(name)) {
     cache[name] = cache[address];
   }
 
@@ -109,8 +115,4 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
 function updateCache(key: string, value: string): void {
   rawCache[key] = value;
   localStorage.setItem(cacheStorageKey, JSON.stringify(rawCache));
-}
-
-function isNotEmpty(value: string): boolean {
-  return !!value && value !== '_' && value !== '-';
 }

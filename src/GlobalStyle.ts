@@ -310,6 +310,15 @@ const GlobalStyle = styled.div<IProps>`
   .ant-modal-footer {
     border-color: ${(props) => props.theme.colors.border};
   }
+
+  .ant-card {
+    border-color: ${(props) => props.theme.colors.border};
+    background-color: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+  }
+  .ant-card-head {
+    border-color: ${(props) => props.theme.colors.border};
+  }
 `;
 
 export default GlobalStyle;

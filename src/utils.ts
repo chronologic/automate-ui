@@ -32,10 +32,6 @@ export function numberToBn(num: number, decimals = 18): BigNumber {
   return utils.parseUnits(`${numStr}`, decimals);
 }
 
-export function formatLongId(id: string): string {
-  return id.substring(0, 6) + '...' + id.substring(id.length - 4, id.length);
-}
-
 export function normalizeBigNumber(bn: BigNumber, decimalsIn: number, decimalsOut = 18): BigNumber {
   const decimalsDiff = decimalsOut - decimalsIn;
 
@@ -55,9 +51,9 @@ export function isTruthy(value: string): boolean {
   return value === 'true' || value == '1';
 }
 
-export function shortAddress(address?: string | null | undefined): string {
+export function shortAddress(address?: string | null | undefined, chars = 4): string {
   const addr = (address || '').toUpperCase();
-  return `0x${addr.substr(2, 4)}...${addr.substr(-4)}`;
+  return `0x${addr.substr(2, chars)}...${addr.substr(-chars)}`;
 }
 
 export function formatNumber(value: number, decimals = 4): string {
@@ -82,4 +78,8 @@ export function formatCurrency(value: number, decimals = 2): string {
   });
 
   return formatter.format(value || 0);
+}
+
+export function isEmptyName(value: string): boolean {
+  return !value || value === '_' || value === '-';
 }

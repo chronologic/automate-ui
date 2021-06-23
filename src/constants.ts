@@ -1,1 +1,2 @@
 export const MOBILE_SCREEN_THRESHOLD = 800;
+export const SMALL_SCREEN_THRESHOLD = 960;

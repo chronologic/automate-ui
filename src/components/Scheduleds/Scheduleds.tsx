@@ -15,7 +15,7 @@ import queryString from 'query-string';
 
 import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, formatLongId, normalizeBigNumber, numberToBn } from '../../utils';
+import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
@@ -300,7 +300,7 @@ function Scheduleds() {
         dataIndex: 'id',
         render: (id: string, record: IScheduledForUser) => (
           <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
-            {formatLongId(id)}
+            {shortAddress(id)}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
@@ -370,7 +370,7 @@ function Scheduleds() {
         dataIndex: 'from',
         render: (from: string) => (
           <a href={`https://etherscan.io/address/${from}`} title={from} target="_blank" rel="noopener noreferrer">
-            {formatLongId(from)}
+            {shortAddress(from)}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
@@ -380,7 +380,7 @@ function Scheduleds() {
         dataIndex: 'to',
         render: (to: string) => (
           <a href={`https://etherscan.io/address/${to}`} title={to} target="_blank" rel="noopener noreferrer">
-            {formatLongId(to || '')}
+            {shortAddress(to || '')}
           </a>
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
