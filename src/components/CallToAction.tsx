@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
+import { MOBILE_SCREEN_THRESHOLD } from '../constants';
 import { useTheme } from '../hooks';
-// import
 
 function CallToAction() {
   const { theme } = useTheme();
@@ -47,6 +47,10 @@ const Container = styled.div`
   flex-direction: row;
   align-items: stretch;
   width: 100%;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    flex-direction: column;
+  }
 `;
 
 const Action = styled.div`
@@ -75,10 +79,12 @@ const Action = styled.div`
       background-color: ${(props) => props.theme.colors.weak};
       opacity: 0.5;
     }
-    &.right {
-      align-items: flex-end;
-      .content {
-        padding-right: 90px;
+    @media (min-width: ${MOBILE_SCREEN_THRESHOLD + 1}px) {
+      &.right {
+        align-items: flex-end;
+        .content {
+          padding-right: 90px;
+        }
       }
     }
     a {
@@ -90,10 +96,12 @@ const Action = styled.div`
       background-color: ${(props) => props.theme.colors.border};
       opacity: 0.5;
     }
-    &.left {
-      align-items: flex-start;
-      .content {
-        padding-left: 90px;
+    @media (min-width: ${MOBILE_SCREEN_THRESHOLD + 1}px) {
+      &.left {
+        align-items: flex-start;
+        .content {
+          padding-left: 90px;
+        }
       }
     }
     a {
