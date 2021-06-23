@@ -5,6 +5,7 @@ import { useTheme } from '../../hooks';
 import WalletConnector from '../WalletConnector';
 import FlexSpacer from '../FlexSpacer';
 import User from './User';
+import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
 function HeaderMain() {
   const { theme } = useTheme();
@@ -13,7 +14,7 @@ function HeaderMain() {
     <Container>
       <Logos>
         <Link to="/" className="logo-link">
-          <img alt="logo" className="logo" src={theme.assets.logoMain} />
+          <img alt="logo" className="logo chrono" src={theme.assets.logoMain} />
         </Link>
         {!!theme.assets.logoPartner && (
           <>
@@ -26,7 +27,7 @@ function HeaderMain() {
       </Logos>
       <FlexSpacer />
       <User />
-      <WalletConnector />
+      <WalletConnector className="walletConnector" />
     </Container>
   );
 }
@@ -40,6 +41,14 @@ const Container = styled.div`
   max-width: 1180px;
   margin: 0 auto;
   padding: 8px 0;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    padding: 8px;
+
+    .walletConnector {
+      display: none;
+    }
+  }
 `;
 
 const Logos = styled.div`
@@ -56,6 +65,21 @@ const Logos = styled.div`
     font-size: 2rem;
     margin-left: 24px;
     margin-right: 16px;
+  }
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    .logo {
+      height: 50px;
+    }
+    .logo.chrono {
+      width: 50px;
+      object-fit: cover;
+      object-position: left;
+    }
+    .plus {
+      margin-left: 8px;
+      margin-right: 8px;
+    }
   }
 `;
 

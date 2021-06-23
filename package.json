@@ -11,6 +11,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "antd": "^4.16.1",
+    "antd-mobile": "^2.3.4",
     "axios": "^0.21.1",
     "carbon-components": "^10.36.0",
     "carbon-components-react": "^7.36.0",
