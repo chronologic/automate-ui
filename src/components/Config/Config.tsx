@@ -7,6 +7,7 @@ import { CHAIN_ID } from '../../env';
 import { useAuth, useAutomateConnection } from '../../hooks';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
+import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
 function Config() {
   const wallet = useWallet();
@@ -258,6 +259,10 @@ const Checkboxes = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 24px;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    flex-direction: column;
+  }
 `;
 
 const CheckboxSection = styled.div`
@@ -271,6 +276,12 @@ const CheckboxSection = styled.div`
 const SliderContainer = styled.div`
   width: 100%;
   margin-bottom: 100px;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
   .ant-slider-mark {
     white-space: nowrap;
