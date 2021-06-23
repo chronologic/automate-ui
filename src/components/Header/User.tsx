@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useAuth } from '../../hooks';
 import { IThemeProps } from '../../types';
 import { ALLOW_SIGNUP } from '../../env';
+import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
@@ -30,7 +31,7 @@ function HeaderMain() {
       <Container>
         <Dropdown overlay={menu} trigger={['click']}>
           <Login>
-            {user.login} <DownOutlined />
+            <span>{user.login}</span> <DownOutlined />
           </Login>
         </Dropdown>
       </Container>
@@ -47,6 +48,14 @@ function HeaderMain() {
 const Container = styled.div`
   color: ${(props: IThemeProps) => props.theme.colors.accent};
   margin-right: 40px;
+
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    margin-right: 0;
+
+    .ant-dropdown-trigger {
+      white-space: nowrap;
+    }
+  }
 `;
 
 const Login = styled.div`
