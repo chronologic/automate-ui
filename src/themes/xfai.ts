@@ -4,8 +4,8 @@ const theme: ITheme = {
   name: 'xfai',
   colors: {
     body: 'black',
-    text: 'white',
-    textAccent: 'white',
+    text: '#f5f5f5',
+    textAccent: '#f5f5f5',
     accent: '#fc307b',
     accentGradient: 'linear-gradient(104deg, #fc307b 0%, #a22dc9 100%)',
     shadow:

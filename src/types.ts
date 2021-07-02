@@ -133,3 +133,8 @@ export interface IScheduledForUser {
   gasPaid: number;
   gasSaved: number;
 }
+
+export interface IUserCredits {
+  user: number;
+  community: number;
+}

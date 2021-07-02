@@ -56,7 +56,7 @@ export function shortAddress(address?: string | null | undefined, chars = 4): st
   return `0x${addr.substr(2, chars)}...${addr.substr(-chars)}`;
 }
 
-export function formatNumber(value: number, decimals = 4): string {
+export function formatNumber(value: number, decimals = 4, fallbackValue = '-'): string {
   if (value) {
     const formatter = new Intl.NumberFormat('en-US', {
       minimumFractionDigits: decimals,
@@ -66,7 +66,7 @@ export function formatNumber(value: number, decimals = 4): string {
     return formatter.format(value);
   }
 
-  return '-';
+  return fallbackValue;
 }
 
 export function formatCurrency(value: number, decimals = 2): string {

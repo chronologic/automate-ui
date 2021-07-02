@@ -48,8 +48,8 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
   }, []);
 
   const onAuthenticated = useCallback((user: IUserWithExpiration) => {
-    setIsAuthenticated(true);
     setUser(user);
+    setIsAuthenticated(true);
     const userWithExpiration: IUserWithExpiration = {
       ...user,
       expirationDate: user.expirationDate || moment().add(30, 'days').toISOString(),

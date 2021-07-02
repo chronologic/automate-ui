@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useTheme } from '../../hooks';
+import { useAuth, useTheme } from '../../hooks';
 import WalletConnector from '../WalletConnector';
 import FlexSpacer from '../FlexSpacer';
 import User from './User';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import Credits from './Credits';
+import { SMALL_SCREEN_THRESHOLD } from '../../constants';
 
 function HeaderMain() {
   const { theme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   return (
     <Container>
@@ -26,6 +28,8 @@ function HeaderMain() {
         )}
       </Logos>
       <FlexSpacer />
+      {isAuthenticated && <Credits />}
+      <FlexSpacer />
       <User />
       <WalletConnector className="walletConnector" />
     </Container>
@@ -42,7 +46,7 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 8px 0;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SMALL_SCREEN_THRESHOLD}px) {
     padding: 8px;
 
     .walletConnector {
@@ -67,7 +71,7 @@ const Logos = styled.div`
     margin-right: 16px;
   }
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SMALL_SCREEN_THRESHOLD}px) {
     .logo {
       height: 50px;
     }
