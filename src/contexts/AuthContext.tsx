@@ -1,14 +1,14 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 
-import { IUser, IUserWithExpiration } from '../types';
+import { IAuthParams, IUser, IUserWithExpiration } from '../types';
 import { UserAPI } from '../api';
 
 export interface IAuthContext {
   isAuthenticated: boolean;
   authenticating: boolean;
   user: IUser;
-  onAuthenticate: (login: string, password: string, signup: boolean) => void;
+  onAuthenticate: (params: IAuthParams) => void;
   onLogout: () => void;
 }
 
@@ -58,12 +58,12 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
   }, []);
 
   const onAuthenticate = useCallback(
-    async (login: string, password: string, signup: boolean) => {
+    async (params: IAuthParams) => {
       setAuthenticating(true);
-      const fn = signup ? UserAPI.signup : UserAPI.login;
+      const fn = params.signup ? UserAPI.signup : UserAPI.login;
 
       try {
-        const user = await fn(login, password);
+        const user = await fn(params);
         onAuthenticated(user);
       } catch (e) {
         console.error(e);

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '../env';
-import { IUserCredits, IUserWithExpiration } from '../types';
+import { IAuthParams, IUserCredits, IUserWithExpiration } from '../types';
 import { withErrorHandler } from './withErrorHandler';
 
 const api = axios.create({
@@ -9,18 +9,18 @@ const api = axios.create({
 });
 
 export const UserAPI = {
-  auth: withErrorHandler(async (login: string, password: string): Promise<IUserWithExpiration> => {
-    const response = await api.post('/auth', { login, password });
+  auth: withErrorHandler(async (params: IAuthParams): Promise<IUserWithExpiration> => {
+    const response = await api.post('/auth', params);
     return response.data;
   }),
 
-  login: withErrorHandler(async (login: string, password: string): Promise<IUserWithExpiration> => {
-    const response = await api.post('/auth/login', { login, password });
+  login: withErrorHandler(async (params: IAuthParams): Promise<IUserWithExpiration> => {
+    const response = await api.post('/auth/login', params);
     return response.data;
   }),
 
-  signup: withErrorHandler(async (login: string, password: string): Promise<IUserWithExpiration> => {
-    const response = await api.post('/auth/signup', { login, password });
+  signup: withErrorHandler(async (params: IAuthParams): Promise<IUserWithExpiration> => {
+    const response = await api.post('/auth/signup', params);
     return response.data;
   }),
 

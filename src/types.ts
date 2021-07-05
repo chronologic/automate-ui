@@ -138,3 +138,10 @@ export interface IUserCredits {
   user: number;
   community: number;
 }
+
+export interface IAuthParams {
+  login: string;
+  password: string;
+  source?: string;
+  signup: boolean;
+}

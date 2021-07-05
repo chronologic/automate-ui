@@ -1,4 +1,7 @@
 import { BigNumber, utils } from 'ethers';
+import { parseUrl } from 'query-string';
+
+const USER_SOURCE_STORAGE_KEY = 'source';
 
 export function bigNumberToString(num: BigNumber, decimals = 18, precision = 6): string {
   let str = num.toString();
@@ -82,4 +85,25 @@ export function formatCurrency(value: number, decimals = 2): string {
 
 export function isEmptyName(value: string): boolean {
   return !value || value === '_' || value === '-';
+}
+
+export function hasNonDefaultUserSource(): boolean {
+  return getUserSource() !== 'automate';
+}
+
+export function getUserSource(): string {
+  let source = (localStorage.getItem(USER_SOURCE_STORAGE_KEY) as string) || 'automate';
+  const parsed = parseUrl(window.location.href);
+
+  if (parsed.query?.utm_source) {
+    source = parsed.query.utm_source as string;
+  }
+
+  return setUserSource(source);
+}
+
+function setUserSource(name: string): string {
+  localStorage.setItem(USER_SOURCE_STORAGE_KEY, name);
+
+  return name;
 }

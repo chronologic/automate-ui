@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useState } from 'react';
-import { parseUrl } from 'query-string';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
 import { ITheme } from '../types';
 import themes from '../themes';
+import { getUserSource, hasNonDefaultUserSource } from '../utils';
 
 const defaultThemeName = 'automate';
 const themeStorageKey = 'theme';
@@ -40,11 +40,9 @@ export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
 
 function _getTheme(): ITheme {
   let themeName = localStorage.getItem(themeStorageKey) as string;
-
-  const parsed = parseUrl(window.location.href);
-
-  if (parsed.query?.utm_source) {
-    themeName = parsed.query.utm_source as string;
+  const source = getUserSource();
+  if (hasNonDefaultUserSource()) {
+    themeName = source;
   }
 
   return _setTheme(themeName);

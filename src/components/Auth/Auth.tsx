@@ -7,6 +7,7 @@ import { parseUrl } from 'query-string';
 import PageTitle from '../PageTitle';
 import { useAuth } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
+import { getUserSource } from '../../utils';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
@@ -22,7 +23,7 @@ function Auth() {
   const [password, setPassword] = useState('');
 
   const handleAuth = useCallback(() => {
-    onAuthenticate(login, password, signup);
+    onAuthenticate({ login, password, signup, source: getUserSource() });
   }, [login, onAuthenticate, password, signup]);
 
   const handleLoginChange = useCallback((e: any) => {
