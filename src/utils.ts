@@ -4,7 +4,7 @@ import { parseUrl } from 'query-string';
 const USER_SOURCE_STORAGE_KEY = 'source';
 
 export function bigNumberToString(num: BigNumber, decimals = 18, precision = 6): string {
-  let str = num.toString();
+  let str = (num || '').toString();
   let len = str.length;
   if (decimals > 0 && len < decimals + 1) {
     str = '0'.repeat(decimals - len + 1) + str;
