@@ -96,7 +96,7 @@ function Config() {
         setConfirmationTime(0);
         // network: arbitrum (this is a new parameter that you will have to add,
         //it needs to be added to the connection string)
-        handleConfirmConfigured();
+        ArbitrumNetworkConnect();
       } else {
         notification.error({
           message: (
@@ -209,7 +209,7 @@ function Config() {
       </Typography.Title>
       {completed && (
         <Completed>
-          <p>You can now start saving on gas fees! </p>
+          <p>You can now start scheduling transactions! </p>
         </Completed>
       )}
       {!completed && (
