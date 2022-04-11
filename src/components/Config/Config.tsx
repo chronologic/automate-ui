@@ -64,7 +64,7 @@ function Config() {
     if (confirmationTime) {
       name += ` ${sliderMarks[confirmationTime].value}`;
     }
-
+    // name=Automate Draft Arbitrum
     return name;
   }, [confirmationTime, draft, gasPriceAware, sliderMarks]);
 
@@ -85,7 +85,7 @@ function Config() {
 
   const handleConnect = useCallback((network: string) => {
     console.log('network: ' + network);
-    if (network == 'Etherium') {
+    if (network == 'Ethereum') {
       setSubmitted(true);
       setCompleted(false);
     } else if (network == 'Arbitrum') {
@@ -147,17 +147,17 @@ function Config() {
   }, [checkConnection, wallet]);
 
   const ArbitrumNetworkConnect = useCallback(async () => {
-    const binanceTestChainId = '0x66eeb'; // arbitrum test net
+    const ArbitrumTestChainId = '0x66eeb'; // arbitrum test net
     if (typeof window.ethereum !== 'undefined') {
       const chainId = await window.ethereum.request({ method: `eth_chainId` });
-      if (chainId === binanceTestChainId) {
+      if (chainId === ArbitrumTestChainId) {
         notification.success({ message: `You're connected to Automate!` });
       } else {
         console.log('oulalal, switch to the correct network,chainid: ' + chainId);
         try {
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: binanceTestChainId }],
+            params: [{ chainId: ArbitrumTestChainId }],
           });
           console.log('You have succefully switched to Arbitrum Test network');
         } catch (chainerror) {
@@ -169,9 +169,9 @@ function Config() {
               method: 'wallet_addEthereumChain',
               params: [
                 {
-                  chainId: binanceTestChainId,
-                  chainName: 'Arbitrum Testnet',
-                  rpcUrls: ['https://rinkeby.arbitrum.io/rpc'],
+                  chainId: ArbitrumTestChainId,
+                  chainName: 'Arbitrum Testnet', // Automate Draft Arbitrum
+                  rpcUrls: ['https://rinkeby.arbitrum.io/rpc'], // url + draft=true
                   blockExplorerUrls: ['https://testnet.arbiscan.io/'],
                   nativeCurrency: {
                     symbol: 'ETH', // 2-6 characters long
@@ -282,7 +282,7 @@ function Config() {
               </div>
             </>
           )}
-          <Button type="primary" size="large" onClick={() => handleConnect(networkvalue < 2 ? 'Etherium' : 'Arbitrum')}>
+          <Button type="primary" size="large" onClick={() => handleConnect(networkvalue < 2 ? 'Ethereum' : 'Arbitrum')}>
             Connect to Automate
           </Button>
         </>
