@@ -28,7 +28,6 @@ export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
         },
       ],
     });
-
     return res.client === 'automate';
   } catch (e) {
     return false;

@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, Button, Checkbox, Typography, Slider, notification } from 'antd';
+import { Form, Modal, Button, Checkbox, Typography, Slider, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
@@ -18,6 +18,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [networkvalue, setnetworkValue] = useState(1);
 
   const sliderMarks: {
     [key: number]: {
@@ -82,9 +83,34 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
 
-  const handleConnect = useCallback(async () => {
-    setSubmitted(true);
-    setCompleted(false);
+  const handleConnect = useCallback((network: string) => {
+    console.log('network: ' + network);
+    if (network == 'Etherium') {
+      setSubmitted(true);
+      setCompleted(false);
+    } else if (network == 'Arbitrum') {
+      // Check metamask extension is installed
+      if (typeof window.ethereum !== 'undefined') {
+        setGasPriceAware(false);
+        setDraft(true);
+        setConfirmationTime(0);
+        // network: arbitrum (this is a new parameter that you will have to add,
+        //it needs to be added to the connection string)
+        handleConfirmConfigured();
+      } else {
+        notification.error({
+          message: (
+            <span>
+              Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
+              <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+                Metamask extension.
+              </a>{' '}
+              If you have installed refresh the page.
+            </span>
+          ),
+        });
+      }
+    }
   }, []);
 
   const handleCancel = useCallback(async () => {
@@ -120,68 +146,148 @@ function Config() {
     }
   }, [checkConnection, wallet]);
 
+  const ArbitrumNetworkConnect = useCallback(async () => {
+    const binanceTestChainId = '0x66eeb'; // arbitrum test net
+    if (typeof window.ethereum !== 'undefined') {
+      const chainId = await window.ethereum.request({ method: `eth_chainId` });
+      if (chainId === binanceTestChainId) {
+        notification.success({ message: `You're connected to Automate!` });
+      } else {
+        console.log('oulalal, switch to the correct network,chainid: ' + chainId);
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: binanceTestChainId }],
+          });
+          console.log('You have succefully switched to Arbitrum Test network');
+        } catch (chainerror) {
+          if (chainerror.code === 4902) {
+            console.log('This network is not available in your metamask, please add it');
+          }
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: binanceTestChainId,
+                  chainName: 'Arbitrum Testnet',
+                  rpcUrls: ['https://rinkeby.arbitrum.io/rpc'],
+                  blockExplorerUrls: ['https://testnet.arbiscan.io/'],
+                  nativeCurrency: {
+                    symbol: 'ETH', // 2-6 characters long
+                    decimals: 18,
+                  },
+                },
+              ],
+            });
+          } catch (addError) {
+            console.log(addError);
+          }
+        }
+      }
+    } else {
+      notification.error({
+        message: (
+          <span>
+            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
+            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+              Metamask extension.
+            </a>{' '}
+            If you have installed refresh the page.
+          </span>
+        ),
+      });
+    }
+  }, []);
+
   return (
     <Container>
       <PageTitle title="Connect" />
+
       <Typography.Title level={3} className="title">
-        {completed ? 'Congratulations!' : 'Connection Settings'}
+        {completed ? 'Congratulations!' : networkvalue < 2 ? 'Connection Settings' : 'Select Network'}
       </Typography.Title>
       {completed && (
         <Completed>
-          <p>You can now start saving on gas fees! Click one of the links below to proceed.</p>
+          <p>You can now start saving on gas fees! </p>
         </Completed>
       )}
       {!completed && (
         <>
-          <Checkboxes>
-            <CheckboxSection>
-              <Checkbox
-                checked={gasPriceAware}
-                disabled={submitted}
-                onChange={(e) => setGasPriceAware(e.target.checked)}
-              >
-                <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
-              </Checkbox>
-              <p>
-                Once the network gas price falls below the gas cost specified in the transaction, it will be broadcast
-                to the network.
-              </p>
-            </CheckboxSection>
-            <CheckboxSection>
-              <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
-                <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
-              </Checkbox>
-              <p>
-                No transaction will be broadcast to the Ethereum network until you go to the Transaction list and
-                specify additional conditions.
-              </p>
-            </CheckboxSection>
-          </Checkboxes>
-          <div>
-            <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
-            <p>
-              Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer wait
-              times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network, this is
-              NOT a guaranteed confirmation time.
-            </p>
-            <SliderContainer>
-              <Slider
-                marks={sliderMarks}
-                step={1}
-                value={confirmationTime}
-                min={0}
-                max={3}
-                disabled={submitted}
-                tooltipVisible={false}
-                onChange={setConfirmationTime}
-              />
-            </SliderContainer>
-          </div>
-          <Button type="primary" size="large" onClick={handleConnect}>
+          <Radio.Group
+            defaultValue={1}
+            onChange={(e) => setnetworkValue(e.target.value)}
+            size="large"
+            className="title"
+          >
+            <Radio.Button value={1} className="radiobuttons">
+              <img alt="eth-network-icon" src="/assets/eth.svg" width="32" height="32" className="network-icon" />
+              Ethereum
+            </Radio.Button>
+            <Radio.Button value={2}>
+              <img alt="eth-network-icon" src="/assets/arbitrum.svg" width="32" height="32" className="network-icon" />
+              Arbitrum
+            </Radio.Button>
+            {/* if we want to add more networks.
+              <Radio value={3}>C</Radio>
+              <Radio value={4}>D</Radio>
+            */}
+          </Radio.Group>
+
+          {networkvalue < 2 && (
+            <>
+              <Checkboxes>
+                <CheckboxSection>
+                  <Checkbox
+                    checked={gasPriceAware}
+                    disabled={submitted}
+                    onChange={(e) => setGasPriceAware(e.target.checked)}
+                  >
+                    <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
+                  </Checkbox>
+                  <p>
+                    Once the network gas price falls below the gas cost specified in the transaction, it will be
+                    broadcast to the network.
+                  </p>
+                </CheckboxSection>
+                <CheckboxSection>
+                  <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
+                    <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
+                  </Checkbox>
+                  <p>
+                    No transaction will be broadcast to the Ethereum network until you go to the Transaction list and
+                    specify additional conditions.
+                  </p>
+                </CheckboxSection>
+              </Checkboxes>
+              <div>
+                <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
+                <p>
+                  Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer
+                  wait times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network,
+                  this is NOT a guaranteed confirmation time.
+                </p>
+                <SliderContainer>
+                  <Slider
+                    marks={sliderMarks}
+                    step={1}
+                    value={confirmationTime}
+                    min={0}
+                    max={3}
+                    disabled={submitted}
+                    tooltipVisible={false}
+                    onChange={setConfirmationTime}
+                  />
+                </SliderContainer>
+              </div>
+            </>
+          )}
+          <Button type="primary" size="large" onClick={() => handleConnect(networkvalue < 2 ? 'Etherium' : 'Arbitrum')}>
             Connect to Automate
           </Button>
         </>
       )}
+
       <Modal
         title="Add Automate to MetaMask"
         visible={submitted}
@@ -249,6 +355,12 @@ const Container = styled.div`
     font-weight: 300;
     font-size: 1.8rem;
     margin-bottom: 16px;
+  }
+  .radiobuttons {
+    margin-right: 50px;
+  }
+  .network-icon {
+    padding: 1px 2px 5px 2px;
   }
   p {
     font-weight: 300;
