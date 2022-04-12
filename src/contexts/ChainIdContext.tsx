@@ -10,14 +10,15 @@ interface IProps {
 }
 
 const chainIdStorageKey = 'chainId';
+const defaultChainId = _retrieveChainId();
 
 export const ChainIdContext = createContext<IChainIdContext>({
-  chainId: _retrieveChainId(),
+  chainId: defaultChainId,
   setChainId: () => {},
 });
 
 export const ChainIdProvider: React.FC<IProps> = ({ children }: IProps) => {
-  const [chainId, setChainId] = useState<number | null>(null);
+  const [chainId, setChainId] = useState<number | null>(defaultChainId);
 
   const handleSetChainId = useCallback((chainId: number | null) => {
     _storeChainId(chainId);
