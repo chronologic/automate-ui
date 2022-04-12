@@ -1,5 +1,6 @@
 export * from './useAuth';
 export * from './useAutomateConnection';
+export * from './useChainId';
 export * from './useEthers';
 export * from './useScreen';
 export * from './useTheme';
