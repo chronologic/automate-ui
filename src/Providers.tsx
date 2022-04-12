@@ -1,8 +1,15 @@
 import React from 'react';
 import { UseWalletProvider } from 'use-wallet';
 
-import { AuthProvider, EthersProvider, ThemeProvider, AutomateConnectionProvider, ScreenProvider } from './contexts';
-import { CHAIN_ID } from './env';
+import {
+  AuthProvider,
+  ChainIdProvider,
+  EthersProvider,
+  ThemeProvider,
+  AutomateConnectionProvider,
+  ScreenProvider,
+} from './contexts';
+import { useChainId } from './hooks';
 
 interface IProps {
   children: React.ReactNode;
@@ -10,8 +17,18 @@ interface IProps {
 
 export function Providers({ children }: IProps) {
   return (
+    <ChainIdProvider>
+      <WrappedProviders>{children}</WrappedProviders>
+    </ChainIdProvider>
+  );
+}
+
+function WrappedProviders({ children }: IProps) {
+  const { chainId } = useChainId();
+
+  return (
     <ScreenProvider>
-      <UseWalletProvider chainId={CHAIN_ID}>
+      <UseWalletProvider chainId={chainId as number}>
         <EthersProvider>
           <AutomateConnectionProvider>
             <AuthProvider>

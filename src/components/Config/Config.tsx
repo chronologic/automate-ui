@@ -3,9 +3,9 @@ import { ethers } from 'ethers';
 import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
+
+import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
 import { Network, ChainId } from '../../constants';
-import { useAuth, useAutomateConnection } from '../../hooks';
-import { CHAIN_ID } from '../../env';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
@@ -14,6 +14,7 @@ function Config() {
   const wallet = useWallet();
   const { checkConnection } = useAutomateConnection();
   const { user } = useAuth();
+  const { chainId } = useChainId();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(1);
@@ -82,70 +83,10 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
 
-  const handleConnect = useCallback(async () => {
-    if (network === Network.Ethereum) {
-      handleEthereumConnection();
-    } else if (network === Network.Arbitrum) {
-      handleArbitrumConnection();
-    }
-  }, [network]);
-
   const handleEthereumConnection = useCallback(async () => {
     setSubmitted(true);
     setCompleted(false);
   }, []);
-
-  const handleArbitrumConnection = useCallback(async () => {
-    const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
-    if (isMetamaskInstalled) {
-      arbitrumNetworkConnect();
-    } else {
-      notification.error({
-        message: (
-          <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
-            </a>{' '}
-            If you have installed refresh the page.
-          </span>
-        ),
-      });
-    }
-  }, []);
-
-  const handleCancel = useCallback(async () => {
-    setSubmitted(false);
-  }, []);
-
-  const handleConfirmConfigured = useCallback(async () => {
-    if (!(wallet.status === 'connected')) {
-      await wallet.connect('injected');
-    }
-    const isConnected = await checkConnection();
-    if (isConnected) {
-      notification.success({ message: `You're connected to Automate!` });
-      setSubmitted(false);
-      setCompleted(true);
-    } else {
-      notification.error({
-        message: (
-          <span>
-            You're not connected to Automate. Make sure you followed the
-            <br />
-            <a
-              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              setup instructions
-            </a>{' '}
-            correctly.
-          </span>
-        ),
-      });
-    }
-  }, [checkConnection, wallet]);
 
   const arbitrumNetworkConnect = useCallback(async () => {
     const arbitrumOneChainId = ethers.utils.hexlify(ChainId.Arbitrum);
@@ -192,6 +133,66 @@ function Config() {
       });
     }
   }, []);
+
+  const handleArbitrumConnection = useCallback(async () => {
+    const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
+    if (isMetamaskInstalled) {
+      arbitrumNetworkConnect();
+    } else {
+      notification.error({
+        message: (
+          <span>
+            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
+            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+              Metamask extension.
+            </a>{' '}
+            If you have installed refresh the page.
+          </span>
+        ),
+      });
+    }
+  }, [arbitrumNetworkConnect]);
+
+  const handleConnect = useCallback(async () => {
+    if (network === Network.Ethereum) {
+      handleEthereumConnection();
+    } else if (network === Network.Arbitrum) {
+      handleArbitrumConnection();
+    }
+  }, [handleArbitrumConnection, handleEthereumConnection, network]);
+
+  const handleCancel = useCallback(async () => {
+    setSubmitted(false);
+  }, []);
+
+  const handleConfirmConfigured = useCallback(async () => {
+    if (!(wallet.status === 'connected')) {
+      await wallet.connect('injected');
+    }
+    const isConnected = await checkConnection();
+    if (isConnected) {
+      notification.success({ message: `You're connected to Automate!` });
+      setSubmitted(false);
+      setCompleted(true);
+    } else {
+      notification.error({
+        message: (
+          <span>
+            You're not connected to Automate. Make sure you followed the
+            <br />
+            <a
+              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              setup instructions
+            </a>{' '}
+            correctly.
+          </span>
+        ),
+      });
+    }
+  }, [checkConnection, wallet]);
 
   return (
     <Container>
@@ -275,7 +276,7 @@ function Config() {
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
             </Form.Item>
             <Form.Item label="Chain ID">
-              <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
+              <CopyInput value={(chainId || '').toString()} inputTitle="Chain ID" />
             </Form.Item>
             <Form.Item label="Currency Symbol">
               <CopyInput value="ETH" inputTitle="Currency Symbol" />
