@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, Button, Checkbox, Typography, Slider, notification, Radio } from 'antd';
+import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
@@ -7,8 +7,9 @@ import { CHAIN_ID } from '../../env';
 import { useAuth, useAutomateConnection } from '../../hooks';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
+import { Network } from '../../constants';
+import ConnectionSettings from './ConnectionSettings';
 function Config() {
   const wallet = useWallet();
   const { checkConnection } = useAutomateConnection();
@@ -18,7 +19,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [networkvalue, setnetworkValue] = useState(1);
+  const [network, setnetwork] = useState(Network.None);
 
   const sliderMarks: {
     [key: number]: {
@@ -52,7 +53,6 @@ function Config() {
     }),
     [confirmationTime]
   );
-
   const networkName = useMemo(() => {
     let name = 'Automate';
     if (gasPriceAware) {
@@ -64,7 +64,6 @@ function Config() {
     if (confirmationTime) {
       name += ` ${sliderMarks[confirmationTime].value}`;
     }
-    // name=Automate Draft Arbitrum
     return name;
   }, [confirmationTime, draft, gasPriceAware, sliderMarks]);
 
@@ -83,33 +82,35 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
 
-  const handleConnect = useCallback((network: string) => {
-    console.log('network: ' + network);
-    if (network == 'Ethereum') {
-      setSubmitted(true);
-      setCompleted(false);
-    } else if (network == 'Arbitrum') {
-      // Check metamask extension is installed
-      if (typeof window.ethereum !== 'undefined') {
-        setGasPriceAware(false);
-        setDraft(true);
-        setConfirmationTime(0);
-        // network: arbitrum (this is a new parameter that you will have to add,
-        //it needs to be added to the connection string)
-        ArbitrumNetworkConnect();
-      } else {
-        notification.error({
-          message: (
-            <span>
-              Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-              <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-                Metamask extension.
-              </a>{' '}
-              If you have installed refresh the page.
-            </span>
-          ),
-        });
-      }
+  const handleConnect = useCallback(async () => {
+    if (network === Network.Ethereum) {
+      handleEthereumConnection();
+    } else if (network === Network.Arbitrum) {
+      handleArbitrumConnection();
+    }
+  }, [network]);
+
+  const handleEthereumConnection = useCallback(async () => {
+    setSubmitted(true);
+    setCompleted(false);
+  }, []);
+
+  const handleArbitrumConnection = useCallback(async () => {
+    // Check metamask extension is installed
+    if (typeof window.ethereum !== 'undefined') {
+      ArbitrumNetworkConnect();
+    } else {
+      notification.error({
+        message: (
+          <span>
+            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
+            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+              Metamask extension.
+            </a>{' '}
+            If you have installed refresh the page.
+          </span>
+        ),
+      });
     }
   }, []);
 
@@ -147,42 +148,34 @@ function Config() {
   }, [checkConnection, wallet]);
 
   const ArbitrumNetworkConnect = useCallback(async () => {
-    const ArbitrumTestChainId = '0x66eeb'; // arbitrum test net
+    const ArbitrumOneChainId = '0xA4B1';
     if (typeof window.ethereum !== 'undefined') {
-      const chainId = await window.ethereum.request({ method: `eth_chainId` });
-      if (chainId === ArbitrumTestChainId) {
+      const CurrentchainId = await window.ethereum.request({ method: `eth_chainId` });
+      if (CurrentchainId === ArbitrumOneChainId) {
+        setGasPriceAware(false);
+        setDraft(true);
+        setConfirmationTime(0);
+        setnetwork(Network.Arbitrum);
         notification.success({ message: `You're connected to Automate!` });
       } else {
-        console.log('oulalal, switch to the correct network,chainid: ' + chainId);
         try {
           await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: ArbitrumTestChainId }],
-          });
-          console.log('You have succefully switched to Arbitrum Test network');
-        } catch (chainerror) {
-          if (chainerror.code === 4902) {
-            console.log('This network is not available in your metamask, please add it');
-          }
-          try {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: ArbitrumTestChainId,
-                  chainName: 'Arbitrum Testnet', // Automate Draft Arbitrum
-                  rpcUrls: ['https://rinkeby.arbitrum.io/rpc'], // url + draft=true
-                  blockExplorerUrls: ['https://testnet.arbiscan.io/'],
-                  nativeCurrency: {
-                    symbol: 'ETH', // 2-6 characters long
-                    decimals: 18,
-                  },
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: ArbitrumOneChainId,
+                chainName: 'Arbitrum One',
+                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://arbiscan.io/'],
+                nativeCurrency: {
+                  symbol: 'ETH', // 2-6 characters long
+                  decimals: 18,
                 },
-              ],
-            });
-          } catch (addError) {
-            console.log(addError);
-          }
+              },
+            ],
+          });
+        } catch (addError) {
+          console.log(addError);
         }
       }
     } else {
@@ -203,9 +196,8 @@ function Config() {
   return (
     <Container>
       <PageTitle title="Connect" />
-
       <Typography.Title level={3} className="title">
-        {completed ? 'Congratulations!' : networkvalue < 2 ? 'Connection Settings' : 'Select Network'}
+        {completed ? 'Congratulations!' : network === Network.Ethereum ? 'Connection Settings' : 'Select Network'}
       </Typography.Title>
       {completed && (
         <Completed>
@@ -215,74 +207,40 @@ function Config() {
       {!completed && (
         <>
           <Radio.Group
-            defaultValue={1}
-            onChange={(e) => setnetworkValue(e.target.value)}
+            defaultValue={Network.None}
+            onChange={(e) => setnetwork(e.target.value)}
             size="large"
             className="title"
           >
-            <Radio.Button value={1} className="radiobuttons">
+            <Radio.Button value={Network.Ethereum} className="radiobuttons">
               <img alt="eth-network-icon" src="/assets/eth.svg" width="32" height="32" className="network-icon" />
               Ethereum
             </Radio.Button>
-            <Radio.Button value={2}>
-              <img alt="eth-network-icon" src="/assets/arbitrum.svg" width="32" height="32" className="network-icon" />
+            <Radio.Button value={Network.Arbitrum}>
+              <img alt="arb-network-icon" src="/assets/arbitrum.svg" width="32" height="32" className="network-icon" />
               Arbitrum
             </Radio.Button>
-            {/* if we want to add more networks.
-              <Radio value={3}>C</Radio>
-              <Radio value={4}>D</Radio>
-            */}
           </Radio.Group>
 
-          {networkvalue < 2 && (
+          {network === Network.Ethereum && (
             <>
-              <Checkboxes>
-                <CheckboxSection>
-                  <Checkbox
-                    checked={gasPriceAware}
-                    disabled={submitted}
-                    onChange={(e) => setGasPriceAware(e.target.checked)}
-                  >
-                    <Typography.Paragraph className="subtitle">Gas price aware</Typography.Paragraph>
-                  </Checkbox>
-                  <p>
-                    Once the network gas price falls below the gas cost specified in the transaction, it will be
-                    broadcast to the network.
-                  </p>
-                </CheckboxSection>
-                <CheckboxSection>
-                  <Checkbox checked={draft} disabled={submitted} onChange={(e) => setDraft(e.target.checked)}>
-                    <Typography.Paragraph className="subtitle">Draft mode (Advanced)</Typography.Paragraph>
-                  </Checkbox>
-                  <p>
-                    No transaction will be broadcast to the Ethereum network until you go to the Transaction list and
-                    specify additional conditions.
-                  </p>
-                </CheckboxSection>
-              </Checkboxes>
-              <div>
-                <Typography.Paragraph className="subtitle">Estimated Confirmation Time</Typography.Paragraph>
-                <p>
-                  Our algorithms analyze historical gas prices in real time to best propose a gas price for you. Longer
-                  wait times generally correspond to cheaper gas prices. Since we cannot control the Ethereum network,
-                  this is NOT a guaranteed confirmation time.
-                </p>
-                <SliderContainer>
-                  <Slider
-                    marks={sliderMarks}
-                    step={1}
-                    value={confirmationTime}
-                    min={0}
-                    max={3}
-                    disabled={submitted}
-                    tooltipVisible={false}
-                    onChange={setConfirmationTime}
-                  />
-                </SliderContainer>
-              </div>
+              <ConnectionSettings
+                gasPriceAware={gasPriceAware}
+                setGasPriceAware={setGasPriceAware}
+                draft={draft}
+                setDraft={setDraft}
+                confirmationTime={confirmationTime}
+                setConfirmationTime={setConfirmationTime}
+                submitted={submitted}
+              />
             </>
           )}
-          <Button type="primary" size="large" onClick={() => handleConnect(networkvalue < 2 ? 'Ethereum' : 'Arbitrum')}>
+          <Button
+            type="primary"
+            size="large"
+            disabled={network === Network.None ? true : false}
+            onClick={() => handleConnect()}
+          >
             Connect to Automate
           </Button>
         </>
@@ -366,53 +324,6 @@ const Container = styled.div`
     font-weight: 300;
   }
 `;
-
-const Checkboxes = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 24px;
-
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
-    flex-direction: column;
-  }
-`;
-
-const CheckboxSection = styled.div`
-  flex: 1;
-
-  &:first-child {
-    padding-right: 16px;
-  }
-`;
-
-const SliderContainer = styled.div`
-  width: 100%;
-  margin-bottom: 100px;
-
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .ant-slider-mark {
-    white-space: nowrap;
-
-    .ant-slider-mark-text {
-      color: ${(props) => props.theme.colors.text};
-      font-weight: 300;
-
-      .note.note {
-        font-weight: 300;
-      }
-    }
-
-    .ant-slider-mark-text-active .selected {
-      font-weight: bold;
-    }
-  }
-`;
-
 const MetaMaskConfig = styled.div`
   .ant-form-item-control-input-content > div {
     width: 100%;
@@ -426,7 +337,6 @@ const MetaMaskConfig = styled.div`
     margin-bottom: 8px;
   }
 `;
-
 const Completed = styled.div``;
 
 export default Config;
