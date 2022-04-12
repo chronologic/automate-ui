@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from 'use-wallet';
 
+import { useChainId } from './useChainId';
+
 // https://github.com/aragon/use-wallet/issues/70#issuecomment-821257314
 const useEagerConnect = () => {
+  const { chainId } = useChainId();
   const wallet = useWallet();
   const { activate, active } = (wallet as any)._web3ReactContext;
-  const injected = (wallet.connectors.injected as any).web3ReactConnector({ chainId: 1 });
+  const injected = (wallet.connectors.injected as any).web3ReactConnector({ chainId });
   const [tried, setTried] = useState(false);
 
   useEffect(() => {
