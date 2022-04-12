@@ -8,6 +8,8 @@ import { IScheduleAccessKey, IScheduledTransaction, SentinelAPI } from '../../..
 import { ISubmitParams, Status } from '../../../types';
 import ScheduledLink from './ScheduledLink';
 
+const AnyButton: any = Button;
+
 interface IInputElement extends HTMLElement {
   value: any;
   select(): any;
@@ -298,9 +300,9 @@ const PaymentModal: React.FunctionComponent<IPaymentModalProps> = ({
         </div>
         <br />
         <div className="payment-modal__button-container">
-          <Button disabled={!formValid || loading || sentinelResponse} onClick={handleSubmit}>
+          <AnyButton disabled={!formValid || loading || sentinelResponse} onClick={handleSubmit}>
             {loading ? <InlineLoading className="white-loading" description="Loading..." /> : 'Next'}
-          </Button>
+          </AnyButton>
         </div>
       </div>
     );

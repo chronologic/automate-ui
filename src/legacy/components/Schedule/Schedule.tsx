@@ -23,6 +23,8 @@ import Footer from './Footer';
 import PaymentModal from './PaymentModal';
 import SummarySection from './SummarySection';
 
+const AnyButton: any = Button;
+
 const SUPPORTED_NETWORKS = {
   [AssetType.Ethereum]: {
     1: 'Mainnet',
@@ -274,13 +276,13 @@ class Schedule extends React.Component<ISentinelProps, ISentinelState> {
         )}
         <div className={`bx--col-xs-6 main-section`}>
           <div className="bx--row row-padding carbon--center">
-            <Button onClick={this.handleScheduleClick} disabled={this.scheduleButtonDisabled}>
+            <AnyButton onClick={this.handleScheduleClick} disabled={this.scheduleButtonDisabled}>
               {this.state.loadingSentinelResponse ? (
                 <InlineLoading className="white-loading" description="Loading data..." />
               ) : (
                 `SCHEDULE`
               )}
-            </Button>
+            </AnyButton>
           </div>
         </div>
         {response}

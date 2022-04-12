@@ -73,10 +73,10 @@ export class SentinelAPI {
       const params = queryParams ? `?${queryString.stringify(queryParams)}` : '';
       const response = await axios.post(this.API_URL + params, request);
       return response.data as IScheduleAccessKey;
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Schedule API error'],
+        errors: e?.response ? e?.response?.data?.errors : ['Schedule API error'],
       };
     }
   }
@@ -117,10 +117,10 @@ export class SentinelAPI {
           } as any;
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Scheduled API read error'],
+        errors: e?.response ? e?.response?.data?.errors : ['Scheduled API read error'],
       };
     }
   }
@@ -212,7 +212,7 @@ export class SentinelAPI {
     } catch (e) {}
 
     const signedGasLimit = decodedTransaction.gasLimit;
-    const signedGasPrice = decodedTransaction.gasPrice;
+    const signedGasPrice = decodedTransaction.gasPrice || BigNumber.from(0);
     const maxTxCost = signedGasPrice.mul(signedGasLimit);
 
     return {
@@ -233,10 +233,10 @@ export class SentinelAPI {
     try {
       const response = await axios.delete(this.API_URL, { params: request });
       return response.data as ICancelResponse;
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return {
-        errors: e.response ? e.response.data.errors : ['Cancel API error'],
+        errors: e?.response ? e?.response?.data?.errors : ['Cancel API error'],
       };
     }
   }

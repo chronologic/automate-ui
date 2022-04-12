@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BigNumber } from 'ethers';
-import { IDecodedTransaction, IError, PolkadotChainId } from '../types';
 
+import { IDecodedTransaction, IError, PolkadotChainId } from '../types';
 import { API_URL } from '../env';
 
 interface IPolkadotTx {
@@ -69,8 +69,8 @@ const parseTx: (tx: string, chainId: PolkadotChainId) => Promise<IDecodedTransac
     };
 
     return decoded;
-  } catch (e) {
-    return e.response.data;
+  } catch (e: any) {
+    return e?.response?.data;
   }
 };
 
