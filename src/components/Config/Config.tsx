@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { ethers } from 'ethers';
 import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
@@ -8,7 +9,7 @@ import { useAuth, useAutomateConnection } from '../../hooks';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 
-import { Network } from '../../constants';
+import { Network, ArbitrumChain } from '../../constants';
 import ConnectionSettings from './ConnectionSettings';
 function Config() {
   const wallet = useWallet();
@@ -19,7 +20,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [network, setnetwork] = useState(Network.None);
+  const [network, setNetwork] = useState(Network.None);
 
   const sliderMarks: {
     [key: number]: {
@@ -96,9 +97,9 @@ function Config() {
   }, []);
 
   const handleArbitrumConnection = useCallback(async () => {
-    // Check metamask extension is installed
-    if (typeof window.ethereum !== 'undefined') {
-      ArbitrumNetworkConnect();
+    const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
+    if (isMetamaskInstalled) {
+      arbitrumNetworkConnect();
     } else {
       notification.error({
         message: (
@@ -147,15 +148,15 @@ function Config() {
     }
   }, [checkConnection, wallet]);
 
-  const ArbitrumNetworkConnect = useCallback(async () => {
-    const ArbitrumOneChainId = '0xA4B1';
+  const arbitrumNetworkConnect = useCallback(async () => {
+    const arbitrumOneChainId = ethers.utils.hexlify(ArbitrumChain.Id);
     if (typeof window.ethereum !== 'undefined') {
-      const CurrentchainId = await window.ethereum.request({ method: `eth_chainId` });
-      if (CurrentchainId === ArbitrumOneChainId) {
+      const currentChainId = await window.ethereum.request({ method: `eth_chainId` });
+      if (currentChainId === arbitrumOneChainId) {
         setGasPriceAware(false);
         setDraft(true);
         setConfirmationTime(0);
-        setnetwork(Network.Arbitrum);
+        setNetwork(Network.Arbitrum);
         notification.success({ message: `You're connected to Automate!` });
       } else {
         try {
@@ -163,7 +164,7 @@ function Config() {
             method: 'wallet_addEthereumChain',
             params: [
               {
-                chainId: ArbitrumOneChainId,
+                chainId: arbitrumOneChainId,
                 chainName: 'Arbitrum One',
                 rpcUrls: ['https://arb1.arbitrum.io/rpc'],
                 blockExplorerUrls: ['https://arbiscan.io/'],
@@ -208,7 +209,7 @@ function Config() {
         <>
           <Radio.Group
             defaultValue={Network.None}
-            onChange={(e) => setnetwork(e.target.value)}
+            onChange={(e) => setNetwork(e.target.value)}
             size="large"
             className="title"
           >

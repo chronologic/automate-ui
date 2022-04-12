@@ -8,3 +8,6 @@ export enum Network {
   Ethereum = 'Ethereum',
   Arbitrum = 'Arbitrum',
 }
+export enum ArbitrumChain {
+  Id = 42161,
+}
