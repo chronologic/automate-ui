@@ -3,8 +3,7 @@ import { Form, Modal, Button, Checkbox, Typography, Slider, notification } from 
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
-import { CHAIN_ID } from '../../env';
-import { useAuth, useAutomateConnection } from '../../hooks';
+import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
@@ -13,6 +12,7 @@ function Config() {
   const wallet = useWallet();
   const { checkConnection } = useAutomateConnection();
   const { user } = useAuth();
+  const { chainId } = useChainId();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(1);
@@ -213,7 +213,7 @@ function Config() {
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
             </Form.Item>
             <Form.Item label="Chain ID">
-              <CopyInput value={CHAIN_ID.toString()} inputTitle="Chain ID" />
+              <CopyInput value={(chainId || '').toString()} inputTitle="Chain ID" />
             </Form.Item>
             <Form.Item label="Currency Symbol">
               <CopyInput value="ETH" inputTitle="Currency Symbol" />
