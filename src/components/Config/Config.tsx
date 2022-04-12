@@ -223,17 +223,15 @@ function Config() {
           </Radio.Group>
 
           {network === Network.Ethereum && (
-            <>
-              <ConnectionSettings
-                gasPriceAware={gasPriceAware}
-                setGasPriceAware={setGasPriceAware}
-                draft={draft}
-                setDraft={setDraft}
-                confirmationTime={confirmationTime}
-                setConfirmationTime={setConfirmationTime}
-                submitted={submitted}
-              />
-            </>
+            <ConnectionSettings
+              gasPriceAware={gasPriceAware}
+              setGasPriceAware={setGasPriceAware}
+              draft={draft}
+              setDraft={setDraft}
+              confirmationTime={confirmationTime}
+              setConfirmationTime={setConfirmationTime}
+              submitted={submitted}
+            />
           )}
           <Button
             type="primary"
