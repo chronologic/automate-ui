@@ -3,14 +3,13 @@ import { ethers } from 'ethers';
 import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
-
-import { CHAIN_ID } from '../../env';
+import { Network, ChainId } from '../../constants';
 import { useAuth, useAutomateConnection } from '../../hooks';
+import { CHAIN_ID } from '../../env';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
-
-import { Network, ArbitrumChain } from '../../constants';
 import ConnectionSettings from './ConnectionSettings';
+
 function Config() {
   const wallet = useWallet();
   const { checkConnection } = useAutomateConnection();
@@ -149,7 +148,7 @@ function Config() {
   }, [checkConnection, wallet]);
 
   const arbitrumNetworkConnect = useCallback(async () => {
-    const arbitrumOneChainId = ethers.utils.hexlify(ArbitrumChain.Id);
+    const arbitrumOneChainId = ethers.utils.hexlify(ChainId.Arbitrum);
     if (typeof window.ethereum !== 'undefined') {
       const currentChainId = await window.ethereum.request({ method: `eth_chainId` });
       if (currentChainId === arbitrumOneChainId) {
