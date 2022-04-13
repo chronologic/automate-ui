@@ -5,9 +5,10 @@ export const SECOND_MILLIS = 1000;
 export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 export enum Network {
   None = '',
-  Ethereum = 'Ethereum',
-  Arbitrum = 'Arbitrum',
+  Ethereum = 'ethereum',
+  Arbitrum = 'arbitrum',
 }
 export enum ChainId {
   Arbitrum = 42161,
 }
+export const AUTOMATE_BLOCK_EXPLORER_URL = 'https://automate.chronologic.network/transactions?query=';

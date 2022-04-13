@@ -5,10 +5,11 @@ import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
 import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
-import { Network, ChainId } from '../../constants';
+import { Network, ChainId, AUTOMATE_BLOCK_EXPLORER_URL } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
+import { capitalize } from '../../utils';
 
 function Config() {
   const wallet = useWallet();
@@ -54,8 +55,8 @@ function Config() {
     }),
     [confirmationTime]
   );
-  const networkName = useMemo(() => {
-    let name = 'Automate';
+  const connectionName = useMemo(() => {
+    let name = `Automate ${capitalize(network)}`;
     if (gasPriceAware) {
       name += ' Gas';
     }
@@ -66,10 +67,10 @@ function Config() {
       name += ` ${sliderMarks[confirmationTime].value}`;
     }
     return name;
-  }, [confirmationTime, draft, gasPriceAware, sliderMarks]);
+  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks]);
 
   const rpcUrl = useMemo(() => {
-    let url = `https://rpc.chronologic.network?email=${user.login}&apiKey=${user.apiKey}`;
+    let url = `https://rpc.chronologic.network?email=${user.login}&apiKey=${user.apiKey}&network=${network}`;
     if (gasPriceAware) {
       url += '&gasPriceAware=true';
     }
@@ -81,7 +82,38 @@ function Config() {
     }
 
     return url;
-  }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
+  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
+
+  const handleNetworkChange = useCallback(
+    (e) => {
+      const newNetwork = e.target.value;
+
+      switch (newNetwork) {
+        case Network.Ethereum: {
+          setGasPriceAware(true);
+          setDraft(false);
+          setConfirmationTime(1);
+          break;
+        }
+        case Network.Arbitrum: {
+          setGasPriceAware(false);
+          setDraft(true);
+          setConfirmationTime(0);
+          break;
+        }
+        default: {
+          throw new Error(`Unsupported network: ${newNetwork}`);
+        }
+      }
+
+      setNetwork(newNetwork);
+
+      if (!(wallet.status === 'connected')) {
+        wallet.connect('injected').then(console.log).catch(console.error);
+      }
+    },
+    [wallet]
+  );
 
   const handleEthereumConnection = useCallback(async () => {
     setSubmitted(true);
@@ -89,68 +121,52 @@ function Config() {
   }, []);
 
   const arbitrumNetworkConnect = useCallback(async () => {
-    const arbitrumOneChainId = ethers.utils.hexlify(ChainId.Arbitrum);
-    if (typeof window.ethereum !== 'undefined') {
-      const currentChainId = await window.ethereum.request({ method: `eth_chainId` });
-      if (currentChainId === arbitrumOneChainId) {
-        setGasPriceAware(false);
-        setDraft(true);
-        setConfirmationTime(0);
-        setNetwork(Network.Arbitrum);
-        notification.success({ message: `You're connected to Automate!` });
-      } else {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: arbitrumOneChainId,
-                chainName: 'Arbitrum One',
-                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://arbiscan.io/'],
-                nativeCurrency: {
-                  symbol: 'ETH', // 2-6 characters long
-                  decimals: 18,
-                },
-              },
-            ],
-          });
-        } catch (addError) {
-          console.log(addError);
-        }
-      }
-    } else {
-      notification.error({
-        message: (
-          <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
-            </a>{' '}
-            If you have installed refresh the page.
-          </span>
-        ),
-      });
+    const arbitrumChainId = ethers.utils.hexlify(ChainId.Arbitrum);
+
+    console.log('1', wallet.status);
+
+    if (!(wallet.status === 'connected')) {
+      await wallet.connect('injected');
     }
-  }, []);
+
+    console.log('2');
+    const isConnected = await checkConnection();
+    console.log('3', isConnected);
+    const currentChainId = await window.ethereum.request({ method: `eth_chainId` });
+    console.log('4', currentChainId);
+
+    if (isConnected && currentChainId === arbitrumChainId) {
+      notification.success({ message: `You're connected to Automate!` });
+    } else {
+      console.log('6', rpcUrl, connectionName);
+      try {
+        console.log('7');
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: arbitrumChainId,
+              chainName: connectionName,
+              rpcUrls: [rpcUrl],
+              blockExplorerUrls: [AUTOMATE_BLOCK_EXPLORER_URL],
+              nativeCurrency: {
+                symbol: 'ETH', // 2-6 characters long
+                decimals: 18,
+              },
+            },
+          ],
+        });
+        console.log('8');
+      } catch (addError) {
+        console.log('9');
+        console.log(addError);
+      }
+    }
+  }, [checkConnection, connectionName, rpcUrl, wallet]);
 
   const handleArbitrumConnection = useCallback(async () => {
-    const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
-    if (isMetamaskInstalled) {
-      arbitrumNetworkConnect();
-    } else {
-      notification.error({
-        message: (
-          <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
-            </a>{' '}
-            If you have installed refresh the page.
-          </span>
-        ),
-      });
-    }
+    checkMetamaskInstalled();
+    await arbitrumNetworkConnect();
   }, [arbitrumNetworkConnect]);
 
   const handleConnect = useCallback(async () => {
@@ -207,12 +223,7 @@ function Config() {
       )}
       {!completed && (
         <>
-          <Radio.Group
-            defaultValue={Network.None}
-            onChange={(e) => setNetwork(e.target.value)}
-            size="large"
-            className="title"
-          >
+          <Radio.Group defaultValue={Network.None} onChange={handleNetworkChange} size="large" className="title">
             <Radio.Button value={Network.Ethereum} className="radiobuttons">
               <img alt="eth-network-icon" src="/assets/eth.svg" width="32" height="32" className="network-icon" />
               Ethereum
@@ -270,7 +281,7 @@ function Config() {
           <p>When you're done, click 'OK' below.</p>
           <Form layout="vertical">
             <Form.Item label="Network Name">
-              <CopyInput value={networkName} inputTitle="Network Name" />
+              <CopyInput value={connectionName} inputTitle="Network Name" />
             </Form.Item>
             <Form.Item label="New RPC URL">
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
@@ -282,16 +293,31 @@ function Config() {
               <CopyInput value="ETH" inputTitle="Currency Symbol" />
             </Form.Item>
             <Form.Item label="Block Explorer URL">
-              <CopyInput
-                value="https://automate.chronologic.network/transactions?query="
-                inputTitle="Block Explorer URL"
-              />
+              <CopyInput value={AUTOMATE_BLOCK_EXPLORER_URL} inputTitle="Block Explorer URL" />
             </Form.Item>
           </Form>
         </MetaMaskConfig>
       </Modal>
     </Container>
   );
+}
+
+function checkMetamaskInstalled(): void {
+  if (typeof window.ethereum === 'undefined') {
+    notification.error({
+      message: (
+        <span>
+          Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
+          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+            Metamask extension.
+          </a>{' '}
+          If you have installed refresh the page.
+        </span>
+      ),
+    });
+
+    throw new Error('Metamask not installed');
+  }
 }
 
 const Container = styled.div`
