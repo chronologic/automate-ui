@@ -28,7 +28,7 @@ function WrappedProviders({ children }: IProps) {
 
   return (
     <ScreenProvider>
-      <UseWalletProvider chainId={chainId as number}>
+      <UseWalletProvider connectors={{ injected: { chainId: [1, 3, 42161, 421611] } }}>
         <EthersProvider>
           <AutomateConnectionProvider>
             <AuthProvider>

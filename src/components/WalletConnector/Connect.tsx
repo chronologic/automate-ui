@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { Button } from 'antd';
-import { Wallet } from 'use-wallet';
+import { Wallet } from 'use-wallet/dist/cjs/types';
 
 interface IProps {
-  wallet: Wallet<unknown>;
+  wallet: Wallet;
 }
 
 function Connect({ wallet }: IProps) {

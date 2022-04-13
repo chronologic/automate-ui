@@ -39,7 +39,7 @@ class Wrapper extends React.Component {
 function App() {
   const { theme } = useTheme();
   const location = useLocation();
-  useEagerConnect();
+  // useEagerConnect();
 
   if (MAINTENANCE_MODE) {
     return <Maintenance />;

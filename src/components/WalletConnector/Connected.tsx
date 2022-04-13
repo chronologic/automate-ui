@@ -2,14 +2,14 @@ import { useCallback } from 'react';
 import styled from 'styled-components';
 import { Menu, Dropdown, Typography } from 'antd';
 import { PoweroffOutlined } from '@ant-design/icons';
-import { Wallet } from 'use-wallet';
+import { Wallet } from 'use-wallet/dist/cjs/types';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 import { shortAddress } from '../../utils';
 import { useAutomateConnection } from '../../hooks';
 
 interface IProps {
-  wallet: Wallet<unknown>;
+  wallet: Wallet;
 }
 
 const { Text } = Typography;

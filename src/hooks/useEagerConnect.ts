@@ -8,7 +8,7 @@ const useEagerConnect = () => {
   const { chainId } = useChainId();
   const wallet = useWallet();
   const { activate, active } = (wallet as any)._web3ReactContext;
-  const injected = (wallet.connectors.injected as any).web3ReactConnector({ chainId });
+  const injected = ((wallet.connectors as any).injected as any).web3ReactConnector({ chainId });
   const [tried, setTried] = useState(false);
 
   useEffect(() => {

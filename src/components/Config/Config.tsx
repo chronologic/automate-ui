@@ -129,6 +129,29 @@ function Config() {
       await wallet.connect('injected');
     }
 
+    try {
+      console.log('7');
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: arbitrumChainId,
+            chainName: connectionName,
+            rpcUrls: [rpcUrl],
+            blockExplorerUrls: [AUTOMATE_BLOCK_EXPLORER_URL],
+            nativeCurrency: {
+              symbol: 'ETH', // 2-6 characters long
+              decimals: 18,
+            },
+          },
+        ],
+      });
+      console.log('8');
+    } catch (addError) {
+      console.log('9');
+      console.log(addError);
+    }
+
     console.log('2');
     const isConnected = await checkConnection();
     console.log('3', isConnected);
@@ -139,28 +162,6 @@ function Config() {
       notification.success({ message: `You're connected to Automate!` });
     } else {
       console.log('6', rpcUrl, connectionName);
-      try {
-        console.log('7');
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: arbitrumChainId,
-              chainName: connectionName,
-              rpcUrls: [rpcUrl],
-              blockExplorerUrls: [AUTOMATE_BLOCK_EXPLORER_URL],
-              nativeCurrency: {
-                symbol: 'ETH', // 2-6 characters long
-                decimals: 18,
-              },
-            },
-          ],
-        });
-        console.log('8');
-      } catch (addError) {
-        console.log('9');
-        console.log(addError);
-      }
     }
   }, [checkConnection, connectionName, rpcUrl, wallet]);
 
