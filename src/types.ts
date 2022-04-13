@@ -55,6 +55,7 @@ export interface ITheme {
   name: string;
   colors: {
     body: string;
+    header: string;
     text: string;
     textAccent: string;
     accent: string;

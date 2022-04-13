@@ -63,7 +63,7 @@ const GlobalStyle = styled.div<IProps>`
   .ant-layout-header,
   .ant-layout-footer {
     height: auto;
-    background: transparent;
+    background: ${(props) => props.theme.colors.header};
     padding: 0;
     color: ${(props) => props.theme.colors.text};
     line-height: initial;
