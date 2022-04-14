@@ -4,6 +4,7 @@ const theme: ITheme = {
   name: 'automate',
   colors: {
     body: 'white',
+    header: 'white',
     text: '#595959',
     textAccent: '#e0e5ff',
     accent: '#2f4ffd',
