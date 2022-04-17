@@ -1,11 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import { ethers } from 'ethers';
 import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
 import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
-import { Network, ChainId } from '../../constants';
+import { Network } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
@@ -54,8 +53,8 @@ function Config() {
     }),
     [confirmationTime]
   );
-  const networkName = useMemo(() => {
-    let name = 'Automate';
+  const connectionName = useMemo(() => {
+    let name = `Automate ${network}`;
     if (gasPriceAware) {
       name += ' Gas';
     }
@@ -66,7 +65,7 @@ function Config() {
       name += ` ${sliderMarks[confirmationTime].value}`;
     }
     return name;
-  }, [confirmationTime, draft, gasPriceAware, sliderMarks]);
+  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks]);
 
   const rpcUrl = useMemo(() => {
     let url = `https://rpc.chronologic.network?email=${user.login}&apiKey=${user.apiKey}`;
@@ -79,65 +78,28 @@ function Config() {
     if (confirmationTime) {
       url += `&confirmationTime=${sliderMarks[confirmationTime].value}`;
     }
-
-    return url;
-  }, [confirmationTime, draft, gasPriceAware, sliderMarks, user.apiKey, user.login]);
-
-  const handleEthereumConnection = useCallback(async () => {
-    setSubmitted(true);
-    setCompleted(false);
-  }, []);
-
-  const arbitrumNetworkConnect = useCallback(async () => {
-    const arbitrumOneChainId = ethers.utils.hexlify(ChainId.Arbitrum);
-    if (typeof window.ethereum !== 'undefined') {
-      const currentChainId = await window.ethereum.request({ method: `eth_chainId` });
-      if (currentChainId === arbitrumOneChainId) {
-        setGasPriceAware(false);
-        setDraft(true);
-        setConfirmationTime(0);
-        setNetwork(Network.Arbitrum);
-        notification.success({ message: `You're connected to Automate!` });
-      } else {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: arbitrumOneChainId,
-                chainName: 'Arbitrum One',
-                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-                blockExplorerUrls: ['https://arbiscan.io/'],
-                nativeCurrency: {
-                  symbol: 'ETH', // 2-6 characters long
-                  decimals: 18,
-                },
-              },
-            ],
-          });
-        } catch (addError) {
-          console.log(addError);
-        }
-      }
-    } else {
-      notification.error({
-        message: (
-          <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
-            </a>{' '}
-            If you have installed refresh the page.
-          </span>
-        ),
-      });
+    switch (network) {
+      case Network.Arbitrum:
+        url += '&network=arbitrum';
+        break;
+      case Network.Ropsten:
+        url += '&network=ropsten';
+        break;
+      case Network.ArbitrumRinkeby:
+        url += '&network=arbitrumRinkeby';
+        break;
+      default:
+        url += '&network=ethereum';
+        break;
     }
-  }, []);
+    return url;
+  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
 
-  const handleArbitrumConnection = useCallback(async () => {
+  const handleConnection = useCallback(async () => {
     const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
     if (isMetamaskInstalled) {
-      arbitrumNetworkConnect();
+      setSubmitted(true);
+      setCompleted(false);
     } else {
       notification.error({
         message: (
@@ -151,19 +113,29 @@ function Config() {
         ),
       });
     }
-  }, [arbitrumNetworkConnect]);
+  }, []);
 
   const handleConnect = useCallback(async () => {
     if (network === Network.Ethereum) {
-      handleEthereumConnection();
+      setSubmitted(true);
+      setCompleted(false);
     } else if (network === Network.Arbitrum) {
-      handleArbitrumConnection();
+      setSubmitted(true);
+      setCompleted(false);
+      setGasPriceAware(false);
+      setDraft(true);
+      setConfirmationTime(0);
     }
-  }, [handleArbitrumConnection, handleEthereumConnection, network]);
+  }, [handleConnection, network]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
-  }, []);
+    if (network === Network.Arbitrum) {
+      setGasPriceAware(true);
+      setDraft(false);
+      setConfirmationTime(1);
+    }
+  }, [network]);
 
   const handleConfirmConfigured = useCallback(async () => {
     if (!(wallet.status === 'connected')) {
@@ -270,7 +242,7 @@ function Config() {
           <p>When you're done, click 'OK' below.</p>
           <Form layout="vertical">
             <Form.Item label="Network Name">
-              <CopyInput value={networkName} inputTitle="Network Name" />
+              <CopyInput value={connectionName} inputTitle="Network Name" />
             </Form.Item>
             <Form.Item label="New RPC URL">
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
