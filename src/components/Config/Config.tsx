@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, Button, Typography, notification, Radio } from 'antd';
+import { Form, Modal, Button, Typography, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
@@ -8,6 +8,7 @@ import { Network, ChainId } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
+import { Notifications } from './Notifications';
 
 function Config() {
   const wallet = useWallet();
@@ -101,17 +102,7 @@ function Config() {
       setSubmitted(true);
       setCompleted(false);
     } else {
-      notification.error({
-        message: (
-          <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
-            </a>{' '}
-            If you have installed refresh the page.
-          </span>
-        ),
-      });
+      Notifications('Metamasknotinstalled', network, network);
     }
   }, []);
 
@@ -141,40 +132,17 @@ function Config() {
     if (!(wallet.status === 'connected')) {
       await wallet.connect('injected');
     }
-    const isConnected = await checkConnection();
-    console.log('con: ' + isConnected + 'network: ' + network);
-    if (isConnected !== 'none') {
-      if (isConnected === network.toLowerCase()) {
-        notification.success({ message: `You're connected to Automate ${network} Network!` });
+    const connectedNetwork = await checkConnection();
+    if (connectedNetwork !== 'none') {
+      if (connectedNetwork === network.toLowerCase()) {
+        Notifications('success', network, network);
         setSubmitted(false);
         setCompleted(true);
       } else {
-        notification.error({
-          message: (
-            <span>
-              You're connected to Automate <b> {isConnected.toUpperCase()} </b> Network, Please change it to{' '}
-              <b>{network.toUpperCase()} </b> Network in order for Automate to schedule your transactions.
-            </span>
-          ),
-        });
+        Notifications('ConnectedWrongNetwork', connectedNetwork, network);
       }
     } else {
-      notification.error({
-        message: (
-          <span>
-            You're not connected to Automate. Make sure you followed the
-            <br />
-            <a
-              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              setup instructions
-            </a>{' '}
-            correctly.
-          </span>
-        ),
-      });
+      Notifications('NotConnectedtoAutomate', network, network);
     }
   }, [checkConnection, wallet, network]);
 
