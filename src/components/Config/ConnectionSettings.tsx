@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Checkbox, Typography, Slider } from 'antd';
 import styled from 'styled-components';
 import { MOBILE_SCREEN_THRESHOLD } from '../../constants';

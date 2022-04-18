@@ -1,11 +1,8 @@
 import React from 'react';
-import ReactCountUp from 'react-countup';
 import { Link } from 'react-router-dom';
 
 import { IStatsItem, StatsAPI } from '../../../api/StatsAPI';
 import logo from './logo.svg';
-
-const CountUp = (ReactCountUp as any).default;
 
 interface IHeaderProps {
   updateCounter: number;
@@ -53,7 +50,6 @@ class Header extends React.Component<IHeaderProps, IHeaderState> {
   }
 
   public render() {
-    const { completed, pending, statsLoaded } = this.state;
     return (
       <div className="bx--row carbon--center header">
         {/* {statsLoaded && (

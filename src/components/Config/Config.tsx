@@ -3,7 +3,7 @@ import { Form, Modal, Button, Typography, Radio } from 'antd';
 import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
-import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
+import { useAuth, useAutomateConnection } from '../../hooks';
 import { Network, ChainId } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
@@ -14,7 +14,6 @@ function Config() {
   const wallet = useWallet();
   const { checkConnection } = useAutomateConnection();
   const { user } = useAuth();
-  const { chainId } = useChainId();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(1);
@@ -96,28 +95,23 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
 
-  const handleConnection = useCallback(async () => {
+  const handleConnect = useCallback(async () => {
     const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
     if (isMetamaskInstalled) {
-      setSubmitted(true);
-      setCompleted(false);
+      if (network === Network.Ethereum) {
+        setSubmitted(true);
+        setCompleted(false);
+      } else if (network === Network.Arbitrum) {
+        setSubmitted(true);
+        setCompleted(false);
+        setGasPriceAware(false);
+        setDraft(true);
+        setConfirmationTime(0);
+      }
     } else {
       Notifications('Metamasknotinstalled', network, network);
     }
-  }, []);
-
-  const handleConnect = useCallback(async () => {
-    if (network === Network.Ethereum) {
-      setSubmitted(true);
-      setCompleted(false);
-    } else if (network === Network.Arbitrum) {
-      setSubmitted(true);
-      setCompleted(false);
-      setGasPriceAware(false);
-      setDraft(true);
-      setConfirmationTime(0);
-    }
-  }, [handleConnection, network]);
+  }, [network]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
