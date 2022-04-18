@@ -25,7 +25,7 @@ export const Notifications = (message: string, connected_network: string, desire
           </span>
         ),
       });
-    case ' NotConnectedtoAutomate':
+    case 'NotConnectedtoAutomate':
       return notification.error({
         message: (
           <span>
