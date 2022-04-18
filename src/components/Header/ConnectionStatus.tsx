@@ -28,7 +28,11 @@ function ConnectionStatus() {
     <Container onClick={handleClick}>
       <Alert
         type={connected !== 'none' ? 'success' : 'error'}
-        message={connected !== 'none' ? "You're connected to Automate" : "You're not connected to Automate"}
+        message={
+          connected !== 'none'
+            ? `You're connected to Automate ${connected} network`
+            : `You're not connected to Automate ${connected} network`
+        }
         banner
       />
     </Container>
