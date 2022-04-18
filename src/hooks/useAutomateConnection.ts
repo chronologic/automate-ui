@@ -16,7 +16,7 @@ export function useAutomateConnection() {
   return { connected, checkConnection };
 }
 
-export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
+export async function isConnectedToAutomate(ethereum: any): Promise<string> {
   try {
     const res = await ethereum?.request({
       method: 'eth_call',
@@ -28,8 +28,8 @@ export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
         },
       ],
     });
-    return res.client === 'automate';
+    return res.params.network;
   } catch (e) {
-    return false;
+    return 'none';
   }
 }

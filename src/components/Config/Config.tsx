@@ -142,10 +142,22 @@ function Config() {
       await wallet.connect('injected');
     }
     const isConnected = await checkConnection();
-    if (isConnected) {
-      notification.success({ message: `You're connected to Automate!` });
-      setSubmitted(false);
-      setCompleted(true);
+    console.log('con: ' + isConnected + 'network: ' + network);
+    if (isConnected !== 'none') {
+      if (isConnected === network.toLowerCase()) {
+        notification.success({ message: `You're connected to Automate ${network} Network!` });
+        setSubmitted(false);
+        setCompleted(true);
+      } else {
+        notification.error({
+          message: (
+            <span>
+              You're connected to Automate <b> {isConnected.toUpperCase()} </b> Network, Please change it to{' '}
+              <b>{network.toUpperCase()} </b> Network in order for Automate to schedule your transactions.
+            </span>
+          ),
+        });
+      }
     } else {
       notification.error({
         message: (
@@ -164,7 +176,7 @@ function Config() {
         ),
       });
     }
-  }, [checkConnection, wallet]);
+  }, [checkConnection, wallet, network]);
 
   return (
     <Container>

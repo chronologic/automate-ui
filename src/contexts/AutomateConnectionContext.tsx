@@ -1,8 +1,8 @@
 import React, { createContext, useState } from 'react';
 
 export interface IAutomateConnectionContext {
-  connected: boolean;
-  setConnected: (connected: boolean) => void;
+  connected: string;
+  setConnected: (connected: string) => void;
 }
 
 interface IProps {
@@ -10,12 +10,12 @@ interface IProps {
 }
 
 export const AutomateConnectionContext = createContext<IAutomateConnectionContext>({
-  connected: false,
+  connected: 'none',
   setConnected: () => {},
 });
 
 export const AutomateConnectionProvider: React.FC<IProps> = ({ children }: IProps) => {
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState('none');
 
   return (
     <AutomateConnectionContext.Provider value={{ connected, setConnected: setConnected as any }}>
