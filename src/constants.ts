@@ -12,4 +12,7 @@ export enum Network {
 }
 export enum ChainId {
   Arbitrum = 42161,
+  Ethereum = 1,
+  Ropsten = 3,
+  ArbitrumRinkeby = 421611,
 }

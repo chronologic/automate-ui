@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
 import { useAuth, useAutomateConnection, useChainId } from '../../hooks';
-import { Network } from '../../constants';
+import { Network, ChainId } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
@@ -248,7 +248,10 @@ function Config() {
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
             </Form.Item>
             <Form.Item label="Chain ID">
-              <CopyInput value={(chainId || '').toString()} inputTitle="Chain ID" />
+              <CopyInput
+                value={network === Network.Arbitrum ? ChainId.Arbitrum.toString() : ChainId.Ethereum.toString()}
+                inputTitle="Chain ID"
+              />
             </Form.Item>
             <Form.Item label="Currency Symbol">
               <CopyInput value="ETH" inputTitle="Currency Symbol" />
