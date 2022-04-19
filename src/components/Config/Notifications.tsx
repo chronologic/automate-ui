@@ -8,11 +8,10 @@ export const Notifications = (message: string, connected_network: string, desire
       return notification.error({
         message: (
           <span>
-            Metamask is not installed. Metamask is required to connect Automate. Install the{' '}
             <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension.
+              Metamask extension
             </a>{' '}
-            If you have installed refresh the page.
+            is required to connect Automate. Please install it and refresh the page.
           </span>
         ),
       });
