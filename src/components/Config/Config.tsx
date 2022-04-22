@@ -117,7 +117,7 @@ function Config() {
       await wallet.connect('injected');
     }
     const connectedNetwork = await checkConnection();
-    if (connectedNetwork !== 'none') {
+    if (connectedNetwork !== 'notConnectedToAutomate') {
       if (connectedNetwork === network.toLowerCase()) {
         notifications.connectedToAutomate(network);
         setSubmitted(false);
