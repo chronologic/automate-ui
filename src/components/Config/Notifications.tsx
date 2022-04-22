@@ -1,8 +1,12 @@
 import { notification } from 'antd';
 
+import { capitalizeFirstLetter } from '../../utils';
+
 export const notifications = Object.freeze({
   connectedToAutomate(connectedNetwork: string) {
-    notification.success({ message: `You're connected to Automate ${connectedNetwork} Network!` });
+    notification.success({
+      message: `You're connected to Automate ${capitalizeFirstLetter(connectedNetwork)} Network!`,
+    });
   },
   metamaskNotInstalled() {
     notification.error({
@@ -20,8 +24,8 @@ export const notifications = Object.freeze({
     notification.error({
       message: (
         <span>
-          You're connected to Automate <b> {connectedNetwork.toUpperCase()} </b> Network, Please change it to Automate's{' '}
-          <b>{desiredNetwork.toUpperCase()} </b> Network for Automate to track your transactions.
+          You're connected to Automate <b> {capitalizeFirstLetter(connectedNetwork)} </b> Network, Please change it to
+          Automate's <b>{capitalizeFirstLetter(desiredNetwork)} </b> Network for Automate to track your transactions.
         </span>
       ),
     });
