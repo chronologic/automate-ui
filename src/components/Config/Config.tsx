@@ -83,21 +83,23 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
 
-  const handleConnect = useCallback(async () => {
+  const checkMetamaskInstalled = () => {
     const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
-    if (isMetamaskInstalled) {
-      if (network === Network.Ethereum) {
-        setSubmitted(true);
-        setCompleted(false);
-      } else if (network === Network.Arbitrum) {
-        setSubmitted(true);
-        setCompleted(false);
-        setGasPriceAware(false);
-        setDraft(true);
-        setConfirmationTime(0);
-      }
-    } else {
-      notifications.notConnectedtoAutomate();
+    if (!isMetamaskInstalled) {
+      throw notifications.metamaskNotInstalled();
+    }
+  };
+  const handleConnect = useCallback(async () => {
+    checkMetamaskInstalled();
+    if (network === Network.Ethereum) {
+      setSubmitted(true);
+      setCompleted(false);
+    } else if (network === Network.Arbitrum) {
+      setSubmitted(true);
+      setCompleted(false);
+      setGasPriceAware(false);
+      setDraft(true);
+      setConfirmationTime(0);
     }
   }, [network]);
 
