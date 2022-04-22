@@ -1,45 +1,47 @@
 import { notification } from 'antd';
 
-export const Notifications = (message: string, connected_network: string, desired_network: string) => {
-  switch (message) {
-    case 'success':
-      return notification.success({ message: `You're connected to Automate ${connected_network} Network!` });
-    case 'Metamasknotinstalled':
-      return notification.error({
-        message: (
-          <span>
-            <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
-              Metamask extension
-            </a>{' '}
-            is required to connect Automate. Please install it and refresh the page.
-          </span>
-        ),
-      });
-    case 'ConnectedWrongNetwork':
-      return notification.error({
-        message: (
-          <span>
-            You're connected to Automate <b> {connected_network.toUpperCase()} </b> Network, Please change it to
-            Automate's <b>{desired_network.toUpperCase()} </b> Network for Automate to track your transactions.
-          </span>
-        ),
-      });
-    case 'NotConnectedtoAutomate':
-      return notification.error({
-        message: (
-          <span>
-            You're not connected to Automate. Make sure you followed the
-            <br />
-            <a
-              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              setup instructions
-            </a>{' '}
-            correctly.
-          </span>
-        ),
-      });
-  }
-};
+export const notifications = Object.freeze({
+  connectedToAutomate(connectedNetwork: string) {
+    notification.success({ message: `You're connected to Automate ${connectedNetwork} Network!` });
+  },
+  metamaskNotInstalled() {
+    notification.error({
+      message: (
+        <span>
+          <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer">
+            Metamask extension
+          </a>{' '}
+          is required to connect Automate. Please install it and refresh the page.
+        </span>
+      ),
+    });
+  },
+  connectedWrongNetwork(connectedNetwork: string, desiredNetwork: string) {
+    notification.error({
+      message: (
+        <span>
+          You're connected to Automate <b> {connectedNetwork.toUpperCase()} </b> Network, Please change it to Automate's{' '}
+          <b>{desiredNetwork.toUpperCase()} </b> Network for Automate to track your transactions.
+        </span>
+      ),
+    });
+  },
+  notConnectedtoAutomate() {
+    notification.error({
+      message: (
+        <span>
+          You're not connected to Automate. Make sure you followed the
+          <br />
+          <a
+            href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            setup instructions
+          </a>{' '}
+          correctly.
+        </span>
+      ),
+    });
+  },
+});

@@ -16,3 +16,9 @@ export enum ChainId {
   Ropsten = 3,
   ArbitrumRinkeby = 421611,
 }
+export enum ConfirmationTime {
+  immediate = '0d',
+  oneDay = '1d',
+  threeDays = '3d',
+  fiveDays = '5d',
+}

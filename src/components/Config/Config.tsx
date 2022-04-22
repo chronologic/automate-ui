@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import { useWallet } from 'use-wallet';
 
 import { useAuth, useAutomateConnection } from '../../hooks';
-import { Network, ChainId } from '../../constants';
+import { Network, ChainId, ConfirmationTime } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
-import { Notifications } from './Notifications';
+import { notifications } from './Notifications';
 
 function Config() {
   const wallet = useWallet();
@@ -29,11 +29,11 @@ function Config() {
   } = useMemo(
     () => ({
       0: {
-        value: '0',
+        value: ConfirmationTime.immediate,
         label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
       },
       1: {
-        value: '1d',
+        value: ConfirmationTime.oneDay,
         label: (
           <div className={confirmationTime === 1 ? 'selected' : ''}>
             <span>24 hours</span>
@@ -43,11 +43,11 @@ function Config() {
         ),
       },
       2: {
-        value: '3d',
+        value: ConfirmationTime.threeDays,
         label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
       },
       3: {
-        value: '5d',
+        value: ConfirmationTime.fiveDays,
         label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
       },
     }),
@@ -97,7 +97,7 @@ function Config() {
         setConfirmationTime(0);
       }
     } else {
-      Notifications('Metamasknotinstalled', network, network);
+      notifications.notConnectedtoAutomate();
     }
   }, [network]);
 
@@ -117,14 +117,14 @@ function Config() {
     const connectedNetwork = await checkConnection();
     if (connectedNetwork !== 'none') {
       if (connectedNetwork === network.toLowerCase()) {
-        Notifications('success', network, network);
+        notifications.connectedToAutomate(network);
         setSubmitted(false);
         setCompleted(true);
       } else {
-        Notifications('ConnectedWrongNetwork', connectedNetwork, network);
+        notifications.connectedWrongNetwork(connectedNetwork, network);
       }
     } else {
-      Notifications('NotConnectedtoAutomate', network, network);
+      notifications.notConnectedtoAutomate();
     }
   }, [checkConnection, wallet, network]);
 
