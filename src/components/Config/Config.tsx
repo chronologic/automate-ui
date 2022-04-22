@@ -78,20 +78,8 @@ function Config() {
     if (confirmationTime) {
       url += `&confirmationTime=${sliderMarks[confirmationTime].value}`;
     }
-    switch (network) {
-      case Network.Arbitrum:
-        url += '&network=arbitrum';
-        break;
-      case Network.Ropsten:
-        url += '&network=ropsten';
-        break;
-      case Network.ArbitrumRinkeby:
-        url += '&network=arbitrumRinkeby';
-        break;
-      default:
-        url += '&network=ethereum';
-        break;
-    }
+    url += `&network=${network.toLowerCase()}`;
+
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
 
