@@ -17,8 +17,8 @@ export enum ChainId {
   ArbitrumRinkeby = 421611,
 }
 export enum ConfirmationTime {
-  immediate = '0d',
-  oneDay = '1d',
-  threeDays = '3d',
-  fiveDays = '5d',
+  immediate = '0d', // 0
+  oneDay = '1d', // 1
+  threeDays = '3d', // 2
+  fiveDays = '5d', // 3
 }

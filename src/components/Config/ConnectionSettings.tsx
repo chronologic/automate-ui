@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Checkbox, Typography, Slider } from 'antd';
 import styled from 'styled-components';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { MOBILE_SCREEN_THRESHOLD, ConfirmationTime } from '../../constants';
 
 interface IProps {
   gasPriceAware?: boolean;
@@ -54,7 +54,17 @@ function ConnectionSettings({
     }),
     [confirmationTime]
   );
-
+  const marks = {
+    [ConfirmationTime.immediate]: '0°C',
+    [ConfirmationTime.oneDay]: '26°C',
+    [ConfirmationTime.threeDays]: '37°C',
+    [ConfirmationTime.fiveDays]: {
+      style: {
+        color: '#f50',
+      },
+      label: <strong>100°C</strong>,
+    },
+  };
   return (
     <>
       <Checkboxes>
@@ -96,6 +106,7 @@ function ConnectionSettings({
             onChange={setConfirmationTime}
           />
         </SliderContainer>
+        <Slider marks={marks} min={0} max={3} step={1} />
       </div>
     </>
   );

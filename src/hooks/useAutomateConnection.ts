@@ -29,7 +29,7 @@ export async function isConnectedToAutomate(ethereum: any): Promise<string> {
       ],
     });
     if (res.client !== 'automate') {
-      return 'notConnectedToAutomate';
+      return 'none';
     }
     const connectedNetowrk = res.params.network;
     return connectedNetowrk;

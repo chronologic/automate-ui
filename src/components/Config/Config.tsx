@@ -117,16 +117,14 @@ function Config() {
       await wallet.connect('injected');
     }
     const connectedNetwork = await checkConnection();
-    if (connectedNetwork !== 'notConnectedToAutomate') {
-      if (connectedNetwork === network.toLowerCase()) {
-        notifications.connectedToAutomate(network);
-        setSubmitted(false);
-        setCompleted(true);
-      } else {
-        notifications.connectedWrongNetwork(connectedNetwork, network);
-      }
+    if (connectedNetwork === 'none') {
+      notifications.NotConnectedtoAutomate();
+    } else if (connectedNetwork === network.toLowerCase()) {
+      notifications.connectedToAutomate(network);
+      setSubmitted(false);
+      setCompleted(true);
     } else {
-      notifications.notConnectedtoAutomate();
+      notifications.connectedWrongNetwork(connectedNetwork, network);
     }
   }, [checkConnection, wallet, network]);
 
