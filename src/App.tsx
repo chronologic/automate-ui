@@ -9,6 +9,7 @@ import { MAINTENANCE_MODE } from './env';
 import {
   Auth,
   Scheduleds,
+  StrategyList,
   Maintenance,
   Header,
   Footer,
@@ -66,6 +67,7 @@ function App() {
               <PrivateRoute path="/connect">
                 <Config />
               </PrivateRoute>
+              <Route path="/strategies" component={StrategyList} />
               <Route path="/scheduleds" component={Scheduleds} />
               <Route exact={true} path="/" component={Auth} />
               <Route path="*" component={RouteFallback} />

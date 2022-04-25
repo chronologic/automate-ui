@@ -7,3 +7,4 @@ export { default as Maintenance } from './Maintenance';
 export { default as PrivateRoute } from './PrivateRoute';
 export { default as Scheduleds } from './Scheduleds';
 export { default as Transactions } from './Transactions';
+export { default as StrategyList } from './Strategies';
