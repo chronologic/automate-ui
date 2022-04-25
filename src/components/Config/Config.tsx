@@ -16,7 +16,7 @@ function Config() {
   const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
-  const [confirmationTime, setConfirmationTime] = useState(1);
+  const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [network, setNetwork] = useState(Network.None);
@@ -30,12 +30,12 @@ function Config() {
     () => ({
       0: {
         value: ConfirmationTime.immediate,
-        label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
+        label: <div className={confirmationTime === ConfirmationTime.immediate ? 'selected' : ''}>Immediate</div>,
       },
       1: {
         value: ConfirmationTime.oneDay,
         label: (
-          <div className={confirmationTime === 1 ? 'selected' : ''}>
+          <div className={confirmationTime === ConfirmationTime.oneDay ? 'selected' : ''}>
             <span>24 hours</span>
             <br />
             <span className="note">(recommended)</span>
@@ -44,11 +44,11 @@ function Config() {
       },
       2: {
         value: ConfirmationTime.threeDays,
-        label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
+        label: <div className={confirmationTime === ConfirmationTime.threeDays ? 'selected' : ''}>3 days</div>,
       },
       3: {
         value: ConfirmationTime.fiveDays,
-        label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
+        label: <div className={confirmationTime === ConfirmationTime.fiveDays ? '' : ''}>5 days</div>,
       },
     }),
     [confirmationTime]
@@ -62,7 +62,7 @@ function Config() {
       name += ' Draft';
     }
     if (confirmationTime) {
-      name += ` ${sliderMarks[confirmationTime].value}`;
+      name += ` ${confirmationTime}`;
     }
     return name;
   }, [confirmationTime, draft, gasPriceAware, network, sliderMarks]);
@@ -76,7 +76,7 @@ function Config() {
       url += '&draft=true';
     }
     if (confirmationTime) {
-      url += `&confirmationTime=${sliderMarks[confirmationTime].value}`;
+      url += `&confirmationTime=${confirmationTime}`;
     }
     url += `&network=${network.toLowerCase()}`;
 
@@ -99,7 +99,7 @@ function Config() {
       setCompleted(false);
       setGasPriceAware(false);
       setDraft(true);
-      setConfirmationTime(0);
+      setConfirmationTime(ConfirmationTime.immediate);
     }
   }, [network]);
 
@@ -108,7 +108,7 @@ function Config() {
     if (network === Network.Arbitrum) {
       setGasPriceAware(true);
       setDraft(false);
-      setConfirmationTime(1);
+      setConfirmationTime(ConfirmationTime.oneDay);
     }
   }, [network]);
 

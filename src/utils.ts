@@ -1,6 +1,5 @@
 import { BigNumber, utils } from 'ethers';
 import { parseUrl } from 'query-string';
-import { ConfirmationTime } from './constants';
 
 const USER_SOURCE_STORAGE_KEY = 'source';
 
@@ -111,14 +110,4 @@ function setUserSource(name: string): string {
 
 export function capitalizeFirstLetter(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
-}
-
-export function castConfirmationTime(value: string) {
-  var retVal: number = Number(value.replace('d', ''));
-  if (retVal === 3) {
-    retVal = 2;
-  } else if (retVal === 5) {
-    retVal = 3;
-  }
-  return retVal;
 }

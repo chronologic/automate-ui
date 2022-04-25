@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Checkbox, Typography, Slider } from 'antd';
 import styled from 'styled-components';
 import { MOBILE_SCREEN_THRESHOLD, ConfirmationTime } from '../../constants';
@@ -8,8 +8,8 @@ interface IProps {
   setGasPriceAware: (gasPriceAware: boolean) => void;
   draft?: boolean;
   setDraft: (draft: boolean) => void;
-  confirmationTime?: number;
-  setConfirmationTime: (draft: number) => void;
+  confirmationTime: ConfirmationTime;
+  setConfirmationTime: (confirmationTime: ConfirmationTime) => void;
   submitted?: boolean;
 }
 
@@ -23,20 +23,20 @@ function ConnectionSettings({
   submitted,
 }: IProps) {
   const sliderMarks: {
-    [key: number]: {
-      value: string;
+    [key: string]: {
+      value: ConfirmationTime;
       label: React.ReactNode;
     };
   } = useMemo(
     () => ({
       0: {
-        value: '0',
-        label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
+        value: ConfirmationTime.immediate,
+        label: <div className={confirmationTime === ConfirmationTime.immediate ? 'selected' : ''}>Immediate</div>,
       },
       1: {
-        value: '1d',
+        value: ConfirmationTime.oneDay,
         label: (
-          <div className={confirmationTime === 1 ? 'selected' : ''}>
+          <div className={confirmationTime === ConfirmationTime.oneDay ? 'selected' : ''}>
             <span>24 hours</span>
             <br />
             <span className="note">(recommended)</span>
@@ -44,27 +44,17 @@ function ConnectionSettings({
         ),
       },
       2: {
-        value: '3d',
-        label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
+        value: ConfirmationTime.threeDays,
+        label: <div className={confirmationTime === ConfirmationTime.threeDays ? 'selected' : ''}>3 days</div>,
       },
       3: {
-        value: '5d',
-        label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
+        value: ConfirmationTime.fiveDays,
+        label: <div className={confirmationTime === ConfirmationTime.fiveDays ? '' : ''}>5 days</div>,
       },
     }),
     [confirmationTime]
   );
-  const marks = {
-    [ConfirmationTime.immediate]: '0°C',
-    [ConfirmationTime.oneDay]: '26°C',
-    [ConfirmationTime.threeDays]: '37°C',
-    [ConfirmationTime.fiveDays]: {
-      style: {
-        color: '#f50',
-      },
-      label: <strong>100°C</strong>,
-    },
-  };
+
   return (
     <>
       <Checkboxes>
@@ -98,15 +88,14 @@ function ConnectionSettings({
           <Slider
             marks={sliderMarks}
             step={1}
-            value={confirmationTime}
             min={0}
             max={3}
+            defaultValue={1}
             disabled={submitted}
             tooltipVisible={false}
-            onChange={setConfirmationTime}
+            onChange={(value) => setConfirmationTime(sliderMarks[value].value)}
           />
         </SliderContainer>
-        <Slider marks={marks} min={0} max={3} step={1} />
       </div>
     </>
   );
