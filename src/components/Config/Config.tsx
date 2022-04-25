@@ -16,43 +16,11 @@ function Config() {
   const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
-  const [confirmationTime, setConfirmationTime] = useState(1);
+  const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [network, setNetwork] = useState(Network.None);
 
-  const sliderMarks: {
-    [key: number]: {
-      value: string;
-      label: React.ReactNode;
-    };
-  } = useMemo(
-    () => ({
-      0: {
-        value: ConfirmationTime.immediate,
-        label: <div className={confirmationTime === 0 ? 'selected' : ''}>Immediate</div>,
-      },
-      1: {
-        value: ConfirmationTime.oneDay,
-        label: (
-          <div className={confirmationTime === 1 ? 'selected' : ''}>
-            <span>24 hours</span>
-            <br />
-            <span className="note">(recommended)</span>
-          </div>
-        ),
-      },
-      2: {
-        value: ConfirmationTime.threeDays,
-        label: <div className={confirmationTime === 2 ? 'selected' : ''}>3 days</div>,
-      },
-      3: {
-        value: ConfirmationTime.fiveDays,
-        label: <div className={confirmationTime === 3 ? 'selected' : ''}>5 days</div>,
-      },
-    }),
-    [confirmationTime]
-  );
   const connectionName = useMemo(() => {
     let name = `Automate ${network}`;
     if (gasPriceAware) {
@@ -62,10 +30,10 @@ function Config() {
       name += ' Draft';
     }
     if (confirmationTime) {
-      name += ` ${sliderMarks[confirmationTime].value}`;
+      name += ` ${confirmationTime}`;
     }
     return name;
-  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks]);
+  }, [confirmationTime, draft, gasPriceAware, network]);
 
   const rpcUrl = useMemo(() => {
     let url = `https://rpc.chronologic.network?email=${user.login}&apiKey=${user.apiKey}`;
@@ -76,12 +44,12 @@ function Config() {
       url += '&draft=true';
     }
     if (confirmationTime) {
-      url += `&confirmationTime=${sliderMarks[confirmationTime].value}`;
+      url += `&confirmationTime=${confirmationTime}`;
     }
     url += `&network=${network.toLowerCase()}`;
 
     return url;
-  }, [confirmationTime, draft, gasPriceAware, network, sliderMarks, user.apiKey, user.login]);
+  }, [confirmationTime, draft, gasPriceAware, network, user.apiKey, user.login]);
 
   const checkMetamaskInstalled = () => {
     const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
@@ -89,44 +57,44 @@ function Config() {
       throw notifications.metamaskNotInstalled();
     }
   };
-  const handleConnect = useCallback(async () => {
-    checkMetamaskInstalled();
+  const handleNetworkSelection = (network: Network) => {
+    setNetwork(network);
     if (network === Network.Ethereum) {
-      setSubmitted(true);
-      setCompleted(false);
+      setGasPriceAware(true);
+      setDraft(false);
+      setConfirmationTime(ConfirmationTime.oneDay);
     } else if (network === Network.Arbitrum) {
-      setSubmitted(true);
-      setCompleted(false);
       setGasPriceAware(false);
       setDraft(true);
-      setConfirmationTime(0);
+      setConfirmationTime(ConfirmationTime.immediate);
+    }
+  };
+
+  const handleConnect = useCallback(async () => {
+    checkMetamaskInstalled();
+    if (network !== Network.None) {
+      setSubmitted(true);
+      setCompleted(false);
     }
   }, [network]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
-    if (network === Network.Arbitrum) {
-      setGasPriceAware(true);
-      setDraft(false);
-      setConfirmationTime(1);
-    }
-  }, [network]);
+  }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
     if (!(wallet.status === 'connected')) {
       await wallet.connect('injected');
     }
     const connectedNetwork = await checkConnection();
-    if (connectedNetwork !== 'notConnectedToAutomate') {
-      if (connectedNetwork === network.toLowerCase()) {
-        notifications.connectedToAutomate(network);
-        setSubmitted(false);
-        setCompleted(true);
-      } else {
-        notifications.connectedWrongNetwork(connectedNetwork, network);
-      }
+    if (connectedNetwork === 'none') {
+      notifications.NotConnectedtoAutomate();
+    } else if (connectedNetwork === network.toLowerCase()) {
+      notifications.connectedToAutomate(network);
+      setSubmitted(false);
+      setCompleted(true);
     } else {
-      notifications.notConnectedtoAutomate();
+      notifications.connectedWrongNetwork(connectedNetwork, network);
     }
   }, [checkConnection, wallet, network]);
 
@@ -145,7 +113,7 @@ function Config() {
         <>
           <Radio.Group
             defaultValue={Network.None}
-            onChange={(e) => setNetwork(e.target.value)}
+            onChange={(e) => handleNetworkSelection(e.target.value)}
             size="large"
             className="title"
           >
@@ -212,10 +180,7 @@ function Config() {
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
             </Form.Item>
             <Form.Item label="Chain ID">
-              <CopyInput
-                value={network === Network.Arbitrum ? ChainId.Arbitrum.toString() : ChainId.Ethereum.toString()}
-                inputTitle="Chain ID"
-              />
+              <CopyInput value={ChainId[network].toString()} inputTitle="Chain ID" />
             </Form.Item>
             <Form.Item label="Currency Symbol">
               <CopyInput value="ETH" inputTitle="Currency Symbol" />

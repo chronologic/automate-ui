@@ -4,20 +4,21 @@ export const TABLET_SCREEN_THRESHOLD = 1200;
 export const SECOND_MILLIS = 1000;
 export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 export enum Network {
-  None = '',
+  None = 'None',
   Ethereum = 'Ethereum',
   Arbitrum = 'Arbitrum',
   Ropsten = 'Ropsten',
   ArbitrumRinkeby = 'ArbitrumRinkeby',
 }
 export enum ChainId {
+  None = '',
   Arbitrum = 42161,
   Ethereum = 1,
   Ropsten = 3,
   ArbitrumRinkeby = 421611,
 }
 export enum ConfirmationTime {
-  immediate = '0d',
+  immediate = '',
   oneDay = '1d',
   threeDays = '3d',
   fiveDays = '5d',
