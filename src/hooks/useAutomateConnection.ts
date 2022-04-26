@@ -16,7 +16,7 @@ export function useAutomateConnection() {
   return { connected, checkConnection };
 }
 
-export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
+export async function isConnectedToAutomate(ethereum: any): Promise<string> {
   try {
     const res = await ethereum?.request({
       method: 'eth_call',
@@ -28,8 +28,12 @@ export async function isConnectedToAutomate(ethereum: any): Promise<boolean> {
         },
       ],
     });
-    return res.client === 'automate';
+    if (res.client !== 'automate') {
+      throw new Error('The user is not connected to Automate');
+    }
+    const connectedNetowrk = res.params.network;
+    return connectedNetowrk;
   } catch (e) {
-    return false;
+    return 'none';
   }
 }

@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { useAutomateConnection } from '../../hooks';
 import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { capitalizeFirstLetter } from '../../utils';
 
 function ConnectionStatus() {
   const history = useHistory();
@@ -27,8 +28,12 @@ function ConnectionStatus() {
   return (
     <Container onClick={handleClick}>
       <Alert
-        type={connected ? 'success' : 'error'}
-        message={connected ? "You're connected to Automate" : "You're not connected to Automate"}
+        type={connected !== 'none' ? 'success' : 'error'}
+        message={
+          connected !== 'none'
+            ? `You're connected to Automate ${capitalizeFirstLetter(connected)} network`
+            : `You're not connected to Automate `
+        }
         banner
       />
     </Container>
