@@ -319,6 +319,47 @@ const GlobalStyle = styled.div<IProps>`
   .ant-card-head {
     border-color: ${(props) => props.theme.colors.border};
   }
+  .ant-picker-range .ant-picker-active-bar {
+    background: ${(props) => props.theme.colors.accent};
+  }
+  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+    background: ${(props) => props.theme.colors.accent};
+  }
+  .ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before {
+    border: ${(props) => props.theme.colors.accent};
+  }
+  .ant-picker-cell-in-view.ant-picker-cell-in-range::before {
+    background: ${(props) => props.theme.colors.text};
+  }
+  .ant-picker:hover,
+  .ant-picker-focused,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):first-child,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-picker-header-view button:hover,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
+  .ant-radio-button-wrapper:hover {
+    color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not([class*=' ant-radio-button-wrapper-disabled']).ant-radio-button-wrapper:first-child {
+    border-right-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover::before {
+    background-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+    color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-radio-button-wrapper:focus-within,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
+    box-shadow: none;
+  }
 `;
 
 export default GlobalStyle;

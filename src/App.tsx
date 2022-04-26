@@ -10,6 +10,7 @@ import {
   Auth,
   Scheduleds,
   StrategyList,
+  StrategyDetails,
   Maintenance,
   Header,
   Footer,
@@ -68,6 +69,7 @@ function App() {
                 <Config />
               </PrivateRoute>
               <Route path="/strategies" component={StrategyList} />
+              <Route path="/bridgeworld-claim-and-send" component={StrategyDetails} />
               <Route path="/scheduleds" component={Scheduleds} />
               <Route exact={true} path="/" component={Auth} />
               <Route path="*" component={RouteFallback} />
