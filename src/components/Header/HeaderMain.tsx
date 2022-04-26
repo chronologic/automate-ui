@@ -44,10 +44,10 @@ const Container = styled.div`
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 8px 0;
+  padding: 16px 0;
 
   @media (max-width: ${SMALL_SCREEN_THRESHOLD}px) {
-    padding: 8px;
+    padding: 16px;
 
     .walletConnector {
       display: none;
