@@ -48,7 +48,7 @@ function StrategyList() {
         </Col>
         <Col span={8}>
           <Card className="antcard" hoverable cover={<img alt="example" src="../img/ivory-tower.jpg" />}>
-            <Meta title="Send Legions Questing" description="Bridgeworld" />
+            <Meta title="Send Legions Questing" description="Bridgeworld (Ivory Tower)" />
             <Text type="danger" className="soon">
               COMING SOON!
             </Text>
@@ -70,8 +70,7 @@ const Container = styled.div`
 
   .ant-card {
     border: none;
-    background-color: rgb(245 245 245 / 5%);
-    color: #f5f5f5;
+    background-color: rgb(255 255 255 / 5%);
   }
 
   .ant-card-meta-title {
