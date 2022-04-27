@@ -1,5 +1,5 @@
 import { Card, Row, Col, Typography, Input, DatePicker, Radio, Button, Space } from 'antd';
-import { BlockOutlined, GiftOutlined, ExportOutlined, ReloadOutlined } from '@ant-design/icons';
+import { BlockOutlined, GiftOutlined, ExportOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { IThemeProps } from '../../types';
 
@@ -43,7 +43,9 @@ function StrategyDetails() {
                   </div>
                 </Col>
               </Card>
-
+              <Arrow>
+                <ArrowDownOutlined style={{ color: 'rgb(255 255 255 / 45%)' }} />
+              </Arrow>
               <Card
                 hoverable
                 title={
@@ -62,12 +64,11 @@ function StrategyDetails() {
                 </Col>
               </Card>
             </div>
-
             <Repeat>
               <Card
                 title={
                   <>
-                    <ReloadOutlined />
+                    <ReloadOutlined spin />
                     <Text className="cardTitle">Repeat</Text>
                   </>
                 }
@@ -121,9 +122,14 @@ const Footer = styled.div`
   flex-direction: column;
   align-items: center;
   padding-top: 3em;
+`;
 
-
-  }
+const Arrow = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
 `;
 
 const Container = styled.div`
@@ -141,7 +147,7 @@ const Container = styled.div`
   }
 
   .inner {
-    padding: 10px 10px 0;
+    padding: 10px 10px 20px;
   }
 
   .ant-card {
@@ -151,10 +157,6 @@ const Container = styled.div`
 
   .ant-typography.ant-typography-secondary {
     color: rgb(255 255 255 / 45%);
-  }
-
-  .ant-card {
-    margin-bottom: 24px;
   }
 
   .ant-card-head {
