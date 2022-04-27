@@ -24,7 +24,7 @@ function StrategyList() {
       <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
         {strategies.map((strategy) => (
           <Col span={8} key={strategy.itemId}>
-            <div onClick={() => strategyClick(strategy)} id={strategy.itemId.toString()}>
+            <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
                 <Text type="danger" className="soon" id={strategy.title}>
