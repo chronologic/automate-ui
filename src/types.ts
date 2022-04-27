@@ -146,3 +146,10 @@ export interface IAuthParams {
   source?: string;
   signup: boolean;
 }
+export interface IStrategies {
+  title: string;
+  imageSrc: string;
+  displayComingSoonText: boolean;
+  itemId: number;
+  detailPageURL: string;
+}
