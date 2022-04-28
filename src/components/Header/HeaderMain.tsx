@@ -30,7 +30,9 @@ function HeaderMain() {
       </Logos>
       <FlexSpacer />
       {isAuthenticated && <Credits />}
-      <TreasureEcosystemButton />
+      {
+        // <TreasureEcosystemButton />
+      }
       <FlexSpacer />
       <User />
       <WalletConnector className="walletConnector" />

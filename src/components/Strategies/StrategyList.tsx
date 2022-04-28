@@ -2,7 +2,6 @@ import { Card, Row, Col, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { IStrategies } from './../../types';
-
 import { strategies } from './StrategyData';
 
 const { Meta } = Card;
@@ -13,7 +12,7 @@ function StrategyList() {
   const strategyClick = (strategy: IStrategies) => {
     var comingSoonTextId = document.getElementById(strategy.title);
     if (strategy.displayComingSoonText) {
-      comingSoonTextId!.style.display = 'block';
+      comingSoonTextId!.classList.remove('visible');
     } else {
       window.open('/' + strategy.detailPageURL);
     }
@@ -27,8 +26,10 @@ function StrategyList() {
             <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
-                <Text type="danger" className="soon" id={strategy.title}>
-                  COMING SOON!
+                <Text type="danger" className="comingSoon">
+                  <div className="visible" id={strategy.title}>
+                    COMING SOON!
+                  </div>
                 </Text>
               </Card>
             </div>
@@ -65,9 +66,23 @@ const Container = styled.div`
     display: inline-block;
   }
 
-  .soon {
-    display: none;
+  .comingSoon {
     float: right;
+    animation: 0.5s ease fadeIn 1;
+  }
+  .visible {
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      visibility: hidden;
+    }
+    100% {
+      opacity: 1;
+      visibility: visible;
+    }
   }
 `;
 
