@@ -68,8 +68,9 @@ const Container = styled.div`
 
   .comingSoon {
     float: right;
-    animation: 0.5s ease fadeIn 1;
+    animation: opacity 0.5s ease;
   }
+
   .visible {
     opacity: 0;
   }
