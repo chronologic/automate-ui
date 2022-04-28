@@ -67,9 +67,9 @@ function App() {
               <PrivateRoute path="/connect">
                 <Config />
               </PrivateRoute>
-              <Route path="/strategies" component={StrategyList} />
+              <Route path="/login" component={Auth} />
               <Route path="/scheduleds" component={Scheduleds} />
-              <Route exact={true} path="/" component={Auth} />
+              <Route exact={true} path="/" component={StrategyList} />
               <Route path="*" component={RouteFallback} />
             </Switch>
           </Layout.Content>

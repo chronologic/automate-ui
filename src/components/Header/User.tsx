@@ -46,7 +46,7 @@ function HeaderMain() {
 
   return (
     <Container>
-      <Link to="/">{ALLOW_SIGNUP ? 'Log in/Sign up' : 'Log in'}</Link>
+      <Link to="/login">{ALLOW_SIGNUP ? 'Log in/Sign up' : 'Log in'}</Link>
     </Container>
   );
 }

@@ -5,7 +5,7 @@ import { ITheme } from '../types';
 import themes from '../themes';
 import { getUserSource, hasNonDefaultUserSource } from '../utils';
 
-const defaultThemeName = 'automate';
+const defaultThemeName = 'magic';
 const themeStorageKey = 'theme';
 
 export interface IThemeContext {
@@ -27,7 +27,7 @@ export const ThemeContext = createContext<IThemeContext>({
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [theme, setNewTheme] = useState(initialTheme);
   const setTheme = useCallback((name: string) => {
-    const newTheme = _setTheme(name, initialTheme.name);
+    const newTheme = _setTheme('magic', initialTheme.name);
     setNewTheme(newTheme);
   }, []);
 
@@ -45,13 +45,13 @@ function _getTheme(): ITheme {
     themeName = source;
   }
 
-  return _setTheme(themeName);
+  return _setTheme('magic');
 }
 
 function _setTheme(name: string, fallbackThemeName?: string): ITheme {
   const theme: ITheme = (themes as any)[name || fallbackThemeName || defaultThemeName];
 
-  localStorage.setItem(themeStorageKey, theme.name);
+  localStorage.setItem(themeStorageKey, 'magic');
 
   return theme;
 }
