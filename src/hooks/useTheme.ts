@@ -6,7 +6,6 @@ import { useAuth } from './useAuth';
 export const useTheme = () => {
   const { user } = useAuth();
   const { theme, setTheme } = useContext(ThemeContext);
-  console.log('theme: ' + JSON.stringify(theme));
   useEffect(() => {
     if (user?.source) {
       setTheme(user.source);

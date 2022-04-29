@@ -4,7 +4,6 @@ import {
   PlusOutlined,
   MoreOutlined,
   EditOutlined,
-  ExportOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -36,7 +35,7 @@ import AssetSymbol from '../AssetSymbol';
 import TxStatus from './TxStatus';
 import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import AssetSymbolLink from './AssetSymbolLink';
-import EtherscanAddress from './EtherscanAddress';
+import BlockExplorer from './BlockExplorer';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -335,14 +334,18 @@ function TransactionTable({
       },
       {
         dataIndex: 'from',
-        render: (from: string) => <EtherscanAddress address={from} />,
+        render: (from: string, record: IScheduledForUser) => (
+          <BlockExplorer address={from} chainId={record.chainId} isCheckingTx={false} />
+        ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
         align: 'center' as any,
       },
       {
         dataIndex: 'to',
-        render: (to: string) => <EtherscanAddress address={to} />,
+        render: (to: string, record: IScheduledForUser) => (
+          <BlockExplorer address={to} chainId={record.chainId} isCheckingTx={false} />
+        ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
         align: 'center' as any,
@@ -350,7 +353,9 @@ function TransactionTable({
       {
         dataIndex: 'assetName',
         render: (assetName: string, record: IScheduledForUser) => {
-          return <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} />;
+          return (
+            <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} chainId={record.chainId} />
+          );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset',
@@ -461,13 +466,12 @@ function TransactionTable({
               </Menu.Item>
               {showEtherscan && (
                 <Menu.Item key="2">
-                  <a
-                    href={`https://etherscan.io/tx/${record.transactionHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExportOutlined /> Etherscan
-                  </a>
+                  <BlockExplorer
+                    address={record.transactionHash}
+                    chainId={record.chainId}
+                    isCheckingTx={true}
+                    displayedText={'ScanMenuItem'}
+                  />
                 </Menu.Item>
               )}
               {showCancel && (

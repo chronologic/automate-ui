@@ -27,7 +27,7 @@ export const ThemeContext = createContext<IThemeContext>({
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [theme, setNewTheme] = useState(initialTheme);
   const setTheme = useCallback((name: string) => {
-    const newTheme = _setTheme('magic', initialTheme.name);
+    const newTheme = _setTheme(defaultThemeName, initialTheme.name);
     setNewTheme(newTheme);
   }, []);
 
@@ -45,13 +45,13 @@ function _getTheme(): ITheme {
     themeName = source;
   }
 
-  return _setTheme('magic');
+  return _setTheme(themeName);
 }
 
 function _setTheme(name: string, fallbackThemeName?: string): ITheme {
   const theme: ITheme = (themes as any)[name || fallbackThemeName || defaultThemeName];
 
-  localStorage.setItem(themeStorageKey, 'magic');
+  localStorage.setItem(themeStorageKey, theme.name);
 
   return theme;
 }

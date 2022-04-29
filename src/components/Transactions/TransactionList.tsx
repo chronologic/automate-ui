@@ -6,7 +6,7 @@ import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
 import TxStatus from './TxStatus';
 import AssetSymbolLink from './AssetSymbolLink';
-import EtherscanAddress from './EtherscanAddress';
+import BlockExplorer from './BlockExplorer';
 import { SMALL_SCREEN_THRESHOLD } from '../../constants';
 
 interface IProps {
@@ -33,7 +33,7 @@ interface IListItemProps {
 function TransactionListItem({ item }: IListItemProps) {
   const title = (
     <div className="header">
-      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chars={3} />
+      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chainId={item.chainId} chars={3} />
       <TxStatus status={item.statusName} txHash={item.transactionHash} />
     </div>
   );
@@ -47,13 +47,13 @@ function TransactionListItem({ item }: IListItemProps) {
         <div className="row">
           <div className="label">From</div>
           <div className="value">
-            <EtherscanAddress address={item.from} chars={3} />
+            <BlockExplorer address={item.from} chainId={item.chainId} chars={3} isCheckingTx={false} />
           </div>
         </div>
         <div className="row">
           <div className="label">To</div>
           <div className="value">
-            <EtherscanAddress address={item.to} chars={3} />
+            <BlockExplorer address={item.to} chainId={item.chainId} chars={3} isCheckingTx={false} />
           </div>
         </div>
         <div className="row">

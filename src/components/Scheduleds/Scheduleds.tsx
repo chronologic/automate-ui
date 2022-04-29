@@ -17,6 +17,7 @@ import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
 import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { IScheduledForUser } from '../../types';
+import BlockExplorer from '../Transactions/BlockExplorer';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 
@@ -358,9 +359,12 @@ function Scheduleds() {
           }
 
           return (
-            <a href={`https://etherscan.io/tx/${record.transactionHash}`} target="_blank" rel="noopener noreferrer">
-              {res}
-            </a>
+            <BlockExplorer
+              address={record.transactionHash}
+              chainId={record.chainId}
+              isCheckingTx={true}
+              displayedText={res}
+            />
           );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
@@ -368,20 +372,16 @@ function Scheduleds() {
       },
       {
         dataIndex: 'from',
-        render: (from: string) => (
-          <a href={`https://etherscan.io/address/${from}`} title={from} target="_blank" rel="noopener noreferrer">
-            {shortAddress(from)}
-          </a>
+        render: (from: string, record: IScheduledForUser) => (
+          <BlockExplorer address={from} chainId={record.chainId} isCheckingTx={false} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
       },
       {
         dataIndex: 'to',
-        render: (to: string) => (
-          <a href={`https://etherscan.io/address/${to}`} title={to} target="_blank" rel="noopener noreferrer">
-            {shortAddress(to || '')}
-          </a>
+        render: (to: string, record: IScheduledForUser) => (
+          <BlockExplorer address={to} chainId={record.chainId} isCheckingTx={false} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
@@ -393,14 +393,12 @@ function Scheduleds() {
 
           if (record.assetContract) {
             return (
-              <a
-                href={`https://etherscan.io/address/${record.assetContract}`}
-                title={record.assetContract}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {name}
-              </a>
+              <BlockExplorer
+                address={record.assetContract}
+                chainId={record.chainId}
+                isCheckingTx={false}
+                displayedText={name}
+              />
             );
           }
 
@@ -466,14 +464,12 @@ function Scheduleds() {
 
           if (conditionAsset) {
             return (
-              <a
-                href={`https://etherscan.io/address/${conditionAsset}`}
-                title={conditionAsset}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {assetName || conditionAsset}
-              </a>
+              <BlockExplorer
+                address={conditionAsset}
+                chainId={record.chainId}
+                isCheckingTx={false}
+                displayedText={conditionAsset}
+              />
             );
           }
 
