@@ -146,3 +146,23 @@ export interface IAuthParams {
   source?: string;
   signup: boolean;
 }
+
+export interface IStrategyPrepTxBase {
+  to: string;
+  data: string;
+}
+
+export interface IStrategyPrepTx extends IStrategyPrepTxBase {
+  assetType: AssetType;
+  chainId: number;
+  from: string;
+  nonce: number;
+}
+
+export interface IStrategyPrepTxWithConditions extends IStrategyPrepTx {
+  priority: number;
+  conditionAsset?: string;
+  conditionAmount?: string;
+  timeCondition?: number;
+  timeConditionTZ?: string;
+}

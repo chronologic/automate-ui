@@ -23,3 +23,8 @@ export enum ConfirmationTime {
   threeDays = '3d',
   fiveDays = '5d',
 }
+
+export enum StrategyBlock {
+  Arbitrum_Bridgeworld_Claim = 'arbitrum:bridgeworld:claim',
+  Arbitrum_Magic_Send = 'arbitrum:magic:send',
+}

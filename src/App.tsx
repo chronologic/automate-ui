@@ -68,8 +68,8 @@ function App() {
               <PrivateRoute path="/connect">
                 <Config />
               </PrivateRoute>
+              <Route path="/strategies/:id" component={StrategyDetails} />
               <Route path="/strategies" component={StrategyList} />
-              <Route path="/strategy/bridgeworld-claim-and-send" component={StrategyDetails} />
               <Route path="/scheduleds" component={Scheduleds} />
               <Route exact={true} path="/" component={Auth} />
               <Route path="*" component={RouteFallback} />

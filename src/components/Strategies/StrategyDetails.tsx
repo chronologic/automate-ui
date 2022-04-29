@@ -1,104 +1,102 @@
-import { Card, Row, Col, Typography, Input, DatePicker, Radio, Button, Space } from 'antd';
-import { BlockOutlined, GiftOutlined, ExportOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { useCallback, useMemo } from 'react';
+import { Card, Row, Col, Typography, DatePicker, Radio, Button, Space, Form } from 'antd';
+import { BlockOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { useLocation } from 'react-router-dom';
+
 import { IThemeProps } from '../../types';
+import { strategies } from './strategyDetailsData';
+import { blockForName } from './Blocks';
 
 const { Title, Text } = Typography;
 
 const { RangePicker } = DatePicker;
 
 function StrategyDetails() {
+  const location = useLocation();
+  const [form] = Form.useForm();
+  const { pathname } = location;
+
+  const strategyName = useMemo(() => {
+    return pathname.split('/').reverse()[0];
+  }, [pathname]);
+
+  const strategy = strategies[strategyName];
+
+  const blocks = useMemo(() => {
+    const separator = (
+      <Arrow>
+        <ArrowDownOutlined style={{ color: 'rgb(255 255 255 / 45%)' }} />
+      </Arrow>
+    );
+
+    return strategy?.blocks.map((name, index) => {
+      const Block = blockForName[name];
+      return (
+        <div key={name}>
+          {index !== 0 && separator}
+          <Block />
+        </div>
+      );
+    });
+  }, [strategy?.blocks]);
+
+  const handleSubmit = useCallback(async () => {
+    const res = await form.validateFields();
+    console.log(res);
+  }, [form]);
+
+  if (!strategy) {
+    return <div>strategy not found</div>;
+  }
+
   return (
     <Container>
-      <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-        <Col span={12}>
-          <Title level={3}>Claim Rewards</Title>
-          <Text type="secondary">
-            Use this combo when you want to periodically claim $MAGIC earned during a vested release. This strategy
-            combines two steps for you: sending $MAGIC to a specified wallet address and setting up recurring payouts.
-          </Text>
-        </Col>
-        <Col span={12}>
-          <div className="outer">
-            <div className="inner">
-              <Card
-                hoverable
-                title={
-                  <>
-                    <GiftOutlined />
-                    <Text className="cardTitle">Claim Rewards</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="14px">
-                  <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
-                </Col>
-                <Col flex="auto">
-                  <div>
-                    <Title className="secondary" level={5}>
-                      Atlas Mine
-                    </Title>
-                    <Text type="secondary">There is nothing to specify at this step.</Text>
-                  </div>
-                </Col>
-              </Card>
-              <Arrow>
-                <ArrowDownOutlined style={{ color: 'rgb(255 255 255 / 45%)' }} />
-              </Arrow>
-              <Card
-                hoverable
-                title={
-                  <>
-                    <ExportOutlined />
-                    <Text className="cardTitle">Send $MAGIC</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="390px">
-                  <Input size="large" placeholder="To address" />
-                </Col>
-                <Col flex="auto">
-                  <Input size="large" placeholder="Amount" />
-                </Col>
-              </Card>
+      <Form form={form}>
+        <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
+          <Col span={12}>
+            <Title level={3}>{strategy.title}</Title>
+            <Text type="secondary">{strategy.description}</Text>
+          </Col>
+          <Col span={12}>
+            <div className="outer">
+              <div className="inner">{blocks}</div>
+              <Repeat>
+                <Card
+                  title={
+                    <>
+                      <ReloadOutlined spin />
+                      <Text className="cardTitle">Repeat</Text>
+                    </>
+                  }
+                  extra={<BlockOutlined />}
+                >
+                  <Col flex="auto">
+                    <RangePicker size="large" />
+                  </Col>
+                  <Col flex="263px">
+                    <Radio.Group defaultValue="a" size="large">
+                      <Radio.Button value="a">Daily</Radio.Button>
+                      <Radio.Button value="b">Weekly</Radio.Button>
+                      <Radio.Button value="c">Monthly</Radio.Button>
+                    </Radio.Group>
+                  </Col>
+                </Card>
+              </Repeat>
             </div>
-            <Repeat>
-              <Card
-                title={
-                  <>
-                    <ReloadOutlined spin />
-                    <Text className="cardTitle">Repeat</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="auto">
-                  <RangePicker size="large" />
-                </Col>
-                <Col flex="263px">
-                  <Radio.Group defaultValue="a" size="large">
-                    <Radio.Button value="a">Daily</Radio.Button>
-                    <Radio.Button value="b">Weekly</Radio.Button>
-                    <Radio.Button value="c">Monthly</Radio.Button>
-                  </Radio.Group>
-                </Col>
-              </Card>
-            </Repeat>
-          </div>
-          <Footer>
-            <Space direction="vertical" size="large">
-              <Button type="primary" size="large">
-                Automate!
-              </Button>
-              <Text type="secondary">
-                This automation will generate <strong>14 transactions</strong> for you to sign in Metamask.
-              </Text>
-            </Space>
-          </Footer>
-        </Col>
-      </Row>
+            <Footer>
+              <Space direction="vertical" size="large">
+                <Button type="primary" size="large" onClick={handleSubmit}>
+                  Automate!
+                </Button>
+                <Text type="secondary">
+                  This automation will generate <strong>14 transactions</strong> for you to sign in Metamask.
+                </Text>
+              </Space>
+            </Footer>
+          </Col>
+        </Row>
+      </Form>
     </Container>
   );
 }
