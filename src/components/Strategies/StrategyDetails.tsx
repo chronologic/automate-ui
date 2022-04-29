@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Card, Row, Col, Typography, DatePicker, Radio, Button, Space, Form } from 'antd';
 import { BlockOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import { IThemeProps } from '../../types';
 import { strategies } from './strategyDetailsData';
 import { blockForName } from './Blocks';
+import { useStrategyStore } from '../../hooks';
 
 const { Title, Text } = Typography;
 
@@ -16,6 +17,9 @@ function StrategyDetails() {
   const location = useLocation();
   const [form] = Form.useForm();
   const { pathname } = location;
+  const txs = useStrategyStore((state) => state.txs);
+
+  console.log(txs);
 
   const strategyName = useMemo(() => {
     return pathname.split('/').reverse()[0];
@@ -33,10 +37,10 @@ function StrategyDetails() {
     return strategy?.blocks.map((name, index) => {
       const Block = blockForName[name];
       return (
-        <div key={name}>
+        <React.Fragment key={name}>
           {index !== 0 && separator}
           <Block />
-        </div>
+        </React.Fragment>
       );
     });
   }, [strategy?.blocks]);
