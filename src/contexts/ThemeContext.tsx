@@ -27,6 +27,7 @@ export const ThemeContext = createContext<IThemeContext>({
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [theme, setNewTheme] = useState(initialTheme);
   const setTheme = useCallback((name: string) => {
+    // forced defaultTheme to be 'Magic'.
     const newTheme = _setTheme(defaultThemeName, initialTheme.name);
     setNewTheme(newTheme);
   }, []);
