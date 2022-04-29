@@ -99,7 +99,7 @@ function Auth() {
           Submit
         </Button>
         {ALLOW_SIGNUP && (
-          <ModeSwitch className="SignupLoginText">
+          <ModeSwitch className="signupLoginText">
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
               {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
@@ -122,6 +122,14 @@ const Container = styled.div`
   }
   .ant-col.ant-form-item-control {
     text-align: center;
+  }
+  .ant-input {
+    background: #111827;
+    color: #fff;
+  }
+  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
+  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover {
+    background: #232323;
   }
 
   .title {
