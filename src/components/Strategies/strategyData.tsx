@@ -1,4 +1,4 @@
-import { IStrategies } from './../../types';
+import { IStrategies } from '../../types';
 export const strategies: IStrategies[] = [
   {
     title: 'Bridgeworld (Atlas Mine)',

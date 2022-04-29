@@ -2,7 +2,7 @@ import { Card, Row, Col, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { IStrategies } from './../../types';
-import { strategies } from './StrategyData';
+import { strategies } from './strategyData';
 
 const { Meta } = Card;
 
@@ -10,9 +10,9 @@ const { Text } = Typography;
 
 function StrategyList() {
   const strategyClick = (strategy: IStrategies) => {
-    var comingSoonTextId = document.getElementById(strategy.title);
+    let comingSoonTextId = document.getElementById(strategy.title);
     if (strategy.displayComingSoonText) {
-      comingSoonTextId!.classList.remove('visible');
+      comingSoonTextId!.classList.remove('invisible');
     } else {
       window.open('/' + strategy.detailPageURL);
     }
@@ -26,8 +26,8 @@ function StrategyList() {
             <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
-                <Text type="danger" className="comingSoon">
-                  <div className="visible" id={strategy.title}>
+                <Text type="danger" className="comingSoonText">
+                  <div className="invisible" id={strategy.title}>
                     COMING SOON!
                   </div>
                 </Text>
@@ -66,23 +66,11 @@ const Container = styled.div`
     display: inline-block;
   }
 
-  .comingSoon {
+  .comingSoonText {
     float: right;
-    animation: opacity 0.5s ease;
-  }
-
-  .visible {
-    opacity: 0;
-  }
-
-  @keyframes fadeIn {
-    0% {
+    transition: opacity 0.2s ease;
+    .invisible {
       opacity: 0;
-      visibility: hidden;
-    }
-    100% {
-      opacity: 1;
-      visibility: visible;
     }
   }
 `;
