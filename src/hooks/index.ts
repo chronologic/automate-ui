@@ -7,4 +7,5 @@ export * from './useTheme';
 export * from './useTransactions';
 export * from './useUser';
 export * from './useEagerConnect';
+export * from './useStrategyApi';
 export * from './useStrategyStore';

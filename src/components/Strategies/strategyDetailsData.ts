@@ -24,7 +24,8 @@ export const strategies: {
     assetType: AssetType.Ethereum,
     chainId: ChainId.Arbitrum,
     description: `Use this strategy when you want to periodically claim $MAGIC earned during a vested release.
-This strategy combines two steps for you: claiming $MAGIC and sending it to a specified wallet address.`,
-    blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim, StrategyBlock.Arbitrum_Magic_Send],
+This strategy combines two steps for you: claiming $MAGIC and sending it to a specified wallet address.
+Sending comes first because if you can't send you can always fall back to claiming.`,
+    blocks: [StrategyBlock.Arbitrum_Magic_Send, StrategyBlock.Arbitrum_Bridgeworld_Claim],
   },
 };

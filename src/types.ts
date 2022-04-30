@@ -166,3 +166,13 @@ export interface IStrategyPrepTxWithConditions extends IStrategyPrepTx {
   timeCondition?: number;
   timeConditionTZ?: string;
 }
+
+export interface IStrategyPrepResponse {
+  instanceId: string;
+  expiresAt: string;
+}
+
+export interface IStrategyRepetition {
+  time: number;
+  tz: string;
+}

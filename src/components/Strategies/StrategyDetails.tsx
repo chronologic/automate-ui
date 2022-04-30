@@ -1,31 +1,33 @@
 import React, { useCallback, useMemo } from 'react';
-import { Card, Row, Col, Typography, DatePicker, Radio, Button, Space, Form } from 'antd';
-import { BlockOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { Row, Col, Typography, Button, Space, Form } from 'antd';
+import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 
 import { IThemeProps } from '../../types';
 import { strategies } from './strategyDetailsData';
-import { blockForName } from './Blocks';
 import { useStrategyStore } from '../../hooks';
+import { blockForName, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
-
-const { RangePicker } = DatePicker;
 
 function StrategyDetails() {
   const location = useLocation();
   const [form] = Form.useForm();
-  const { pathname } = location;
   const txs = useStrategyStore((state) => state.txs);
+  const repetitions = useStrategyStore((state) => state.repetitions);
 
-  console.log(txs);
+  console.log(txs, repetitions);
 
   const strategyName = useMemo(() => {
-    return pathname.split('/').reverse()[0];
-  }, [pathname]);
+    return location?.pathname?.split('/').reverse()[0];
+  }, [location?.pathname]);
 
   const strategy = strategies[strategyName];
+
+  const txsToSign = useMemo(() => {
+    return (strategy?.blocks.length || 0) * repetitions.length;
+  }, [repetitions.length, strategy?.blocks.length]);
 
   const blocks = useMemo(() => {
     const separator = (
@@ -46,8 +48,13 @@ function StrategyDetails() {
   }, [strategy?.blocks]);
 
   const handleSubmit = useCallback(async () => {
-    const res = await form.validateFields();
-    console.log(res);
+    await form.validateFields();
+
+    // TODO:
+    // - calculate # of iterations based on the Repeat input
+    // - construct IStrategyPrepTx[] from txs + user nonce
+    // - call API /strategies/prep and store response
+    // - batch send all constructed txs to metamask
   }, [form]);
 
   if (!strategy) {
@@ -60,41 +67,22 @@ function StrategyDetails() {
         <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
           <Col span={12}>
             <Title level={3}>{strategy.title}</Title>
-            <Text type="secondary">{strategy.description}</Text>
+            <Text type="secondary" className="description">
+              {strategy.description}
+            </Text>
           </Col>
           <Col span={12}>
             <div className="outer">
               <div className="inner">{blocks}</div>
-              <Repeat>
-                <Card
-                  title={
-                    <>
-                      <ReloadOutlined spin />
-                      <Text className="cardTitle">Repeat</Text>
-                    </>
-                  }
-                  extra={<BlockOutlined />}
-                >
-                  <Col flex="auto">
-                    <RangePicker size="large" />
-                  </Col>
-                  <Col flex="263px">
-                    <Radio.Group defaultValue="a" size="large">
-                      <Radio.Button value="a">Daily</Radio.Button>
-                      <Radio.Button value="b">Weekly</Radio.Button>
-                      <Radio.Button value="c">Monthly</Radio.Button>
-                    </Radio.Group>
-                  </Col>
-                </Card>
-              </Repeat>
+              <Repeat />
             </div>
             <Footer>
               <Space direction="vertical" size="large">
                 <Button type="primary" size="large" onClick={handleSubmit}>
                   Automate!
                 </Button>
-                <Text type="secondary">
-                  This automation will generate <strong>14 transactions</strong> for you to sign in Metamask.
+                <Text type="secondary" className="txsToSign">
+                  This automation will generate <strong>{txsToSign} transactions</strong> for you to sign in Metamask.
                 </Text>
               </Space>
             </Footer>
@@ -104,35 +92,6 @@ function StrategyDetails() {
     </Container>
   );
 }
-const Repeat = styled.div`
-  .ant-card {
-    border: none;
-    background-color: ${(props: IThemeProps) => props.theme.colors.accent} !important;
-    margin-bottom: 0px !important;
-  }
-  .ant-card-head {
-    border-color: rgb(255 255 255 / 25%);
-  }
-  .ant-card-extra {
-    color: rgb(255 255 255 / 45%) !important;
-  }
-`;
-
-const Footer = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 3em;
-`;
-
-const Arrow = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2px 0;
-`;
 
 const Container = styled.div`
   width: 100%;
@@ -143,6 +102,10 @@ const Container = styled.div`
   align-items: center;
   margin: 0 auto;
 
+  .description {
+    color: rgb(255 255 255 / 45%);
+  }
+
   .outer {
     border: 1px solid ${(props: IThemeProps) => props.theme.colors.accent};
     border-radius: 2px;
@@ -150,15 +113,6 @@ const Container = styled.div`
 
   .inner {
     padding: 10px 10px 20px;
-  }
-
-  .ant-card {
-    border: none;
-    background-color: rgb(245 245 245 / 5%);
-  }
-
-  .ant-typography.ant-typography-secondary {
-    color: rgb(255 255 255 / 45%);
   }
 
   .ant-card-head {
@@ -181,6 +135,26 @@ const Container = styled.div`
   .cardTitle {
     margin-left: 10px;
   }
+`;
+
+const Footer = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3em;
+
+  .txsToSign {
+    color: rgb(255 255 255 / 45%);
+  }
+`;
+
+const Arrow = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
 `;
 
 export default StrategyDetails;

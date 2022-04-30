@@ -1,2 +1,3 @@
 export * from './UserAPI';
 export * from './TransactionAPI';
+export * from './StrategyAPI';

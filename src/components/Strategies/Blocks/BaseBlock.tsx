@@ -3,8 +3,6 @@ import { Card } from 'antd';
 import { BlockOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { IThemeProps } from '../../../types';
-
 interface IProps {
   title: React.ReactNode;
   children: React.ReactNode;
@@ -22,21 +20,10 @@ function BaseBlock({ title, children }: IProps) {
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1220px;
-  padding: 40px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   margin: 0 auto;
-
-  .outer {
-    border: 1px solid ${(props: IThemeProps) => props.theme.colors.accent};
-    border-radius: 2px;
-  }
-
-  .inner {
-    padding: 10px 10px 20px;
-  }
 
   .ant-card {
     border: none;

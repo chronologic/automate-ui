@@ -47,12 +47,12 @@ function MagicSend() {
         }
       >
         <Col flex="390px">
-          <Form.Item name="address" required>
+          <Form.Item required>
             <Input size="large" placeholder="To address" onChange={(e) => setAddress(e.target.value)} />
           </Form.Item>
         </Col>
         <Col flex="auto">
-          <Form.Item name="amount" required>
+          <Form.Item required>
             <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
           </Form.Item>
         </Col>

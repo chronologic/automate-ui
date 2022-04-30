@@ -28,3 +28,9 @@ export enum StrategyBlock {
   Arbitrum_Bridgeworld_Claim = 'arbitrum:bridgeworld:claim',
   Arbitrum_Magic_Send = 'arbitrum:magic:send',
 }
+
+export enum RepeatFrequency {
+  Daily = 'day',
+  Weekly = 'week',
+  Monthly = 'month',
+}
