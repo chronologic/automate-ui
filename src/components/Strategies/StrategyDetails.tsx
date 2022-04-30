@@ -29,8 +29,6 @@ function StrategyDetails() {
   const { prep } = useStrategyApi();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
 
-  console.log(txs, repetitions);
-
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
   }, [location?.pathname]);

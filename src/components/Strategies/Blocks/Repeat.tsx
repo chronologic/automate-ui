@@ -27,8 +27,6 @@ function Repeat() {
     }
   }, [repeatRange, repeatFrequency, setRepetitions]);
 
-  console.log(repeatRange, repeatFrequency);
-
   return (
     <Container>
       <BaseBlock
