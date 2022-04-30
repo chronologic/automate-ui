@@ -1,5 +1,7 @@
 import { BigNumber } from 'ethers';
 
+import { ChainId, StrategyBlock } from './constants';
+
 export enum AssetType {
   Ethereum = 'ethereum',
   Polkadot = 'polkadot',
@@ -147,15 +149,27 @@ export interface IAuthParams {
   signup: boolean;
 }
 
-export interface IStrategyPrepTxBase {
-  to: string;
-  data: string;
+export interface IStrategy {
+  title: string;
+  assetType: AssetType;
+  chainId: ChainId;
+  description: string;
+  blocks: StrategyBlock[];
 }
 
-export interface IStrategyPrepTx extends IStrategyPrepTxBase {
+export interface IStrategyBlockTx {
+  to: string;
+  data: string;
+  asset?: string;
+  amount?: string;
+}
+
+export interface IStrategyPrepTx {
   assetType: AssetType;
-  chainId: number;
+  chainId: ChainId;
   from: string;
+  to: string;
+  data: string;
   nonce: number;
 }
 
@@ -176,3 +190,7 @@ export interface IStrategyRepetition {
   time: number;
   tz: string;
 }
+
+export type StrategyBlockTxs = {
+  [key in StrategyBlock]: IStrategyBlockTx;
+};

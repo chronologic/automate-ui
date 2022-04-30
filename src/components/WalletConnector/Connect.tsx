@@ -1,5 +1,6 @@
+import { useCallback } from 'react';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import { Wallet } from 'use-wallet';
 
 interface IProps {
@@ -7,9 +8,18 @@ interface IProps {
 }
 
 function Connect({ wallet }: IProps) {
+  const handleConnect = useCallback(async () => {
+    try {
+      await wallet.connect('injected');
+    } catch (e: any) {
+      console.error(e);
+      notification.error(e.message);
+    }
+  }, [wallet]);
+
   return (
     <Container>
-      <Button type="ghost" className="connect-button primary" onClick={() => wallet.connect('injected')}>
+      <Button type="ghost" className="connect-button primary" onClick={handleConnect}>
         Connect to
         <br />
         MetaMask

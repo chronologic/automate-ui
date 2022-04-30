@@ -1,12 +1,20 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Row, Col, Typography, Button, Space, Form } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
+import { useWallet } from 'use-wallet';
 
-import { IThemeProps } from '../../types';
+import {
+  IStrategy,
+  IStrategyPrepResponse,
+  IStrategyPrepTxWithConditions,
+  IStrategyRepetition,
+  IThemeProps,
+  StrategyBlockTxs,
+} from '../../types';
+import { useEthers, useStrategyApi, useStrategyStore } from '../../hooks';
 import { strategies } from './strategyDetailsData';
-import { useStrategyStore } from '../../hooks';
 import { blockForName, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
@@ -14,8 +22,12 @@ const { Title, Text } = Typography;
 function StrategyDetails() {
   const location = useLocation();
   const [form] = Form.useForm();
+  const wallet = useWallet();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
+  const { web3 } = useEthers();
+  const { prep } = useStrategyApi();
+  const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
 
   console.log(txs, repetitions);
 
@@ -26,7 +38,8 @@ function StrategyDetails() {
   const strategy = strategies[strategyName];
 
   const txsToSign = useMemo(() => {
-    return (strategy?.blocks.length || 0) * repetitions.length;
+    const numOfBlocks = strategy?.blocks.length || 0;
+    return numOfBlocks ** 2 * repetitions.length;
   }, [repetitions.length, strategy?.blocks.length]);
 
   const blocks = useMemo(() => {
@@ -49,13 +62,34 @@ function StrategyDetails() {
 
   const handleSubmit = useCallback(async () => {
     await form.validateFields();
+    const from = wallet.account!;
+    const userNonce = await web3!.eth.getTransactionCount(from);
 
-    // TODO:
-    // - calculate # of iterations based on the Repeat input
-    // - construct IStrategyPrepTx[] from txs + user nonce
-    // - call API /strategies/prep and store response
-    // - batch send all constructed txs to metamask
-  }, [form]);
+    const prepTxs = buildPrepTxs({
+      strategy,
+      from,
+      txs,
+      repetitions,
+      startNonce: userNonce,
+    });
+
+    const res = await prep(prepTxs);
+    setPrepResponse(res);
+
+    const batch = new web3!.BatchRequest();
+
+    prepTxs.forEach((tx) =>
+      web3!.eth.sendTransaction({
+        chainId: strategy.chainId as number,
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+        nonce: tx.nonce, // metamask will ignore this
+      })
+    );
+
+    batch.execute();
+  }, [form, prep, repetitions, strategy, txs, wallet?.account, web3]);
 
   if (!strategy) {
     return <div>strategy not found</div>;
@@ -91,6 +125,69 @@ function StrategyDetails() {
       </Form>
     </Container>
   );
+}
+
+// TODO: optimize to skip lower priority transactions for transactions that always succeed
+// e.g. claim -> send (in this case skip send since claim has no fail conditions)
+// this might require changes in strategy.blocks to define which transaction can be skipped like that
+function buildPrepTxs({
+  strategy,
+  from,
+  txs,
+  repetitions,
+  startNonce,
+}: {
+  strategy: IStrategy;
+  from: string;
+  txs: StrategyBlockTxs;
+  repetitions: IStrategyRepetition[];
+  startNonce: number;
+}): IStrategyPrepTxWithConditions[] {
+  const prepTxs: IStrategyPrepTxWithConditions[] = [];
+
+  let nonce = startNonce;
+  for (const repetition of repetitions) {
+    for (const block of strategy.blocks) {
+      const tx = txs[block];
+      let priority = 1;
+      prepTxs.push({
+        assetType: strategy.assetType,
+        chainId: strategy.chainId,
+        from,
+        to: tx.to,
+        data: tx.data,
+        nonce,
+        priority,
+        conditionAsset: tx.asset,
+        conditionAmount: tx.amount,
+        timeCondition: repetition.time,
+        timeConditionTZ: repetition.tz,
+      });
+
+      const otherBlocks = strategy.blocks.filter((b) => b !== block);
+
+      for (const otherBlock of otherBlocks) {
+        const otherTx = txs[otherBlock];
+        priority += 1;
+        prepTxs.push({
+          assetType: strategy.assetType,
+          chainId: strategy.chainId,
+          from,
+          to: otherTx.to,
+          data: otherTx.data,
+          nonce,
+          priority,
+          conditionAsset: otherTx.asset,
+          conditionAmount: otherTx.amount,
+          timeCondition: repetition.time,
+          timeConditionTZ: repetition.tz,
+        });
+      }
+      nonce++;
+    }
+  }
+
+  return prepTxs;
 }
 
 const Container = styled.div`

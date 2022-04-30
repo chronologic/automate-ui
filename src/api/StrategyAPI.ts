@@ -10,7 +10,7 @@ const api = axios.create({
 
 export const StrategyAPI = {
   prep: withErrorHandler(
-    async (txs: IStrategyPrepTxWithConditions[], apiKey: string): Promise<IStrategyPrepResponse[]> => {
+    async (txs: IStrategyPrepTxWithConditions[], apiKey: string): Promise<IStrategyPrepResponse> => {
       const response = await api.post('/strategy/prep', txs, {
         headers: {
           Authorization: `Bearer ${apiKey}`,

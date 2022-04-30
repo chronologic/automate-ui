@@ -41,7 +41,11 @@ function Repeat() {
       >
         <Col flex="auto">
           <Form.Item name="repeatRange">
-            <RangePicker size="large" onChange={(range) => setRepeatRange(range as any)} />
+            <RangePicker
+              size="large"
+              disabledDate={disablePastDates}
+              onChange={(range) => setRepeatRange(range as any)}
+            />
           </Form.Item>
         </Col>
         <Col flex="263px">
@@ -60,6 +64,11 @@ function Repeat() {
       </BaseBlock>
     </Container>
   );
+}
+
+function disablePastDates(date: Moment): boolean {
+  const today = moment().startOf('day');
+  return date.isBefore(today);
 }
 
 function calculateRepetitions(from: Moment, to: Moment, repeatFrequency: RepeatFrequency): IStrategyRepetition[] {

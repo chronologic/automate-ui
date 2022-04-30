@@ -1,13 +1,11 @@
 import create from 'zustand';
 
 import { StrategyBlock } from '../constants';
-import { IStrategyPrepTxBase, IStrategyRepetition } from '../types';
+import { IStrategyBlockTx, IStrategyRepetition, StrategyBlockTxs } from '../types';
 
 interface IStrategyStore {
-  txs: {
-    [key in StrategyBlock]: IStrategyPrepTxBase;
-  };
-  setTx: (key: StrategyBlock, tx: IStrategyPrepTxBase) => void;
+  txs: StrategyBlockTxs;
+  setTx: (key: StrategyBlock, tx: IStrategyBlockTx) => void;
   repetitions: IStrategyRepetition[];
   setRepetitions: (repetitions: IStrategyRepetition[]) => void;
 }

@@ -23,13 +23,14 @@ function MagicSend() {
 
   useEffect(() => {
     try {
-      const callData = magicContract.methods
-        .transfer(address, web3.utils.toWei(amount, MAGIC_DECIMAL_UNIT))
-        .encodeABI();
+      const amountWei = web3.utils.toWei(amount, MAGIC_DECIMAL_UNIT);
+      const callData = magicContract.methods.transfer(address, amountWei).encodeABI();
 
       setTx(StrategyBlock.Arbitrum_Magic_Send, {
         to: MAGIC_ADDRESS,
         data: callData,
+        amount: amountWei,
+        asset: MAGIC_ADDRESS,
       });
     } catch (e) {
       console.error(e);

@@ -24,11 +24,11 @@ export function Providers({ children }: IProps) {
 }
 
 function WrappedProviders({ children }: IProps) {
-  const { chainId } = useChainId();
+  const { injectedChainId } = useChainId();
 
   return (
     <ScreenProvider>
-      <UseWalletProvider chainId={chainId as number}>
+      <UseWalletProvider chainId={injectedChainId!}>
         <EthersProvider>
           <AutomateConnectionProvider>
             <AuthProvider>

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Web3 from 'web3';
 
 import AtlasMineABI from '../../../abi/AtlasMine.json';
-import { IStrategyPrepTxBase } from '../../../types';
+import { IStrategyBlockTx } from '../../../types';
 import { StrategyBlock } from '../../../constants';
 import { useStrategyStore } from '../../../hooks';
 import BaseBlock from './BaseBlock';
@@ -17,7 +17,7 @@ const ATLAS_MINE_ADDRESS = '0xA0A89db1C899c49F98E6326b764BAFcf167fC2CE';
 const web3 = new Web3();
 const callData = new web3.eth.Contract(AtlasMineABI as any).methods.harvestAll().encodeABI();
 
-const tx: IStrategyPrepTxBase = {
+const tx: IStrategyBlockTx = {
   to: ATLAS_MINE_ADDRESS,
   data: callData,
 };

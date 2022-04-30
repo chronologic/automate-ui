@@ -31,8 +31,8 @@ export async function isConnectedToAutomate(ethereum: any): Promise<string> {
     if (res.client !== 'automate') {
       throw new Error('The user is not connected to Automate');
     }
-    const connectedNetowrk = res.params.network;
-    return connectedNetowrk;
+    const connectedNetwork = res.params.network;
+    return connectedNetwork;
   } catch (e) {
     return 'none';
   }
