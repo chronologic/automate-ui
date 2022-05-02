@@ -10,7 +10,12 @@ const { Text } = Typography;
 
 function StrategyList() {
   const strategyClick = (strategy: IStrategies) => {
-    let comingSoonTextId = document.getElementById(strategy.title);
+    try {
+      (window as any).heap.track('StrategyClicked', { strategy: strategy.title });
+    } catch (e) {
+      console.error(e as any);
+    }
+    const comingSoonTextId = document.getElementById(strategy.title);
     if (strategy.displayComingSoonText) {
       comingSoonTextId!.classList.remove('invisible');
     } else {
