@@ -1,6 +1,5 @@
-import { isEmptyName } from '../../utils';
+import { BlockExplorerLink } from '../Transactions';
 import AssetSymbol from '../AssetSymbol';
-import { ChainId, NetworkScanUrl } from '../../constants';
 
 interface IProps {
   assetName: string;
@@ -12,20 +11,11 @@ interface IProps {
 function AssetSymbolLink({ assetName, assetContract, chars, chainId }: IProps) {
   const name = (assetName || '').toUpperCase();
 
-  const _name = isEmptyName(name) ? '' : name;
-  let networkName: string = ChainId[chainId];
-  var networkUrl: string = NetworkScanUrl[networkName as keyof typeof NetworkScanUrl];
-
   if (assetContract) {
     return (
-      <a
-        href={`${networkUrl}address/${assetContract}`}
-        title={_name || assetContract}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <BlockExplorerLink hash={assetContract} chainId={chainId} type={'address'}>
         <AssetSymbol name={name} address={assetContract} chars={chars} />
-      </a>
+      </BlockExplorerLink>
     );
   }
 

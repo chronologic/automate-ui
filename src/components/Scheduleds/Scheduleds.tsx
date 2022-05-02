@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -13,11 +13,11 @@ import uniqBy from 'lodash/uniqBy';
 import moment from 'moment-timezone';
 import queryString from 'query-string';
 
+import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import BlockExplorer from '../Transactions/BlockExplorer';
+import { BlockExplorerLink } from '../Transactions';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 
@@ -359,12 +359,9 @@ function Scheduleds() {
           }
 
           return (
-            <BlockExplorer
-              address={record.transactionHash}
-              chainId={record.chainId}
-              isCheckingTx={true}
-              displayedText={res}
-            />
+            <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
+              {res}
+            </BlockExplorerLink>
           );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
@@ -373,7 +370,7 @@ function Scheduleds() {
       {
         dataIndex: 'from',
         render: (from: string, record: IScheduledForUser) => (
-          <BlockExplorer address={from} chainId={record.chainId} isCheckingTx={false} />
+          <BlockExplorerLink hash={from} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
@@ -381,7 +378,7 @@ function Scheduleds() {
       {
         dataIndex: 'to',
         render: (to: string, record: IScheduledForUser) => (
-          <BlockExplorer address={to} chainId={record.chainId} isCheckingTx={false} />
+          <BlockExplorerLink hash={to} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
@@ -393,12 +390,9 @@ function Scheduleds() {
 
           if (record.assetContract) {
             return (
-              <BlockExplorer
-                address={record.assetContract}
-                chainId={record.chainId}
-                isCheckingTx={false}
-                displayedText={name}
-              />
+              <BlockExplorerLink hash={record.assetContract} chainId={record.chainId} type={'address'}>
+                {name}
+              </BlockExplorerLink>
             );
           }
 
@@ -464,12 +458,9 @@ function Scheduleds() {
 
           if (conditionAsset) {
             return (
-              <BlockExplorer
-                address={conditionAsset}
-                chainId={record.chainId}
-                isCheckingTx={false}
-                displayedText={conditionAsset}
-              />
+              <BlockExplorerLink hash={conditionAsset} chainId={record.chainId} type={'address'}>
+                {conditionAsset}
+              </BlockExplorerLink>
             );
           }
 

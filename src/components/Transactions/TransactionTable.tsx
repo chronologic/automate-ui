@@ -4,6 +4,7 @@ import {
   PlusOutlined,
   MoreOutlined,
   EditOutlined,
+  ExportOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
@@ -28,14 +29,15 @@ import { Link } from 'react-router-dom';
 
 import { TokenAPI } from '../../api/TokenAPI';
 import { bigNumberToNumber, formatCurrency, formatNumber, normalizeBigNumber, numberToBn } from '../../utils';
+import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
+import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import { IScheduledForUser } from '../../types';
+import { BlockExplorerLink } from '../Transactions';
+import AssetSymbol from '../AssetSymbol';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
-import AssetSymbol from '../AssetSymbol';
-import TxStatus from './TxStatus';
-import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import AssetSymbolLink from './AssetSymbolLink';
-import BlockExplorer from './BlockExplorer';
+import TxStatus from './TxStatus';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -335,7 +337,7 @@ function TransactionTable({
       {
         dataIndex: 'from',
         render: (from: string, record: IScheduledForUser) => (
-          <BlockExplorer address={from} chainId={record.chainId} isCheckingTx={false} />
+          <BlockExplorerLink hash={from} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
@@ -344,7 +346,7 @@ function TransactionTable({
       {
         dataIndex: 'to',
         render: (to: string, record: IScheduledForUser) => (
-          <BlockExplorer address={to} chainId={record.chainId} isCheckingTx={false} />
+          <BlockExplorerLink hash={to} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
@@ -453,6 +455,8 @@ function TransactionTable({
 
           const showCancel = ['Draft', 'Pending'].includes(record.statusName);
           const showEtherscan = !['Draft', 'Pending', 'Cancelled'].includes(record.statusName);
+          const networkName: string = ChainId[record.chainId];
+          const networkExplorerName: string = ' ' + BlockExplorerName[networkName as keyof typeof BlockExplorerUrl];
 
           const menu = (
             <Menu>
@@ -466,12 +470,10 @@ function TransactionTable({
               </Menu.Item>
               {showEtherscan && (
                 <Menu.Item key="2">
-                  <BlockExplorer
-                    address={record.transactionHash}
-                    chainId={record.chainId}
-                    isCheckingTx={true}
-                    displayedText={'ScanMenuItem'}
-                  />
+                  <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
+                    <ExportOutlined />
+                    {networkExplorerName}
+                  </BlockExplorerLink>
                 </Menu.Item>
               )}
               {showCancel && (
@@ -536,14 +538,9 @@ function TransactionTable({
 
             if (conditionAsset) {
               return (
-                <a
-                  href={`https://etherscan.io/address/${conditionAsset}`}
-                  title={assetName || conditionAsset}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <BlockExplorerLink hash={assetName || conditionAsset} chainId={record.chainId} type={'address'}>
                   <AssetSymbol name={assetName} address={conditionAsset} />
-                </a>
+                </BlockExplorerLink>
               );
             }
 

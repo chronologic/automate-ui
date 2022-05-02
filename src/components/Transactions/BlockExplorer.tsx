@@ -1,37 +1,20 @@
-import { ExportOutlined } from '@ant-design/icons';
-
 import { shortAddress } from '../../utils';
-import { ChainId, NetworkScanUrl, BlockchainExplorer } from '../../constants';
+import { ChainId, BlockExplorerUrl } from '../../constants';
 interface IProps {
-  address: string;
-  chars?: number;
+  hash: string;
   chainId: number;
-  isCheckingTx: boolean;
-  displayedText?: any;
+  type: 'address' | 'tx';
+  children?: React.ReactNode;
 }
 
-function BlockExplorer({ address, chars, chainId, isCheckingTx, displayedText }: IProps) {
-  let networkName: string = ChainId[chainId];
-  var networkUrl: string = NetworkScanUrl[networkName as keyof typeof NetworkScanUrl];
-  if (isCheckingTx) {
-    networkUrl += 'tx/';
-  } else {
-    networkUrl += 'address/';
-  }
-  if (displayedText === 'ScanMenuItem') {
-    displayedText = ' ' + BlockchainExplorer[networkName as keyof typeof NetworkScanUrl];
-    return (
-      <a href={`${networkUrl}${address}`} title={address} target="_blank" rel="noopener noreferrer">
-        <ExportOutlined />
-        {displayedText}
-      </a>
-    );
-  }
+function BlockExplorerLink({ hash, chainId, type, children }: IProps) {
+  const networkName: string = ChainId[chainId];
+  const networkUrl: string = BlockExplorerUrl[networkName as keyof typeof BlockExplorerUrl];
   return (
-    <a href={`${networkUrl}${address}`} title={address} target="_blank" rel="noopener noreferrer">
-      {displayedText ? displayedText : shortAddress(address, chars)}
+    <a href={`${networkUrl}${type}/${hash}`} title={hash} target="_blank" rel="noopener noreferrer">
+      {children ? children : shortAddress(hash, 4)}
     </a>
   );
 }
 
-export default BlockExplorer;
+export default BlockExplorerLink;

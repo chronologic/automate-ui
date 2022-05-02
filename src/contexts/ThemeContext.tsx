@@ -17,7 +17,7 @@ interface IProps {
   children: React.ReactNode;
 }
 
-const initialTheme = _getTheme();
+const initialTheme = forceMagicTheme();
 
 export const ThemeContext = createContext<IThemeContext>({
   theme: initialTheme,
@@ -55,4 +55,9 @@ function _setTheme(name: string, fallbackThemeName?: string): ITheme {
   localStorage.setItem(themeStorageKey, theme.name);
 
   return theme;
+}
+
+function forceMagicTheme(): ITheme {
+  let themeName = defaultThemeName;
+  return _setTheme(themeName);
 }

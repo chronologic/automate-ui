@@ -23,14 +23,14 @@ export enum ConfirmationTime {
   threeDays = '3d',
   fiveDays = '5d',
 }
-export enum NetworkScanUrl {
+export enum BlockExplorerUrl {
   None = '',
   Arbitrum = 'https://arbiscan.io/',
   Ethereum = 'https://etherscan.io/',
   Ropsten = 'https://ropsten.etherscan.io/',
   ArbitrumRinkeby = 'https://testnet.arbiscan.io/',
 }
-export enum BlockchainExplorer {
+export enum BlockExplorerName {
   None = '',
   Arbitrum = 'Arbiscan',
   Ethereum = 'Etherscan',

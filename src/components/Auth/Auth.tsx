@@ -123,14 +123,6 @@ const Container = styled.div`
   .ant-col.ant-form-item-control {
     text-align: center;
   }
-  .ant-input {
-    background: #111827;
-    color: #fff;
-  }
-  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
-  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover {
-    background: #232323;
-  }
 
   .title {
     font-weight: 300;

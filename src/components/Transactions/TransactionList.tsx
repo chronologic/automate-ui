@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
+import { SMALL_SCREEN_THRESHOLD } from '../../constants';
+import { BlockExplorerLink } from '../Transactions';
 import TxStatus from './TxStatus';
 import AssetSymbolLink from './AssetSymbolLink';
-import BlockExplorer from './BlockExplorer';
-import { SMALL_SCREEN_THRESHOLD } from '../../constants';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -47,13 +47,13 @@ function TransactionListItem({ item }: IListItemProps) {
         <div className="row">
           <div className="label">From</div>
           <div className="value">
-            <BlockExplorer address={item.from} chainId={item.chainId} chars={3} isCheckingTx={false} />
+            <BlockExplorerLink hash={item.from} chainId={item.chainId} type={'address'} />
           </div>
         </div>
         <div className="row">
           <div className="label">To</div>
           <div className="value">
-            <BlockExplorer address={item.to} chainId={item.chainId} chars={3} isCheckingTx={false} />
+            <BlockExplorerLink hash={item.to} chainId={item.chainId} type={'address'} />
           </div>
         </div>
         <div className="row">
