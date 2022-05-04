@@ -1,18 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 import { Form, Modal, Button, Typography, Radio } from 'antd';
 import styled from 'styled-components';
-import { useWallet } from 'use-wallet';
 
 import { useAuth, useAutomateConnection } from '../../hooks';
-import { Network, ChainId, ConfirmationTime } from '../../constants';
+import { Network, ChainId, ConfirmationTime, ethereum } from '../../constants';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import { notifications } from './Notifications';
 
 function Config() {
-  const wallet = useWallet();
-  const { checkConnection } = useAutomateConnection();
+  const { connect } = useAutomateConnection();
   const { user } = useAuth();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
@@ -52,7 +50,7 @@ function Config() {
   }, [confirmationTime, draft, gasPriceAware, network, user.apiKey, user.login]);
 
   const checkMetamaskInstalled = () => {
-    const isMetamaskInstalled = typeof window.ethereum !== 'undefined';
+    const isMetamaskInstalled = !!ethereum;
     if (!isMetamaskInstalled) {
       throw notifications.metamaskNotInstalled();
     }
@@ -83,20 +81,17 @@ function Config() {
   }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
-    if (!(wallet.status === 'connected')) {
-      await wallet.connect('injected');
-    }
-    const connectedNetwork = await checkConnection();
-    if (connectedNetwork === 'none') {
-      notifications.NotConnectedtoAutomate();
-    } else if (connectedNetwork === network.toLowerCase()) {
+    const res = await connect();
+    if (!res.connected) {
+      notifications.notConnectedtoAutomate();
+    } else if (res.connectionParams.network === network.toLowerCase()) {
       notifications.connectedToAutomate(network);
       setSubmitted(false);
       setCompleted(true);
     } else {
-      notifications.connectedWrongNetwork(connectedNetwork, network);
+      notifications.connectedWrongNetwork(res.connectionParams.network, network);
     }
-  }, [checkConnection, wallet, network]);
+  }, [connect, network]);
 
   return (
     <Container>

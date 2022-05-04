@@ -21,7 +21,7 @@ import {
 } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
-import { useEagerConnect, useTheme } from './hooks';
+import { useTheme } from './hooks';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
@@ -41,7 +41,6 @@ class Wrapper extends React.Component {
 function App() {
   const { theme } = useTheme();
   const location = useLocation();
-  useEagerConnect();
 
   if (MAINTENANCE_MODE) {
     return <Maintenance />;

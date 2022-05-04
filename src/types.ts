@@ -194,3 +194,15 @@ export interface IStrategyRepetition {
 export type StrategyBlockTxs = {
   [key in StrategyBlock]: IStrategyBlockTx;
 };
+
+export type SupportedNetworks = 'ethereum' | 'ropsten' | 'arbitrum' | 'arbitrumRinkeby';
+
+export interface IAutomateConnectionParams {
+  apiKey: string;
+  email: string;
+  draft?: boolean;
+  gasPriceAware?: boolean;
+  gasPrice?: number;
+  confirmationTime?: string;
+  network: SupportedNetworks;
+}

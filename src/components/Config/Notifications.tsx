@@ -30,7 +30,7 @@ export const notifications = Object.freeze({
       ),
     });
   },
-  NotConnectedtoAutomate() {
+  notConnectedtoAutomate() {
     notification.error({
       message: (
         <span>

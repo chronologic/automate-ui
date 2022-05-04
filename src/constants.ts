@@ -1,3 +1,5 @@
+import { MetaMaskInpageProvider } from '@metamask/providers';
+
 export const MOBILE_SCREEN_THRESHOLD = 800;
 export const SMALL_SCREEN_THRESHOLD = 960;
 export const TABLET_SCREEN_THRESHOLD = 1200;
@@ -35,3 +37,5 @@ export enum RepeatFrequency {
   Weekly = 'week',
   Monthly = 'month',
 }
+
+export const ethereum = (window as any).ethereum as MetaMaskInpageProvider;

@@ -3,7 +3,6 @@ import { Row, Col, Typography, Button, Space, Form } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
-import { useWallet } from 'use-wallet';
 
 import {
   IStrategy,
@@ -13,7 +12,7 @@ import {
   IThemeProps,
   StrategyBlockTxs,
 } from '../../types';
-import { useEthers, useStrategyApi, useStrategyStore } from '../../hooks';
+import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { strategies } from './strategyDetailsData';
 import { blockForName, Repeat } from './Blocks';
 
@@ -22,11 +21,10 @@ const { Title, Text } = Typography;
 function StrategyDetails() {
   const location = useLocation();
   const [form] = Form.useForm();
-  const wallet = useWallet();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
-  const { web3 } = useEthers();
   const { prep } = useStrategyApi();
+  const { account } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
 
   const strategyName = useMemo(() => {
@@ -60,34 +58,35 @@ function StrategyDetails() {
 
   const handleSubmit = useCallback(async () => {
     await form.validateFields();
-    const from = wallet.account!;
-    const userNonce = await web3!.eth.getTransactionCount(from);
+    // const userNonce = await web3!.eth.getTransactionCount(account!);
 
-    const prepTxs = buildPrepTxs({
-      strategy,
-      from,
-      txs,
-      repetitions,
-      startNonce: userNonce,
-    });
+    // const prepTxs = buildPrepTxs({
+    //   strategy,
+    //   from: account!,
+    //   txs,
+    //   repetitions,
+    //   startNonce: userNonce,
+    // });
 
-    const res = await prep(prepTxs);
-    setPrepResponse(res);
+    // console.log(prepTxs);
 
-    const batch = new web3!.BatchRequest();
+    // const res = await prep(prepTxs);
+    // setPrepResponse(res);
 
-    prepTxs.forEach((tx) =>
-      web3!.eth.sendTransaction({
-        chainId: strategy.chainId as number,
-        from: tx.from,
-        to: tx.to,
-        data: tx.data,
-        nonce: tx.nonce, // metamask will ignore this
-      })
-    );
+    // const batch = new web3!.BatchRequest();
 
-    batch.execute();
-  }, [form, prep, repetitions, strategy, txs, wallet?.account, web3]);
+    // prepTxs.forEach((tx) =>
+    //   web3!.eth.sendTransaction({
+    //     chainId: strategy.chainId as number,
+    //     from: tx.from,
+    //     to: tx.to,
+    //     data: tx.data,
+    //     nonce: tx.nonce, // metamask will ignore this
+    //   })
+    // );
+
+    // batch.execute();
+  }, [account, form, prep, repetitions, strategy, txs]);
 
   if (!strategy) {
     return <div>strategy not found</div>;

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useWallet } from 'use-wallet';
+import { useAutomateConnection } from '../../hooks';
 
 import Connect from './Connect';
 import Connected from './Connected';
@@ -9,13 +9,9 @@ interface IProps {
 }
 
 function WalletConnector({ className = '' }: Partial<IProps>) {
-  const wallet = useWallet();
+  const { connected } = useAutomateConnection();
 
-  return (
-    <Container className={className}>
-      {wallet.status === 'connected' ? <Connected wallet={wallet} /> : <Connect wallet={wallet} />}
-    </Container>
-  );
+  return <Container className={className}>{connected ? <Connected /> : <Connect />}</Container>;
 }
 
 const Container = styled.div``;

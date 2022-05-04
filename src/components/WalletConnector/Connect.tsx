@@ -1,25 +1,14 @@
-import { useCallback } from 'react';
 import styled from 'styled-components';
-import { Button, notification } from 'antd';
-import { Wallet } from 'use-wallet';
+import { Button } from 'antd';
 
-interface IProps {
-  wallet: Wallet<unknown>;
-}
+import { useAutomateConnection } from '../../hooks';
 
-function Connect({ wallet }: IProps) {
-  const handleConnect = useCallback(async () => {
-    try {
-      await wallet.connect('injected');
-    } catch (e: any) {
-      console.error(e);
-      notification.error(e.message);
-    }
-  }, [wallet]);
+function Connect() {
+  const { connect } = useAutomateConnection();
 
   return (
     <Container>
-      <Button type="ghost" className="connect-button primary" onClick={handleConnect}>
+      <Button type="ghost" className="connect-button primary" onClick={connect}>
         Connect to
         <br />
         MetaMask
