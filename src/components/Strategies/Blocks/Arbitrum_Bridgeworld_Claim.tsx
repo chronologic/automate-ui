@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Col, Typography } from 'antd';
+import { Col, Row, Typography } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Web3 from 'web3';
@@ -39,17 +39,19 @@ function Arbitrum_Bridgeworld_Claim() {
           </>
         }
       >
-        <Col flex="14px">
-          <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
-        </Col>
-        <Col flex="auto">
-          <div>
-            <Title className="secondary" level={5}>
-              Atlas Mine
-            </Title>
-            <Text type="secondary">There are no parameters to specify at this step.</Text>
-          </div>
-        </Col>
+        <Row gutter={12}>
+          <Col span={6}>
+            <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
+          </Col>
+          <Col>
+            <div>
+              <Title className="secondary" level={5}>
+                Atlas Mine
+              </Title>
+              <Text type="secondary">There are no parameters to specify at this step.</Text>
+            </div>
+          </Col>
+        </Row>
       </BaseBlock>
     </Container>
   );

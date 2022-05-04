@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col, Typography, Input, Form } from 'antd';
+import { Col, Row, Typography, Input, Form } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Web3 from 'web3';
@@ -48,25 +48,27 @@ function Arbitrum_Magic_Send() {
           </>
         }
       >
-        <Col flex="390px">
-          <Form.Item
-            name={`${StrategyBlock.Arbitrum_Magic_Send}_to`}
-            rules={[
-              { required: true, message: 'Recipient address is required' },
-              { validator: (_, value) => ethereumAddressValidator(value) },
-            ]}
-          >
-            <Input size="large" placeholder="To address" onChange={(e) => setAddress(e.target.value)} />
-          </Form.Item>
-        </Col>
-        <Col flex="auto">
-          <Form.Item
-            name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
-            rules={[{ required: true, message: 'Amount is required' }]}
-          >
-            <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
-          </Form.Item>
-        </Col>
+        <Row gutter={12}>
+          <Col span={18}>
+            <Form.Item
+              name={`${StrategyBlock.Arbitrum_Magic_Send}_to`}
+              rules={[
+                { required: true, message: 'Recipient address is required' },
+                { validator: (_, value) => ethereumAddressValidator(value) },
+              ]}
+            >
+              <Input size="large" placeholder="To address" onChange={(e) => setAddress(e.target.value)} />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
+              rules={[{ required: true, message: 'Amount is required' }]}
+            >
+              <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
+            </Form.Item>
+          </Col>
+        </Row>
       </BaseBlock>
     </Container>
   );
