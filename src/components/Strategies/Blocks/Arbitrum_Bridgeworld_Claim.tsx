@@ -22,7 +22,7 @@ const tx: IStrategyBlockTx = {
   data: callData,
 };
 
-function BridgeworldClaim() {
+function Arbitrum_Bridgeworld_Claim() {
   const setTx = useStrategyStore((state) => state.setTx);
 
   useEffect(() => {
@@ -57,4 +57,4 @@ function BridgeworldClaim() {
 
 const Container = styled.div``;
 
-export default BridgeworldClaim;
+export default Arbitrum_Bridgeworld_Claim;

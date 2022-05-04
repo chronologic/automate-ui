@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Col, Row, Typography, DatePicker, Radio, Form, TimePicker } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
+import { Col, Row, Typography, DatePicker, Radio, Form, TimePicker, InputNumber } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import moment, { Moment } from 'moment-timezone';
@@ -12,21 +12,38 @@ import BaseBlock from './BaseBlock';
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
+const defaultFrequencyHours = 6;
+
 function Repeat() {
   const setRepetitions = useStrategyStore((state) => state.setRepetitions);
   const [repeatRange, setRepeatRange] = useState<[Moment, Moment]>([] as any);
   const [startTime, setStartTime] = useState<Moment>();
   const [repeatFrequency, setRepeatFrequency] = useState(RepeatFrequency.Daily);
+  const [frequencyHours, setFrequencyHours] = useState(defaultFrequencyHours);
+
+  const handleSetRepeatFrequency = useCallback((freq) => {
+    if (freq !== RepeatFrequency.Hourly) {
+      setFrequencyHours(defaultFrequencyHours);
+    }
+    setRepeatFrequency(freq);
+  }, []);
 
   useEffect(() => {
     try {
+      if (!startTime) {
+        return;
+      }
       const [from, to] = repeatRange;
-      const repetitions = calculateRepetitions(from, to, repeatFrequency);
+
+      const fromDateTime = copyTime(from, startTime);
+      const toDateTime = copyTime(to, startTime);
+
+      const repetitions = calculateRepetitions(fromDateTime, toDateTime, repeatFrequency, frequencyHours);
       setRepetitions(repetitions);
     } catch (e) {
       console.error(e);
     }
-  }, [repeatRange, repeatFrequency, setRepetitions]);
+  }, [repeatRange, repeatFrequency, setRepetitions, startTime, frequencyHours]);
 
   return (
     <Container>
@@ -38,8 +55,8 @@ function Repeat() {
           </>
         }
       >
-        <Row>
-          <Col flex={1}>
+        <Row gutter={12}>
+          <Col span={12}>
             <Form.Item name="repeatRange" rules={[{ required: true, message: 'Date range is required' }]}>
               <RangePicker
                 size="large"
@@ -48,7 +65,7 @@ function Repeat() {
               />
             </Form.Item>
           </Col>
-          <Col flex={1}>
+          <Col span={12}>
             <Form.Item name="repeatStartTime" rules={[{ required: true, message: 'Start time is required' }]}>
               <TimePicker size="large" placeholder="Start time" onChange={(time) => setStartTime(time as any)} />
             </Form.Item>
@@ -56,12 +73,12 @@ function Repeat() {
         </Row>
         <Row>
           <Col>
-            <Form.Item name="repeatFrequency" rules={[{ required: true, message: 'Frequency is required' }]}>
-              <Radio.Group
-                defaultValue={RepeatFrequency.Daily}
-                size="large"
-                onChange={(e) => setRepeatFrequency(e.target.value)}
-              >
+            <Form.Item
+              name="repeatFrequency"
+              initialValue={RepeatFrequency.Daily}
+              rules={[{ required: true, message: 'Frequency is required' }]}
+            >
+              <Radio.Group size="large" onChange={(e) => handleSetRepeatFrequency(e.target.value)}>
                 <Radio.Button value={RepeatFrequency.Hourly}>Hourly</Radio.Button>
                 <Radio.Button value={RepeatFrequency.Daily}>Daily</Radio.Button>
                 <Radio.Button value={RepeatFrequency.Weekly}>Weekly</Radio.Button>
@@ -70,6 +87,28 @@ function Repeat() {
             </Form.Item>
           </Col>
         </Row>
+        {repeatFrequency === RepeatFrequency.Hourly && (
+          <Row>
+            <Col span={4}>Repeat every </Col>
+            <Col span={3}>
+              <Form.Item
+                name="frequencyHours"
+                initialValue={defaultFrequencyHours}
+                rules={[{ required: true, message: 'Hourly frequency is required' }]}
+              >
+                <InputNumber
+                  className="frequencyHoursInput"
+                  value={frequencyHours}
+                  min={1}
+                  max={23}
+                  step={1}
+                  onChange={(value) => setFrequencyHours(value)}
+                />{' '}
+              </Form.Item>
+            </Col>
+            <Col>hour{frequencyHours > 1 && 's'}</Col>
+          </Row>
+        )}
       </BaseBlock>
     </Container>
   );
@@ -80,17 +119,32 @@ function disablePastDates(date: Moment): boolean {
   return date.isBefore(today);
 }
 
-function calculateRepetitions(from: Moment, to: Moment, repeatFrequency: RepeatFrequency): IStrategyRepetition[] {
+function copyTime(date: Moment, time: Moment): Moment {
+  const ret = date.clone();
+  ['hour', 'minute', 'second', 'millisecond'].forEach((unit) => {
+    ret.set(unit as any, time.get(unit as any));
+  });
+
+  return ret;
+}
+
+function calculateRepetitions(
+  from: Moment,
+  to: Moment,
+  repeatFrequency: RepeatFrequency,
+  frequencyHours: number
+): IStrategyRepetition[] {
   const repetitions: IStrategyRepetition[] = [];
   const tz = moment.tz.guess();
+  const step = repeatFrequency === RepeatFrequency.Hourly ? frequencyHours : 1;
 
-  let currentDate = from;
-  while (currentDate.isSameOrBefore(to)) {
+  let currentDateTime = from;
+  while (currentDateTime.isSameOrBefore(to)) {
     repetitions.push({
-      time: currentDate.toDate().getTime(),
+      time: currentDateTime.toDate().getTime(),
       tz,
     });
-    currentDate = currentDate.add(1, repeatFrequency);
+    currentDateTime = currentDateTime.add(step, repeatFrequency);
   }
 
   return repetitions;
@@ -111,6 +165,10 @@ const Container = styled.div`
 
   .ant-form-item-explain-error {
     color: ${(props: IThemeProps) => props.theme.colors.text};
+  }
+
+  .frequencyHoursInput {
+    width: 60px;
   }
 `;
 

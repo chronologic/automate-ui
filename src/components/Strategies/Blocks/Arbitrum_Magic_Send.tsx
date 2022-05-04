@@ -17,7 +17,7 @@ const MAGIC_ADDRESS = '0x539bdE0d7Dbd336b79148AA742883198BBF60342';
 const MAGIC_DECIMAL_UNIT = 'ether';
 const magicContract = new web3.eth.Contract(ERC20ABI as any);
 
-function MagicSend() {
+function Arbitrum_Magic_Send() {
   const setTx = useStrategyStore((state) => state.setTx);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
@@ -74,4 +74,4 @@ function MagicSend() {
 
 const Container = styled.div``;
 
-export default MagicSend;
+export default Arbitrum_Magic_Send;

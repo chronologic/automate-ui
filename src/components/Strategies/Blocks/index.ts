@@ -1,14 +1,14 @@
 import { StrategyBlock } from '../../../constants';
-import { default as BridgeworldClaim } from './BridgeworldClaim';
-import { default as MagicSend } from './MagicSend';
+import { default as Arbitrum_Bridgeworld_Claim } from './Arbitrum_Bridgeworld_Claim';
+import { default as Arbitrum_Magic_Send } from './Arbitrum_Magic_Send';
 
 export { default as Repeat } from './Repeat';
 
 const blockForName: {
   [key in StrategyBlock]: () => JSX.Element;
 } = {
-  'arbitrum:bridgeworld:claim': BridgeworldClaim,
-  'arbitrum:magic:send': MagicSend,
+  'arbitrum:bridgeworld:claim': Arbitrum_Bridgeworld_Claim,
+  'arbitrum:magic:send': Arbitrum_Magic_Send,
 };
 
 export { blockForName };
