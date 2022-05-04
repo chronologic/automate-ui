@@ -1,4 +1,5 @@
 import { Card, Row, Col, Typography } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const { Meta } = Card;
@@ -48,16 +49,53 @@ function StrategyList() {
         </Col>
         <Col span={8}>
           <Card className="antcard" hoverable cover={<img alt="example" src="../img/ivory-tower.jpg" />}>
-            <Meta title="Send Legions Questing" description="Bridgeworld" />
+            <Meta title="Send Legions Questing" description="Bridgeworld (Ivory Tower)" />
             <Text type="danger" className="soon">
               COMING SOON!
             </Text>
           </Card>
         </Col>
+        <Col span={8}>
+          <Create>
+            <div
+              data-tf-popup="qL2sZQN7"
+              data-tf-auto-close="2000"
+              data-tf-iframe-props="title=Automate ideas"
+              data-tf-medium="snippet"
+            >
+              <Card className="antcard" hoverable>
+                <PlusOutlined />
+                <Meta description="Create your own" />
+              </Card>
+            </div>
+          </Create>
+        </Col>
+        <Col></Col>
       </Row>
     </Container>
   );
 }
+
+const Create = styled.div`
+  text-align: center;
+  .ant-card-body {
+    padding: 132px 24px;
+  }
+  .ant-card-bordered {
+    border: 1px dashed rgb(245 245 245 / 15%) !important;
+  }
+  .ant-card-hoverable:hover {
+    border-color: ${(props) => props.theme.colors.accent} !important;
+  }
+  .ant-card-meta {
+    display: block !important;
+  }
+  .anticon {
+    font-size: 200%;
+    color: rgb(245 245 245 / 45%);
+    padding-bottom: 1em;
+  }
+`;
 
 const Container = styled.div`
   width: 100%;
@@ -70,8 +108,7 @@ const Container = styled.div`
 
   .ant-card {
     border: none;
-    background-color: rgb(245 245 245 / 5%);
-    color: #f5f5f5;
+    background-color: rgb(255 255 255 / 5%);
   }
 
   .ant-card-meta-title {

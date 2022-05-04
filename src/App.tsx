@@ -10,6 +10,7 @@ import {
   Auth,
   Scheduleds,
   StrategyList,
+  StrategyDetails,
   Maintenance,
   Header,
   Footer,
