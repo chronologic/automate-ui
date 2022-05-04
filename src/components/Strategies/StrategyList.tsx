@@ -11,7 +11,7 @@ const { Text } = Typography;
 function StrategyList() {
   const strategyClick = (strategy: IStrategies) => {
     try {
-      (window as any).heap.track('StrategyClicked', { strategy: strategy.title });
+      (window as any).heap.track('StrategyClicked', { strategy: strategy.title, url: strategy.detailPageURL });
     } catch (e) {
       console.error(e as any);
     }
