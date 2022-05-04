@@ -38,10 +38,6 @@ const Container = styled.div`
     color: white;
   }
 
-  .ant-card-body {
-    display: flex;
-  }
-
   .secondary {
     color: rgb(255 255 255 / 45%);
   }

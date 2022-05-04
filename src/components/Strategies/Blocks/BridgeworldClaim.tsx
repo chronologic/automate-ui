@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Col, Typography, Form } from 'antd';
+import { Col, Typography } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Web3 from 'web3';
@@ -39,7 +39,6 @@ function BridgeworldClaim() {
           </>
         }
       >
-        <Form.Item hidden />
         <Col flex="14px">
           <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
         </Col>
@@ -48,7 +47,7 @@ function BridgeworldClaim() {
             <Title className="secondary" level={5}>
               Atlas Mine
             </Title>
-            <Text type="secondary">There is nothing to specify at this step.</Text>
+            <Text type="secondary">There are no parameters to specify at this step.</Text>
           </div>
         </Col>
       </BaseBlock>

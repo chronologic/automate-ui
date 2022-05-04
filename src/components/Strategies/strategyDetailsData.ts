@@ -15,8 +15,7 @@ export const strategies: {
     title: 'Claim and send Atlas Mine rewards',
     assetType: AssetType.Ethereum,
     chainId: ChainId.Arbitrum,
-    description: `Use this strategy when you want to periodically claim $MAGIC earned during a vested release.
-This strategy combines two steps for you: claiming $MAGIC and sending it to a specified wallet address.`,
+    description: `Use this strategy when you want to periodically claim $MAGIC earned during a vested release and then immediately send some $MAGIC to a different address.`,
     blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim, StrategyBlock.Arbitrum_Magic_Send],
   },
 };

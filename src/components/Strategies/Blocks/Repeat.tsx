@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col, Typography, DatePicker, Radio, Form } from 'antd';
+import { Col, Row, Typography, DatePicker, Radio, Form, TimePicker } from 'antd';
 import { ReloadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import moment, { Moment } from 'moment-timezone';
@@ -14,7 +14,8 @@ const { RangePicker } = DatePicker;
 
 function Repeat() {
   const setRepetitions = useStrategyStore((state) => state.setRepetitions);
-  const [repeatRange, setRepeatRange] = useState([]);
+  const [repeatRange, setRepeatRange] = useState<[Moment, Moment]>([] as any);
+  const [startTime, setStartTime] = useState<Moment>();
   const [repeatFrequency, setRepeatFrequency] = useState(RepeatFrequency.Daily);
 
   useEffect(() => {
@@ -37,28 +38,38 @@ function Repeat() {
           </>
         }
       >
-        <Col flex="auto">
-          <Form.Item name="repeatRange">
-            <RangePicker
-              size="large"
-              disabledDate={disablePastDates}
-              onChange={(range) => setRepeatRange(range as any)}
-            />
-          </Form.Item>
-        </Col>
-        <Col flex="263px">
-          <Form.Item name="repeatFrequency" required>
-            <Radio.Group
-              defaultValue={RepeatFrequency.Daily}
-              size="large"
-              onChange={(e) => setRepeatFrequency(e.target.value)}
-            >
-              <Radio.Button value={RepeatFrequency.Daily}>Daily</Radio.Button>
-              <Radio.Button value={RepeatFrequency.Weekly}>Weekly</Radio.Button>
-              <Radio.Button value={RepeatFrequency.Monthly}>Monthly</Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-        </Col>
+        <Row>
+          <Col flex={1}>
+            <Form.Item name="repeatRange" rules={[{ required: true, message: 'Date range is required' }]}>
+              <RangePicker
+                size="large"
+                disabledDate={disablePastDates}
+                onChange={(range) => setRepeatRange(range as any)}
+              />
+            </Form.Item>
+          </Col>
+          <Col flex={1}>
+            <Form.Item name="repeatStartTime" rules={[{ required: true, message: 'Start time is required' }]}>
+              <TimePicker size="large" placeholder="Start time" onChange={(time) => setStartTime(time as any)} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Item name="repeatFrequency" rules={[{ required: true, message: 'Frequency is required' }]}>
+              <Radio.Group
+                defaultValue={RepeatFrequency.Daily}
+                size="large"
+                onChange={(e) => setRepeatFrequency(e.target.value)}
+              >
+                <Radio.Button value={RepeatFrequency.Hourly}>Hourly</Radio.Button>
+                <Radio.Button value={RepeatFrequency.Daily}>Daily</Radio.Button>
+                <Radio.Button value={RepeatFrequency.Weekly}>Weekly</Radio.Button>
+                <Radio.Button value={RepeatFrequency.Monthly}>Monthly</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+        </Row>
       </BaseBlock>
     </Container>
   );
@@ -96,6 +107,10 @@ const Container = styled.div`
   }
   .ant-card-extra {
     color: rgb(255 255 255 / 45%) !important;
+  }
+
+  .ant-form-item-explain-error {
+    color: ${(props: IThemeProps) => props.theme.colors.text};
   }
 `;
 

@@ -30,6 +30,7 @@ export enum StrategyBlock {
 }
 
 export enum RepeatFrequency {
+  Hourly = 'hour',
   Daily = 'day',
   Weekly = 'week',
   Monthly = 'month',

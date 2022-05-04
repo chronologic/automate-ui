@@ -113,9 +113,11 @@ function StrategyDetails() {
                 <Button type="primary" size="large" onClick={handleSubmit}>
                   Automate!
                 </Button>
-                <Text type="secondary" className="txsToSign">
-                  This automation will generate <strong>{txsToSign} transactions</strong> for you to sign in Metamask.
-                </Text>
+                {txsToSign > 0 && (
+                  <Text type="secondary" className="txsToSign">
+                    This automation will generate <strong>{txsToSign} transactions</strong> for you to sign in Metamask.
+                  </Text>
+                )}
               </Space>
             </Footer>
           </Col>
@@ -212,10 +214,6 @@ const Container = styled.div`
 
   .ant-card-head {
     color: white;
-  }
-
-  .ant-card-body {
-    display: flex;
   }
 
   .secondary {
