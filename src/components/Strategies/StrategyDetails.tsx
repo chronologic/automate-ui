@@ -3,6 +3,7 @@ import { Row, Col, Typography, Button, Space, Form } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
+import Web3 from 'web3';
 
 import {
   IStrategy,
@@ -14,7 +15,8 @@ import {
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { strategies } from './strategyDetailsData';
-import { blockForName, Repeat } from './Blocks';
+import { blockConfig, Repeat } from './Blocks';
+import { ethereum } from '../../constants';
 
 const { Title, Text } = Typography;
 
@@ -23,8 +25,8 @@ function StrategyDetails() {
   const [form] = Form.useForm();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
-  const { prep } = useStrategyApi();
-  const { account } = useAutomateConnection();
+  const { prep, cancel } = useStrategyApi();
+  const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
 
   const strategyName = useMemo(() => {
@@ -33,10 +35,20 @@ function StrategyDetails() {
 
   const strategy = strategies[strategyName];
 
-  const txsToSign = useMemo(() => {
-    const numOfBlocks = strategy?.blocks.length || 0;
-    return numOfBlocks ** 2 * repetitions.length;
-  }, [repetitions.length, strategy?.blocks.length]);
+  const txsToSignCount = useMemo(() => {
+    try {
+      const prepTxsJustForCount = buildPrepTxs({
+        strategy,
+        from: account!,
+        txs,
+        repetitions,
+        startNonce: 0,
+      });
+      return prepTxsJustForCount.length;
+    } catch (e) {
+      return 0;
+    }
+  }, [account, repetitions, strategy, txs]);
 
   const blocks = useMemo(() => {
     const separator = (
@@ -46,7 +58,7 @@ function StrategyDetails() {
     );
 
     return strategy?.blocks.map((name, index) => {
-      const Block = blockForName[name];
+      const Block = blockConfig[name].component;
       return (
         <React.Fragment key={name}>
           {index !== 0 && separator}
@@ -58,20 +70,24 @@ function StrategyDetails() {
 
   const handleSubmit = useCallback(async () => {
     await form.validateFields();
-    // const userNonce = await web3!.eth.getTransactionCount(account!);
+    await connect();
+    const web3 = new Web3(ethereum as any);
+    const userNonce = await web3!.eth.getTransactionCount(account!);
 
-    // const prepTxs = buildPrepTxs({
-    //   strategy,
-    //   from: account!,
-    //   txs,
-    //   repetitions,
-    //   startNonce: userNonce,
-    // });
+    const prepTxs = buildPrepTxs({
+      strategy,
+      from: account!,
+      txs,
+      repetitions,
+      startNonce: userNonce,
+    });
 
     // console.log(prepTxs);
 
-    // const res = await prep(prepTxs);
-    // setPrepResponse(res);
+    const prepRes = await prep(prepTxs);
+    setPrepResponse(prepRes);
+
+    // console.log(prepRes);
 
     // const batch = new web3!.BatchRequest();
 
@@ -81,12 +97,30 @@ function StrategyDetails() {
     //     from: tx.from,
     //     to: tx.to,
     //     data: tx.data,
-    //     nonce: tx.nonce, // metamask will ignore this
+    //     // nonce: tx.nonce, // metamask will ignore this
     //   })
     // );
 
     // batch.execute();
-  }, [account, form, prep, repetitions, strategy, txs]);
+
+    for (const tx of prepTxs) {
+      try {
+        await web3!.eth.sendTransaction({
+          chainId: strategy.chainId as number,
+          from: tx.from,
+          to: tx.to,
+          data: tx.data,
+          // nonce: tx.nonce, // metamask will ignore this
+        });
+      } catch (e: any) {
+        const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
+        if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
+          cancel(prepRes.instanceId);
+          throw e;
+        }
+      }
+    }
+  }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   if (!strategy) {
     return <div>strategy not found</div>;
@@ -112,9 +146,10 @@ function StrategyDetails() {
                 <Button type="primary" size="large" onClick={handleSubmit}>
                   Automate!
                 </Button>
-                {txsToSign > 0 && (
-                  <Text type="secondary" className="txsToSign">
-                    This automation will generate <strong>{txsToSign} transactions</strong> for you to sign in Metamask.
+                {txsToSignCount > 0 && (
+                  <Text type="secondary" className="txsToSignCount">
+                    This automation will generate <strong>{txsToSignCount} transactions</strong> for you to sign in
+                    Metamask.
                   </Text>
                 )}
               </Space>
@@ -163,24 +198,28 @@ function buildPrepTxs({
         timeConditionTZ: repetition.tz,
       });
 
-      const otherBlocks = strategy.blocks.filter((b) => b !== block);
+      const { requiresFallback } = blockConfig[block];
 
-      for (const otherBlock of otherBlocks) {
-        const otherTx = txs[otherBlock];
-        priority += 1;
-        prepTxs.push({
-          assetType: strategy.assetType,
-          chainId: strategy.chainId,
-          from,
-          to: otherTx.to,
-          data: otherTx.data,
-          nonce,
-          priority,
-          conditionAsset: otherTx.asset,
-          conditionAmount: otherTx.amount,
-          timeCondition: repetition.time,
-          timeConditionTZ: repetition.tz,
-        });
+      if (requiresFallback) {
+        const otherBlocks = strategy.blocks.filter((b) => b !== block);
+
+        for (const otherBlock of otherBlocks) {
+          const otherTx = txs[otherBlock];
+          priority += 1;
+          prepTxs.push({
+            assetType: strategy.assetType,
+            chainId: strategy.chainId,
+            from,
+            to: otherTx.to,
+            data: otherTx.data,
+            nonce,
+            priority,
+            conditionAsset: otherTx.asset,
+            conditionAmount: otherTx.amount,
+            timeCondition: repetition.time,
+            timeConditionTZ: repetition.tz,
+          });
+        }
       }
       nonce++;
     }
@@ -236,7 +275,7 @@ const Footer = styled.div`
   align-items: center;
   padding-top: 3em;
 
-  .txsToSign {
+  .txsToSignCount {
     color: rgb(255 255 255 / 45%);
   }
 `;

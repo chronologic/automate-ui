@@ -4,11 +4,11 @@ import { default as Arbitrum_Magic_Send } from './Arbitrum_Magic_Send';
 
 export { default as Repeat } from './Repeat';
 
-const blockForName: {
-  [key in StrategyBlock]: () => JSX.Element;
+const blockConfig: {
+  [key in StrategyBlock]: { component: () => JSX.Element; requiresFallback: boolean };
 } = {
-  'arbitrum:bridgeworld:claim': Arbitrum_Bridgeworld_Claim,
-  'arbitrum:magic:send': Arbitrum_Magic_Send,
+  'arbitrum:bridgeworld:claim': { component: Arbitrum_Bridgeworld_Claim, requiresFallback: false },
+  'arbitrum:magic:send': { component: Arbitrum_Magic_Send, requiresFallback: true },
 };
 
-export { blockForName };
+export { blockConfig };
