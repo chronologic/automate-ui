@@ -11,13 +11,18 @@ const { Text } = Typography;
 function StrategyList() {
   const strategyClick = (strategy: IStrategies) => {
     try {
-      (window as any).heap.track('StrategyClicked', { strategy: strategy.title, url: strategy.detailPageURL });
+      (window as any).heap.track('StrategyClicked', {
+        strategy: strategy.title,
+        url: strategy.detailPageURL,
+        id: strategy.itemid,
+      });
     } catch (e) {
       console.error(e as any);
     }
-    const comingSoonTextId = document.getElementById(strategy.title);
-    if (strategy.displayComingSoonText) {
-      comingSoonTextId!.classList.remove('invisible');
+    const comingSoonTextId = document.getElementById(String(strategy.itemid));
+    console.log('com: ' + comingSoonTextId!.classList.contains('invisible'));
+    if (strategy.ComingSoon) {
+      comingSoonTextId!.classList.add('comingSoonText-visible');
     } else {
       window.open('/' + strategy.detailPageURL);
     }
@@ -27,14 +32,12 @@ function StrategyList() {
     <Container>
       <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
         {strategies.map((strategy) => (
-          <Col span={8} key={strategy.itemId}>
+          <Col span={8} key={strategy.itemid}>
             <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
-                <Text type="danger" className="comingSoonText">
-                  <div className="invisible" id={strategy.title}>
-                    COMING SOON!
-                  </div>
+                <Text type="danger" className="comingSoonText comingSoonText-invisible" id={String(strategy.itemid)}>
+                  COMING SOON!
                 </Text>
               </Card>
             </div>
@@ -74,9 +77,12 @@ const Container = styled.div`
   .comingSoonText {
     float: right;
     transition: opacity 0.2s ease;
-    .invisible {
-      opacity: 0;
-    }
+  }
+  .comingSoonText-invisible {
+    opacity: 0;
+  }
+  .comingSoonText-visible {
+    opacity: 1;
   }
 `;
 
