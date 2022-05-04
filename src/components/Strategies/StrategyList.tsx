@@ -20,7 +20,6 @@ function StrategyList() {
       console.error(e as any);
     }
     const comingSoonTextId = document.getElementById(String(strategy.itemid));
-    console.log('com: ' + comingSoonTextId!.classList.contains('invisible'));
     if (strategy.ComingSoon) {
       comingSoonTextId!.classList.add('comingSoonText-visible');
     } else {
