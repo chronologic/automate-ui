@@ -16,6 +16,7 @@ interface IAutomateStoreMethods {
   connect: () => Promise<IAutomateStoreState>;
   checkConnection: () => Promise<ICheckConnectionResult>;
   reset: () => Promise<void>;
+  eagerConnect: () => Promise<void>;
 }
 
 interface ICheckConnectionResult {
@@ -65,6 +66,8 @@ async function checkConnection(): Promise<ICheckConnectionResult> {
   }
 }
 
+let triedEagerConnect = false;
+
 function useAutomateConnection(): IAutomateHook {
   const metamaskState = useMetamask();
   const automateState = useStore();
@@ -96,6 +99,13 @@ function useAutomateConnection(): IAutomateHook {
     return ret;
   }, [metamaskState, reset]);
 
+  const eagerConnect = useCallback(async () => {
+    if (!triedEagerConnect && ethereum.selectedAddress) {
+      triedEagerConnect = true;
+      connect();
+    }
+  }, [connect]);
+
   return {
     ...automateState,
     connect,
@@ -103,6 +113,7 @@ function useAutomateConnection(): IAutomateHook {
     checkConnection,
     account: metamaskState.account,
     chainId: metamaskState.chainId,
+    eagerConnect,
   };
 }
 
