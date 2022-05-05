@@ -7,7 +7,7 @@ import Web3 from 'web3';
 import AtlasMineABI from '../../../abi/AtlasMine.json';
 import { IStrategyBlockTx } from '../../../types';
 import { StrategyBlock } from '../../../constants';
-import { useStrategyStore } from '../../../hooks';
+import { useAutomateConnection, useStrategyStore } from '../../../hooks';
 import BaseBlock from './BaseBlock';
 
 const { Title, Text } = Typography;
@@ -24,6 +24,7 @@ const tx: IStrategyBlockTx = {
 
 function Arbitrum_Bridgeworld_Claim() {
   const setTx = useStrategyStore((state) => state.setTx);
+  const { account } = useAutomateConnection();
 
   useEffect(() => {
     setTx(StrategyBlock.Arbitrum_Bridgeworld_Claim, tx);
@@ -48,7 +49,19 @@ function Arbitrum_Bridgeworld_Claim() {
               <Title className="secondary" level={5}>
                 Atlas Mine
               </Title>
-              <Text type="secondary">There are no parameters to specify at this step.</Text>
+              <Text type="secondary">
+                Wondering how much you will be claiming?
+                <br />
+                Check out{' '}
+                <a
+                  href={`https://treasure-canary.vercel.app/${account ? `?address=${account}` : ''}`}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  this tool
+                </a>{' '}
+                to for an estimate!
+              </Text>
             </div>
           </Col>
         </Row>
