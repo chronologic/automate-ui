@@ -18,7 +18,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [network, setNetwork] = useState(Network.None);
+  const [network, setNetwork] = useState(Network.none);
 
   const connectionName = useMemo(() => {
     let name = `Automate ${capitalizeFirstLetter(network)}`;
@@ -58,11 +58,11 @@ function Config() {
   };
   const handleNetworkSelection = (network: Network) => {
     setNetwork(network);
-    if (network === Network.Ethereum) {
+    if (network === Network.ethereum) {
       setGasPriceAware(true);
       setDraft(false);
       setConfirmationTime(ConfirmationTime.oneDay);
-    } else if (network === Network.Arbitrum) {
+    } else if (network === Network.arbitrum) {
       setGasPriceAware(false);
       setDraft(true);
       setConfirmationTime(ConfirmationTime.immediate);
@@ -71,7 +71,7 @@ function Config() {
 
   const handleConnect = useCallback(async () => {
     checkMetamaskInstalled();
-    if (network !== Network.None) {
+    if (network !== Network.none) {
       setSubmitted(true);
       setCompleted(false);
     }
@@ -91,7 +91,7 @@ function Config() {
     <Container>
       <PageTitle title="Connect" />
       <Typography.Title level={3} className="title">
-        {completed ? 'Congratulations!' : network === Network.Ethereum ? 'Connection Settings' : 'Select Network'}
+        {completed ? 'Congratulations!' : network === Network.ethereum ? 'Connection Settings' : 'Select Network'}
       </Typography.Title>
       {completed && (
         <Completed>
@@ -101,22 +101,22 @@ function Config() {
       {!completed && (
         <>
           <Radio.Group
-            defaultValue={Network.None}
+            defaultValue={Network.none}
             onChange={(e) => handleNetworkSelection(e.target.value)}
             size="large"
             className="title"
           >
-            <Radio.Button value={Network.Ethereum} className="radiobuttons">
+            <Radio.Button value={Network.ethereum} className="radiobuttons">
               <img alt="eth-network-icon" src="/assets/eth.svg" width="32" height="32" className="network-icon" />
               Ethereum
             </Radio.Button>
-            <Radio.Button value={Network.Arbitrum}>
+            <Radio.Button value={Network.arbitrum}>
               <img alt="arb-network-icon" src="/assets/arbitrum.svg" width="32" height="32" className="network-icon" />
               Arbitrum
             </Radio.Button>
           </Radio.Group>
 
-          {network === Network.Ethereum && (
+          {network === Network.ethereum && (
             <ConnectionSettings
               gasPriceAware={gasPriceAware}
               setGasPriceAware={setGasPriceAware}
@@ -130,7 +130,7 @@ function Config() {
           <Button
             type="primary"
             size="large"
-            disabled={network === Network.None ? true : false}
+            disabled={network === Network.none ? true : false}
             onClick={() => handleConnect()}
           >
             Connect to Automate

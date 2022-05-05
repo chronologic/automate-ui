@@ -6,14 +6,14 @@ export const TABLET_SCREEN_THRESHOLD = 1200;
 export const SECOND_MILLIS = 1000;
 export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 export enum Network {
-  None = 'none',
-  Ethereum = 'ethereum',
-  Arbitrum = 'arbitrum',
-  Ropsten = 'ropsten',
-  ArbitrumRinkeby = 'arbitrumRinkeby',
+  none = 'none',
+  ethereum = 'ethereum',
+  arbitrum = 'arbitrum',
+  ropsten = 'ropsten',
+  arbitrumRinkeby = 'arbitrumRinkeby',
 }
 export enum ChainId {
-  none = '',
+  none = -1,
   arbitrum = 42161,
   ethereum = 1,
   ropsten = 3,

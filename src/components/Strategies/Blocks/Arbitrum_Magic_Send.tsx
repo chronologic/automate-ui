@@ -5,20 +5,21 @@ import styled from 'styled-components';
 import Web3 from 'web3';
 
 import ERC20ABI from '../../../abi/ERC20.json';
-import { useStrategyStore } from '../../../hooks';
-import { StrategyBlock } from '../../../constants';
+import { useAutomateConnection, useStrategyStore } from '../../../hooks';
+import { ethereum, StrategyBlock } from '../../../constants';
 import { ethereumAddressValidator } from '../../../utils';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
-const web3 = new Web3();
+const web3 = new Web3(ethereum as any);
 
 const MAGIC_ADDRESS = '0x539bdE0d7Dbd336b79148AA742883198BBF60342';
 const MAGIC_DECIMAL_UNIT = 'ether';
-const magicContract = new web3.eth.Contract(ERC20ABI as any);
+const magicContract = new web3.eth.Contract(ERC20ABI as any, MAGIC_ADDRESS);
 
 function Arbitrum_Magic_Send() {
   const setTx = useStrategyStore((state) => state.setTx);
+  const { account } = useAutomateConnection();
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
 
@@ -63,15 +64,37 @@ function Arbitrum_Magic_Send() {
           <Col span={6}>
             <Form.Item
               name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
-              rules={[{ required: true, message: 'Amount is required' }]}
+              rules={[
+                { required: true, message: 'Amount is required' },
+                // { validator: (_, value) => tokenBalanceValidator(account!, value) },
+              ]}
             >
               <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
             </Form.Item>
           </Col>
         </Row>
+        {amount && (
+          <Text className="secondary">
+            You need to have at least {amount} $MAGIC in your wallet right now to be able to Automate the transactions
+          </Text>
+        )}
       </BaseBlock>
     </Container>
   );
+}
+
+async function tokenBalanceValidator(account?: string, amount?: number): Promise<void> {
+  console.log(account, amount);
+  if (!amount) {
+    return;
+  }
+
+  if (!ethereum || !account) {
+    throw new Error('Connect to Automate to validate amount');
+  }
+  const res = await magicContract.methods.balanceOf(account).call();
+
+  console.log(res);
 }
 
 const Container = styled.div``;

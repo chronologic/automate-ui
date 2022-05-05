@@ -14,9 +14,9 @@ import {
   StrategyBlockTxs,
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
+import { ChainId, ethereum, Network } from '../../constants';
 import { strategies } from './strategyDetailsData';
 import { blockConfig, Repeat } from './Blocks';
-import { ethereum } from '../../constants';
 
 const { Title, Text } = Typography;
 
@@ -70,7 +70,7 @@ function StrategyDetails() {
 
   const handleSubmit = useCallback(async () => {
     await form.validateFields();
-    await connect();
+    await connect(ChainId[strategy.chainId] as Network);
     const web3 = new Web3(ethereum as any);
     const userNonce = await web3!.eth.getTransactionCount(account!);
 
