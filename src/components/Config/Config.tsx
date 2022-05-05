@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useAuth, useAutomateConnection } from '../../hooks';
 import { Network, ChainId, ConfirmationTime, ethereum } from '../../constants';
 import CopyInput from '../CopyInput';
+import { capitalizeFirstLetter } from '../../utils';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import { notifications } from './Notifications';
@@ -20,7 +21,7 @@ function Config() {
   const [network, setNetwork] = useState(Network.None);
 
   const connectionName = useMemo(() => {
-    let name = `Automate ${network}`;
+    let name = `Automate ${capitalizeFirstLetter(network)}`;
     if (gasPriceAware) {
       name += ' Gas';
     }
@@ -81,16 +82,9 @@ function Config() {
   }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
-    const res = await connect();
-    if (!res.connected) {
-      notifications.notConnectedtoAutomate();
-    } else if (res.connectionParams.network === network.toLowerCase()) {
-      notifications.connectedToAutomate(network);
-      setSubmitted(false);
-      setCompleted(true);
-    } else {
-      notifications.connectedWrongNetwork(res.connectionParams.network, network);
-    }
+    await connect(network);
+    setSubmitted(false);
+    setCompleted(true);
   }, [connect, network]);
 
   return (

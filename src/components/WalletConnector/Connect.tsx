@@ -8,7 +8,7 @@ function Connect() {
 
   return (
     <Container>
-      <Button type="ghost" className="connect-button primary" onClick={connect}>
+      <Button type="ghost" className="connect-button primary" onClick={() => connect()}>
         Connect to
         <br />
         MetaMask

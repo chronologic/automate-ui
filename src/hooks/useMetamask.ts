@@ -1,6 +1,7 @@
 import create from 'zustand';
 
 import { ethereum } from '../constants';
+import { notifications } from './connectionNotifications';
 
 interface IMetamaskStoreState {
   connected: boolean;
@@ -24,15 +25,21 @@ const defaultState: IMetamaskStoreState = {
 const useStore = create<IMetamaskStoreState>(() => defaultState);
 
 async function connect(): Promise<IMetamaskStoreState> {
+  const isMetamaskInstalled = !!ethereum;
+  if (!isMetamaskInstalled) {
+    reset();
+    throw notifications.metamaskNotInstalled();
+  }
+
   const account = await requestAccount();
   const chainId = await requestChainId();
   const connected = true;
 
-  const newPartialState = { account, chainId, connected };
+  const newState = { account, chainId, connected };
 
-  useStore.setState(newPartialState);
+  useStore.setState(newState);
 
-  return newPartialState;
+  return newState;
 }
 
 async function requestAccount() {

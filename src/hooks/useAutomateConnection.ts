@@ -2,8 +2,9 @@ import create from 'zustand';
 import { useCallback } from 'react';
 
 import { IAutomateConnectionParams } from '../types';
-import { ethereum, SECOND_MILLIS } from '../constants';
+import { ethereum, Network, SECOND_MILLIS } from '../constants';
 import { useMetamask, useStore as metamaskStore } from './useMetamask';
+import { notifications } from './connectionNotifications';
 
 interface IAutomateStoreState {
   connected: boolean;
@@ -13,8 +14,8 @@ interface IAutomateStoreState {
 }
 
 interface IAutomateStoreMethods {
-  connect: () => Promise<IAutomateStoreState>;
-  checkConnection: () => Promise<ICheckConnectionResult>;
+  connect: (desiredNetwork?: Network) => Promise<IAutomateStoreState>;
+  checkConnection: (desiredNetwork?: Network) => Promise<ICheckConnectionResult>;
   reset: () => Promise<void>;
   eagerConnect: () => Promise<void>;
 }
@@ -51,13 +52,17 @@ metamaskStore.subscribe((state, prevState) => {
   }
 });
 
-async function checkConnection(): Promise<ICheckConnectionResult> {
+async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnectionResult> {
   try {
     const params = await getConnectionParams();
 
     const ret = { connected: true, connectionParams: params };
 
     useStore.setState(ret);
+
+    if (desiredNetwork && params.network !== desiredNetwork) {
+      throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
+    }
 
     return ret;
   } catch (e) {
@@ -77,27 +82,36 @@ function useAutomateConnection(): IAutomateHook {
     useStore.setState(defaultState);
   }, [metamaskState]);
 
-  const connect = useCallback(async (): Promise<IAutomateStoreState> => {
-    const mmState = await metamaskState.connect();
-    if (!mmState.connected) {
-      reset();
+  const connect = useCallback(
+    async (desiredNetwork?: Network): Promise<IAutomateStoreState> => {
+      const mmState = await metamaskState.connect();
+      if (!mmState.connected) {
+        reset();
 
-      return defaultState;
-    }
+        return defaultState;
+      }
 
-    const { connected, connectionParams } = await checkConnection();
+      const { connected, connectionParams } = await checkConnection(desiredNetwork);
 
-    const ret = {
-      connected,
-      connectionParams,
-      account: mmState.account,
-      chainId: mmState.chainId,
-    };
+      const ret = {
+        connected,
+        connectionParams,
+        account: mmState.account,
+        chainId: mmState.chainId,
+      };
 
-    useStore.setState(ret);
+      useStore.setState(ret);
 
-    return ret;
-  }, [metamaskState, reset]);
+      if (connected) {
+        notifications.connectedToAutomate(connectionParams.network);
+      } else {
+        throw notifications.notConnectedtoAutomate();
+      }
+
+      return ret;
+    },
+    [metamaskState, reset]
+  );
 
   const eagerConnect = useCallback(async () => {
     if (!triedEagerConnect && ethereum.selectedAddress) {

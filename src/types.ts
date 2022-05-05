@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
 
-import { ChainId, StrategyBlock } from './constants';
+import { ChainId, Network, StrategyBlock } from './constants';
 
 export enum AssetType {
   Ethereum = 'ethereum',
@@ -195,8 +195,6 @@ export type StrategyBlockTxs = {
   [key in StrategyBlock]: IStrategyBlockTx;
 };
 
-export type SupportedNetworks = 'ethereum' | 'ropsten' | 'arbitrum' | 'arbitrumRinkeby';
-
 export interface IAutomateConnectionParams {
   apiKey: string;
   email: string;
@@ -204,5 +202,5 @@ export interface IAutomateConnectionParams {
   gasPriceAware?: boolean;
   gasPrice?: number;
   confirmationTime?: string;
-  network: SupportedNetworks;
+  network: Network;
 }
