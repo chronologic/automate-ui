@@ -1,5 +1,4 @@
 import { Card, Row, Col, Typography } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { IStrategies } from './../../types';
