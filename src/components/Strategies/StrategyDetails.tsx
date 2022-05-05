@@ -132,13 +132,13 @@ function StrategyDetails() {
     <Container>
       <Form form={form}>
         <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-          <Col span={12}>
+          <Col span={24} lg={12}>
             <Title level={3}>{strategy.title}</Title>
             <Text type="secondary" className="description">
               {strategy.description}
             </Text>
           </Col>
-          <Col span={12}>
+          <Col span={24} lg={12}>
             <div className="outer">
               <div className="inner">{blocks}</div>
               <Repeat />
@@ -151,7 +151,7 @@ function StrategyDetails() {
                 {txsToSignCount > 0 && (
                   <Text type="secondary" className="txsToSignCount">
                     This automation will generate <strong>{txsToSignCount} transactions</strong> for you to sign in
-                    Metamask.
+                    Metamask
                   </Text>
                 )}
               </Space>
@@ -163,9 +163,6 @@ function StrategyDetails() {
   );
 }
 
-// TODO: optimize to skip lower priority transactions for transactions that always succeed
-// e.g. claim -> send (in this case skip send since claim has no fail conditions)
-// this might require changes in strategy.blocks to define which transaction can be skipped like that
 function buildPrepTxs({
   strategy,
   from,

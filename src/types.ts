@@ -153,6 +153,7 @@ export interface IStrategy {
   id: number;
   url: string;
   title: string;
+  subtitle: string;
   assetType: AssetType;
   chainId: ChainId;
   description: string;
