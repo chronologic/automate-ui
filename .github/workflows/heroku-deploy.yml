@@ -11,9 +11,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: cl-sentinel-api
+          heroku_app_name: cl-sentinel
           heroku_email: ${{secrets.HEROKU_EMAIL}}
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           buildpack: https://github.com/mars/create-react-app-buildpack.git
         env:
           HD_REACT_APP_API_URL: ${{secrets.REACT_APP_API_URL}}
