@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 
 import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
+import { SMALL_SCREEN_THRESHOLD } from '../../constants';
+import { BlockExplorerLink } from '../Transactions';
 import TxStatus from './TxStatus';
 import AssetSymbolLink from './AssetSymbolLink';
-import EtherscanAddress from './EtherscanAddress';
-import { SMALL_SCREEN_THRESHOLD } from '../../constants';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -33,7 +33,7 @@ interface IListItemProps {
 function TransactionListItem({ item }: IListItemProps) {
   const title = (
     <div className="header">
-      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chars={3} />
+      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chainId={item.chainId} chars={3} />
       <TxStatus status={item.statusName} txHash={item.transactionHash} />
     </div>
   );
@@ -47,13 +47,13 @@ function TransactionListItem({ item }: IListItemProps) {
         <div className="row">
           <div className="label">From</div>
           <div className="value">
-            <EtherscanAddress address={item.from} chars={3} />
+            <BlockExplorerLink hash={item.from} chainId={item.chainId} type={'address'} />
           </div>
         </div>
         <div className="row">
           <div className="label">To</div>
           <div className="value">
-            <EtherscanAddress address={item.to} chars={3} />
+            <BlockExplorerLink hash={item.to} chainId={item.chainId} type={'address'} />
           </div>
         </div>
         <div className="row">

@@ -1,27 +1,21 @@
-import { isEmptyName } from '../../utils';
+import { BlockExplorerLink } from '../Transactions';
 import AssetSymbol from '../AssetSymbol';
 
 interface IProps {
   assetName: string;
   assetContract: string;
   chars?: number;
+  chainId: number;
 }
 
-function AssetSymbolLink({ assetName, assetContract, chars }: IProps) {
+function AssetSymbolLink({ assetName, assetContract, chars, chainId }: IProps) {
   const name = (assetName || '').toUpperCase();
-
-  const _name = isEmptyName(name) ? '' : name;
 
   if (assetContract) {
     return (
-      <a
-        href={`https://etherscan.io/address/${assetContract}`}
-        title={_name || assetContract}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <BlockExplorerLink hash={assetContract} chainId={chainId} type={'address'}>
         <AssetSymbol name={name} address={assetContract} chars={chars} />
-      </a>
+      </BlockExplorerLink>
     );
   }
 

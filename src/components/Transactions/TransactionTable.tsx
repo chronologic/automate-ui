@@ -29,14 +29,15 @@ import { Link } from 'react-router-dom';
 
 import { TokenAPI } from '../../api/TokenAPI';
 import { bigNumberToNumber, formatCurrency, formatNumber, normalizeBigNumber, numberToBn } from '../../utils';
+import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
+import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import { IScheduledForUser } from '../../types';
+import { BlockExplorerLink } from '../Transactions';
+import AssetSymbol from '../AssetSymbol';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
-import AssetSymbol from '../AssetSymbol';
-import TxStatus from './TxStatus';
-import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import AssetSymbolLink from './AssetSymbolLink';
-import EtherscanAddress from './EtherscanAddress';
+import TxStatus from './TxStatus';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -335,14 +336,18 @@ function TransactionTable({
       },
       {
         dataIndex: 'from',
-        render: (from: string) => <EtherscanAddress address={from} />,
+        render: (from: string, record: IScheduledForUser) => (
+          <BlockExplorerLink hash={from} chainId={record.chainId} type={'address'} />
+        ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
         align: 'center' as any,
       },
       {
         dataIndex: 'to',
-        render: (to: string) => <EtherscanAddress address={to} />,
+        render: (to: string, record: IScheduledForUser) => (
+          <BlockExplorerLink hash={to} chainId={record.chainId} type={'address'} />
+        ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
         align: 'center' as any,
@@ -350,7 +355,9 @@ function TransactionTable({
       {
         dataIndex: 'assetName',
         render: (assetName: string, record: IScheduledForUser) => {
-          return <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} />;
+          return (
+            <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} chainId={record.chainId} />
+          );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
         title: 'Asset',
@@ -448,6 +455,8 @@ function TransactionTable({
 
           const showCancel = ['Draft', 'Pending'].includes(record.statusName);
           const showEtherscan = !['Draft', 'Pending', 'Cancelled'].includes(record.statusName);
+          const networkName: string = ChainId[record.chainId];
+          const networkExplorerName: string = ' ' + BlockExplorerName[networkName as keyof typeof BlockExplorerUrl];
 
           const menu = (
             <Menu>
@@ -461,13 +470,10 @@ function TransactionTable({
               </Menu.Item>
               {showEtherscan && (
                 <Menu.Item key="2">
-                  <a
-                    href={`https://etherscan.io/tx/${record.transactionHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExportOutlined /> Etherscan
-                  </a>
+                  <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
+                    <ExportOutlined />
+                    {networkExplorerName}
+                  </BlockExplorerLink>
                 </Menu.Item>
               )}
               {showCancel && (
@@ -532,14 +538,9 @@ function TransactionTable({
 
             if (conditionAsset) {
               return (
-                <a
-                  href={`https://etherscan.io/address/${conditionAsset}`}
-                  title={assetName || conditionAsset}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <BlockExplorerLink hash={assetName || conditionAsset} chainId={record.chainId} type={'address'}>
                   <AssetSymbol name={assetName} address={conditionAsset} />
-                </a>
+                </BlockExplorerLink>
               );
             }
 
