@@ -5,6 +5,9 @@ export const SMALL_SCREEN_THRESHOLD = 960;
 export const TABLET_SCREEN_THRESHOLD = 1200;
 export const SECOND_MILLIS = 1000;
 export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
+
+export const ethereum = (window as any).ethereum as MetaMaskInpageProvider;
+
 export enum Network {
   none = 'none',
   ethereum = 'ethereum',
@@ -38,4 +41,17 @@ export enum RepeatFrequency {
   Monthly = 'month',
 }
 
-export const ethereum = (window as any).ethereum as MetaMaskInpageProvider;
+export enum BlockExplorerUrl {
+  none = '',
+  arbitrum = 'https://arbiscan.io/',
+  ethereum = 'https://etherscan.io/',
+  ropsten = 'https://ropsten.etherscan.io/',
+  arbitrumRinkeby = 'https://testnet.arbiscan.io/',
+}
+export enum BlockExplorerName {
+  none = '',
+  arbitrum = 'Arbiscan',
+  ethereum = 'Etherscan',
+  ropsten = 'Ropsten Etherscan',
+  arbitrumRinkeby = 'Testnet Arbiscan',
+}

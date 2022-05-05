@@ -15,7 +15,7 @@ import {
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
-import { strategies } from './strategyDetailsData';
+import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
@@ -33,7 +33,9 @@ function StrategyDetails() {
     return location?.pathname?.split('/').reverse()[0];
   }, [location?.pathname]);
 
-  const strategy = strategies[strategyName];
+  const strategy = useMemo(() => {
+    return strategies.find((s) => s.url === strategyName)!;
+  }, [strategyName]);
 
   const txsToSignCount = useMemo(() => {
     try {

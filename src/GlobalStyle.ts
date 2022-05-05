@@ -143,7 +143,10 @@ const GlobalStyle = styled.div<IProps>`
   .ant-input-group-addon {
     color: ${(props) => props.theme.colors.text};
   }
-
+  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
+  .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover {
+    background-color: transparent;
+  }
   .ant-form-item-has-error .ant-input,
   .ant-form-item-has-error .ant-input-affix-wrapper,
   .ant-form-item-has-error .ant-input:hover,

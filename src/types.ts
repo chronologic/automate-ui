@@ -150,10 +150,14 @@ export interface IAuthParams {
 }
 
 export interface IStrategy {
+  id: number;
+  url: string;
   title: string;
   assetType: AssetType;
   chainId: ChainId;
   description: string;
+  imageSrc: string;
+  comingSoon: boolean;
   blocks: StrategyBlock[];
 }
 

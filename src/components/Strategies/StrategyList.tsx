@@ -1,59 +1,47 @@
 import { Card, Row, Col, Typography } from 'antd';
 import styled from 'styled-components';
 
+import { IStrategy } from './../../types';
+import { strategies } from './strategyData';
+
 const { Meta } = Card;
 
 const { Text } = Typography;
 
 function StrategyList() {
+  const strategyClick = (strategy: IStrategy) => {
+    try {
+      (window as any).heap.track('StrategyClicked', {
+        strategy: strategy.title,
+        url: strategy.url,
+        id: strategy.id,
+      });
+    } catch (e) {
+      console.error(e as any);
+    }
+    const comingSoonText = document.getElementById(String(strategy.id));
+    if (strategy.comingSoon) {
+      comingSoonText!.classList.add('visible');
+    } else {
+      window.open('/' + strategy.url);
+    }
+  };
+
   return (
     <Container>
       <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-        <Col span={8}>
-          <Card hoverable cover={<img alt="example" src="../img/atlas-mine.jpg" />}>
-            <Meta title="Claim Rewards" description="Bridgeworld (Atlas Mine)" />
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card hoverable cover={<img alt="example" src="../img/magic-dragon.jpg" />}>
-            <Meta title="Claim Rewards" description="Magic Dragon DAO" />
-            <Text type="danger" className="soon">
-              COMING SOON!
-            </Text>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card hoverable cover={<img alt="example" src="../img/battlefly.jpg" />}>
-            <Meta title="Claim Rewards" description="BattleFly" />
-            <Text type="danger" className="soon">
-              COMING SOON!
-            </Text>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card hoverable cover={<img alt="example" src="../img/tales-of-alleria.jpg" />}>
-            <Meta title="Claim Rewards" description="Tales of Elleria" />
-            <Text type="danger" className="soon">
-              COMING SOON!
-            </Text>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card hoverable cover={<img alt="example" src="../img/smithy.jpg" />}>
-            <Meta title="Go on Quests" description="SmithyDAO" />
-            <Text type="danger" className="soon">
-              COMING SOON!
-            </Text>
-          </Card>
-        </Col>
-        <Col span={8}>
-          <Card className="antcard" hoverable cover={<img alt="example" src="../img/ivory-tower.jpg" />}>
-            <Meta title="Send Legions Questing" description="Bridgeworld (Ivory Tower)" />
-            <Text type="danger" className="soon">
-              COMING SOON!
-            </Text>
-          </Card>
-        </Col>
+        {strategies.map((strategy) => (
+          <Col span={8} key={strategy.id}>
+            <div onClick={() => strategyClick(strategy)}>
+              <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
+                <Meta title="Claim Rewards" description={strategy.title} />
+                <Text type="danger" className="comingSoonText" id={String(strategy.id)}>
+                  COMING SOON!
+                </Text>
+              </Card>
+            </div>
+          </Col>
+        ))}
       </Row>
     </Container>
   );
@@ -84,8 +72,13 @@ const Container = styled.div`
     display: inline-block;
   }
 
-  .soon {
+  .comingSoonText {
     float: right;
+    transition: opacity 0.2s ease;
+    opacity: 0;
+    &.visible {
+      opacity: 1;
+    }
   }
 `;
 

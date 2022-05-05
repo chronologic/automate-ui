@@ -7,6 +7,7 @@ import FlexSpacer from '../FlexSpacer';
 import User from './User';
 import Credits from './Credits';
 import { SMALL_SCREEN_THRESHOLD } from '../../constants';
+import { TreasureEcosystemButton } from './TreasureEcosystem';
 
 function HeaderMain() {
   const { theme } = useTheme();
@@ -29,6 +30,9 @@ function HeaderMain() {
       </Logos>
       <FlexSpacer />
       {isAuthenticated && <Credits />}
+      {
+        // <TreasureEcosystemButton />
+      }
       <FlexSpacer />
       <User />
       <WalletConnector className="walletConnector" />
