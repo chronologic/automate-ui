@@ -150,6 +150,6 @@ export interface IStrategies {
   title: string;
   imageSrc: string;
   comingSoon: boolean;
-  itemid: number;
+  id: number;
   detailPageURL: string;
 }

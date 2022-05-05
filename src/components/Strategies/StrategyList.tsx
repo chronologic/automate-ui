@@ -14,12 +14,12 @@ function StrategyList() {
       (window as any).heap.track('StrategyClicked', {
         strategy: strategy.title,
         url: strategy.detailPageURL,
-        id: strategy.itemid,
+        id: strategy.id,
       });
     } catch (e) {
       console.error(e as any);
     }
-    const comingSoonTextId = document.getElementById(strategy.title);
+    const comingSoonTextId = document.getElementById(String(strategy.id));
     if (strategy.comingSoon) {
       comingSoonTextId!.classList.add('visible');
     } else {
@@ -31,11 +31,11 @@ function StrategyList() {
     <Container>
       <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
         {strategies.map((strategy) => (
-          <Col span={8} key={strategy.itemid}>
+          <Col span={8} key={strategy.id}>
             <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
-                <Text type="danger" className="comingSoonText" id={strategy.title}>
+                <Text type="danger" className="comingSoonText" id={String(strategy.id)}>
                   COMING SOON!
                 </Text>
               </Card>
@@ -97,9 +97,9 @@ const Container = styled.div`
     float: right;
     transition: opacity 0.2s ease;
     opacity: 0;
-  }
-  .comingSoonText.visible {
-    opacity: 1;
+    &.visible {
+      opacity: 1;
+    }
   }
 `;
 
