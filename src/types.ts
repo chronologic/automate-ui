@@ -149,7 +149,7 @@ export interface IAuthParams {
 export interface IStrategies {
   title: string;
   imageSrc: string;
-  ComingSoon: boolean;
+  comingSoon: boolean;
   itemid: number;
   detailPageURL: string;
 }

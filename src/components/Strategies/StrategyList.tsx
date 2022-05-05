@@ -19,9 +19,9 @@ function StrategyList() {
     } catch (e) {
       console.error(e as any);
     }
-    const comingSoonTextId = document.getElementById(String(strategy.itemid));
-    if (strategy.ComingSoon) {
-      comingSoonTextId!.classList.add('comingSoonText-visible');
+    const comingSoonTextId = document.getElementById(strategy.title);
+    if (strategy.comingSoon) {
+      comingSoonTextId!.classList.add('visible');
     } else {
       window.open('/' + strategy.detailPageURL);
     }
@@ -35,7 +35,7 @@ function StrategyList() {
             <div onClick={() => strategyClick(strategy)}>
               <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
                 <Meta title="Claim Rewards" description={strategy.title} />
-                <Text type="danger" className="comingSoonText comingSoonText-invisible" id={String(strategy.itemid)}>
+                <Text type="danger" className="comingSoonText" id={strategy.title}>
                   COMING SOON!
                 </Text>
               </Card>
@@ -76,11 +76,9 @@ const Container = styled.div`
   .comingSoonText {
     float: right;
     transition: opacity 0.2s ease;
-  }
-  .comingSoonText-invisible {
     opacity: 0;
   }
-  .comingSoonText-visible {
+  .comingSoonText.visible {
     opacity: 1;
   }
 `;
