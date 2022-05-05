@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -13,10 +13,11 @@ import uniqBy from 'lodash/uniqBy';
 import moment from 'moment-timezone';
 import queryString from 'query-string';
 
+import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
 import { IScheduledForUser } from '../../types';
+import { BlockExplorerLink } from '../Transactions';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 
@@ -358,9 +359,9 @@ function Scheduleds() {
           }
 
           return (
-            <a href={`https://etherscan.io/tx/${record.transactionHash}`} target="_blank" rel="noopener noreferrer">
+            <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
               {res}
-            </a>
+            </BlockExplorerLink>
           );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
@@ -368,20 +369,16 @@ function Scheduleds() {
       },
       {
         dataIndex: 'from',
-        render: (from: string) => (
-          <a href={`https://etherscan.io/address/${from}`} title={from} target="_blank" rel="noopener noreferrer">
-            {shortAddress(from)}
-          </a>
+        render: (from: string, record: IScheduledForUser) => (
+          <BlockExplorerLink hash={from} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
       },
       {
         dataIndex: 'to',
-        render: (to: string) => (
-          <a href={`https://etherscan.io/address/${to}`} title={to} target="_blank" rel="noopener noreferrer">
-            {shortAddress(to || '')}
-          </a>
+        render: (to: string, record: IScheduledForUser) => (
+          <BlockExplorerLink hash={to} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
@@ -393,14 +390,9 @@ function Scheduleds() {
 
           if (record.assetContract) {
             return (
-              <a
-                href={`https://etherscan.io/address/${record.assetContract}`}
-                title={record.assetContract}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <BlockExplorerLink hash={record.assetContract} chainId={record.chainId} type={'address'}>
                 {name}
-              </a>
+              </BlockExplorerLink>
             );
           }
 
@@ -466,14 +458,9 @@ function Scheduleds() {
 
           if (conditionAsset) {
             return (
-              <a
-                href={`https://etherscan.io/address/${conditionAsset}`}
-                title={conditionAsset}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {assetName || conditionAsset}
-              </a>
+              <BlockExplorerLink hash={conditionAsset} chainId={record.chainId} type={'address'}>
+                {conditionAsset}
+              </BlockExplorerLink>
             );
           }
 

@@ -99,9 +99,11 @@ function Auth() {
           Submit
         </Button>
         {ALLOW_SIGNUP && (
-          <ModeSwitch>
-            <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text>{' '}
-            <Typography.Link onClick={handleModeSwitch}>{signup ? 'Log in' : 'Sign up'}</Typography.Link>
+          <ModeSwitch className="signupLoginText">
+            <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
+            <Typography.Link onClick={handleModeSwitch}>
+              {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
+            </Typography.Link>
           </ModeSwitch>
         )}
       </Form>
@@ -131,6 +133,9 @@ const Container = styled.div`
     margin-bottom: 24px;
     padding-left: 40px;
     padding-right: 40px;
+  }
+  .signupLoginText {
+    text-align: center;
   }
 `;
 
