@@ -11,7 +11,7 @@ export const strategies: IStrategy[] = [
     subtitle: 'Bridgeworld',
     assetType: AssetType.Ethereum,
     chainId: ChainId.arbitrum,
-    description: `Use this strategy when you want to periodically claim $MAGIC earned during a vested release.`,
+    description: `Use this strategy when you want to periodically claim $MAGIC earned in the Atlas Mine.`,
     blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim],
   },
   {
@@ -23,7 +23,7 @@ export const strategies: IStrategy[] = [
     subtitle: 'Bridgeworld',
     assetType: AssetType.Ethereum,
     chainId: ChainId.arbitrum,
-    description: `Use this strategy when you want to periodically claim $MAGIC earned during a vested release and then immediately send some $MAGIC to a different address.`,
+    description: `Use this strategy when you want to periodically claim $MAGIC earned in the Atlas Mine and then immediately send some $MAGIC to a different address.`,
     blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim, StrategyBlock.Arbitrum_Magic_Send],
   },
   {
