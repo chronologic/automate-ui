@@ -58,11 +58,17 @@ async function reset() {
   useStore.setState(defaultState);
 }
 
+ethereum?.on('accountsChanged', handleAccountsChanged as any);
+
 function handleAccountsChanged(accounts: string[]) {
   useStore.setState({ account: accounts[0] });
 }
 
-ethereum?.on('accountsChanged', handleAccountsChanged as any);
+ethereum?.on('chainChanged', handleChainChanged as any);
+
+function handleChainChanged(chainIdHex: string) {
+  useStore.setState({ chainId: Number(chainIdHex) });
+}
 
 const useMetamask = (): IMetamaskHook => {
   const state = useStore();
