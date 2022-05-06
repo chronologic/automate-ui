@@ -5,6 +5,7 @@ import { IAutomateConnectionParams } from '../types';
 import { ethereum, Network, SECOND_MILLIS } from '../constants';
 import { useMetamask, useStore as metamaskStore } from './useMetamask';
 import { notifications } from './connectionNotifications';
+import { useAuth } from './useAuth';
 
 interface IAutomateStoreState {
   connected: boolean;
@@ -13,8 +14,13 @@ interface IAutomateStoreState {
   connectionParams: IAutomateConnectionParams;
 }
 
+interface IConnectParams {
+  notifySuccess?: boolean;
+  desiredNetwork?: Network;
+}
+
 interface IAutomateStoreMethods {
-  connect: (desiredNetwork?: Network) => Promise<IAutomateStoreState>;
+  connect: (params?: IConnectParams) => Promise<IAutomateStoreState>;
   checkConnection: (desiredNetwork?: Network) => Promise<ICheckConnectionResult>;
   reset: () => Promise<void>;
   eagerConnect: () => Promise<void>;
@@ -76,6 +82,7 @@ let triedEagerConnect = false;
 function useAutomateConnection(): IAutomateHook {
   const metamaskState = useMetamask();
   const automateState = useStore();
+  const { user } = useAuth();
 
   const reset = useCallback(async () => {
     metamaskState.reset();
@@ -83,7 +90,10 @@ function useAutomateConnection(): IAutomateHook {
   }, [metamaskState]);
 
   const connect = useCallback(
-    async (desiredNetwork?: Network): Promise<IAutomateStoreState> => {
+    async ({
+      notifySuccess,
+      desiredNetwork,
+    }: { notifySuccess?: boolean; desiredNetwork?: Network } = {}): Promise<IAutomateStoreState> => {
       const mmState = await metamaskState.connect();
       if (!mmState.connected) {
         reset();
@@ -102,15 +112,19 @@ function useAutomateConnection(): IAutomateHook {
 
       useStore.setState(ret);
 
-      if (connected) {
+      if (connected && notifySuccess) {
         notifications.connectedToAutomate(connectionParams.network);
-      } else {
+      }
+      if (!connected) {
         throw notifications.notConnectedtoAutomate();
+      }
+      if (user?.login && connectionParams?.email !== user?.login) {
+        throw notifications.userMismatch(user.login, connectionParams.email);
       }
 
       return ret;
     },
-    [metamaskState, reset]
+    [metamaskState, reset, user?.login]
   );
 
   const eagerConnect = useCallback(async () => {

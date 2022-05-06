@@ -48,4 +48,13 @@ export const notifications = Object.freeze({
       ),
     });
   },
+  userMismatch(loggedInUser: string, proxyUser: string) {
+    notification.error({
+      message: (
+        <span>
+          You're logged in as <strong>{loggedInUser}</strong> but Metamask is connected as <strong>{proxyUser}</strong>
+        </span>
+      ),
+    });
+  },
 });

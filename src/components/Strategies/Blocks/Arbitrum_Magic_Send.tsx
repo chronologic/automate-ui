@@ -53,6 +53,7 @@ function Arbitrum_Magic_Send() {
           <Col span={18}>
             <Form.Item
               name={`${StrategyBlock.Arbitrum_Magic_Send}_to`}
+              validateFirst
               rules={[
                 { required: true, message: 'Recipient address is required' },
                 { validator: (_, value) => ethereumAddressValidator(value) },
@@ -64,6 +65,7 @@ function Arbitrum_Magic_Send() {
           <Col span={6}>
             <Form.Item
               name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
+              validateFirst
               rules={[
                 { required: true, message: 'Amount is required' },
                 { validator: (_, value) => tokenBalanceValidator(account!, value) },

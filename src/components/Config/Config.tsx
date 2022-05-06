@@ -82,7 +82,7 @@ function Config() {
   }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
-    await connect(network);
+    await connect({ desiredNetwork: network, notifySuccess: true });
     setSubmitted(false);
     setCompleted(true);
   }, [connect, network]);

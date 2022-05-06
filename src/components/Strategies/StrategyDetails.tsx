@@ -28,6 +28,7 @@ function StrategyDetails() {
   const { prep, cancel } = useStrategyApi();
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
+  const [automating, setAutomating] = useState(false);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -71,56 +72,62 @@ function StrategyDetails() {
   }, [strategy?.blocks]);
 
   const handleSubmit = useCallback(async () => {
-    await form.validateFields();
-    await connect(ChainId[strategy.chainId] as Network);
-    const web3 = new Web3(ethereum as any);
-    const userNonce = await web3!.eth.getTransactionCount(account!);
+    try {
+      setAutomating(true);
 
-    const prepTxs = buildPrepTxs({
-      strategy,
-      from: account!,
-      txs,
-      repetitions,
-      startNonce: userNonce,
-    });
+      await form.validateFields();
+      await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
+      const web3 = new Web3(ethereum as any);
+      const userNonce = await web3!.eth.getTransactionCount(account!);
 
-    // console.log(prepTxs);
+      const prepTxs = buildPrepTxs({
+        strategy,
+        from: account!,
+        txs,
+        repetitions,
+        startNonce: userNonce,
+      });
 
-    const prepRes = await prep(prepTxs);
-    setPrepResponse(prepRes);
+      // console.log(prepTxs);
 
-    // console.log(prepRes);
+      const prepRes = await prep(prepTxs);
+      setPrepResponse(prepRes);
 
-    // const batch = new web3!.BatchRequest();
+      // console.log(prepRes);
 
-    // prepTxs.forEach((tx) =>
-    //   web3!.eth.sendTransaction({
-    //     chainId: strategy.chainId as number,
-    //     from: tx.from,
-    //     to: tx.to,
-    //     data: tx.data,
-    //     // nonce: tx.nonce, // metamask will ignore this
-    //   })
-    // );
+      // const batch = new web3!.BatchRequest();
 
-    // batch.execute();
+      // prepTxs.forEach((tx) =>
+      //   web3!.eth.sendTransaction({
+      //     chainId: strategy.chainId as number,
+      //     from: tx.from,
+      //     to: tx.to,
+      //     data: tx.data,
+      //     // nonce: tx.nonce, // metamask will ignore this
+      //   })
+      // );
 
-    for (const tx of prepTxs) {
-      try {
-        await web3!.eth.sendTransaction({
-          chainId: strategy.chainId as number,
-          from: tx.from,
-          to: tx.to,
-          data: tx.data,
-          // nonce: tx.nonce, // metamask will ignore this
-        });
-      } catch (e: any) {
-        const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
-        if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
-          cancel(prepRes.instanceId);
-          throw e;
+      // batch.execute();
+
+      for (const tx of prepTxs) {
+        try {
+          await web3!.eth.sendTransaction({
+            chainId: strategy.chainId as number,
+            from: tx.from,
+            to: tx.to,
+            data: tx.data,
+            // nonce: tx.nonce, // metamask will ignore this
+          });
+        } catch (e: any) {
+          const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
+          if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
+            cancel(prepRes.instanceId);
+            throw e;
+          }
         }
       }
+    } finally {
+      setAutomating(false);
     }
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
@@ -145,7 +152,7 @@ function StrategyDetails() {
             </div>
             <Footer>
               <Space direction="vertical" size="large">
-                <Button type="primary" size="large" onClick={handleSubmit}>
+                <Button type="primary" size="large" disabled={automating} loading={automating} onClick={handleSubmit}>
                   Automate!
                 </Button>
                 {txsToSignCount > 0 && (
