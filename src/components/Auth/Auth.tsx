@@ -40,7 +40,9 @@ function Auth() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      history.replace('/connect');
+      const returnPath = (history.location as any).state?.from?.pathname || '/connect';
+
+      history.replace(returnPath);
     }
   }, [history, isAuthenticated]);
 

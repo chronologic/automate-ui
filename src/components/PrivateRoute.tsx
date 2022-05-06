@@ -24,7 +24,7 @@ export default function PrivateRoute({ children, ...rest }: IProps) {
         ) : (
           <Redirect
             to={{
-              pathname: '/',
+              pathname: '/login',
               state: { from: location },
             }}
           />
