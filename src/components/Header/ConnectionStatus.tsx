@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Alert } from 'antd';
 import styled from 'styled-components';
@@ -9,29 +9,19 @@ import { capitalizeFirstLetter } from '../../utils';
 
 function ConnectionStatus() {
   const history = useHistory();
-  const { connected, checkConnection } = useAutomateConnection();
+  const { connected, connectionParams } = useAutomateConnection();
 
   const handleClick = useCallback(() => {
     history.push('/connect');
   }, [history]);
 
-  useEffect(() => {
-    let intervalId = setInterval(checkConnection, 5000);
-
-    checkConnection();
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [checkConnection]);
-
   return (
     <Container onClick={handleClick}>
       <Alert
-        type={connected !== 'none' ? 'success' : 'error'}
+        type={connected ? 'success' : 'error'}
         message={
-          connected !== 'none'
-            ? `You're connected to Automate ${capitalizeFirstLetter(connected)} network`
+          connected
+            ? `You're connected to Automate ${capitalizeFirstLetter(connectionParams.network)} network`
             : `You're not connected to Automate `
         }
         banner

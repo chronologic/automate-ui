@@ -1,15 +1,14 @@
 import styled from 'styled-components';
 import { Button } from 'antd';
-import { Wallet } from 'use-wallet';
 
-interface IProps {
-  wallet: Wallet<unknown>;
-}
+import { useAutomateConnection } from '../../hooks';
 
-function Connect({ wallet }: IProps) {
+function Connect() {
+  const { connect } = useAutomateConnection();
+
   return (
     <Container>
-      <Button type="ghost" className="connect-button primary" onClick={() => wallet.connect('injected')}>
+      <Button type="ghost" className="connect-button primary" onClick={() => connect()}>
         Connect to
         <br />
         MetaMask

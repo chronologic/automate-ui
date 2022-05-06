@@ -1,39 +1,164 @@
-import { useCallback, useContext } from 'react';
+import create from 'zustand';
+import { useCallback } from 'react';
 
-import { AutomateConnectionContext } from '../contexts';
+import { IAutomateConnectionParams } from '../types';
+import { ethereum, Network, SECOND_MILLIS } from '../constants';
+import { useMetamask, useStore as metamaskStore } from './useMetamask';
+import { notifications } from './connectionNotifications';
+import { useAuth } from './useAuth';
 
-export function useAutomateConnection() {
-  const { connected, setConnected } = useContext(AutomateConnectionContext);
-
-  const checkConnection = useCallback(async () => {
-    const res = await isConnectedToAutomate((window as any).ethereum);
-
-    setConnected(res);
-
-    return res;
-  }, [setConnected]);
-
-  return { connected, checkConnection };
+interface IAutomateStoreState {
+  connected: boolean;
+  account: string | null;
+  chainId: number | null;
+  connectionParams: IAutomateConnectionParams;
 }
 
-export async function isConnectedToAutomate(ethereum: any): Promise<string> {
+interface IConnectParams {
+  notifySuccess?: boolean;
+  desiredNetwork?: Network;
+}
+
+interface IAutomateStoreMethods {
+  connect: (params?: IConnectParams) => Promise<IAutomateStoreState>;
+  checkConnection: (desiredNetwork?: Network) => Promise<ICheckConnectionResult>;
+  reset: () => Promise<void>;
+  eagerConnect: () => Promise<void>;
+}
+
+interface ICheckConnectionResult {
+  connected: boolean;
+  connectionParams: IAutomateConnectionParams;
+}
+
+interface IAutomateHook extends IAutomateStoreState, IAutomateStoreMethods {}
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const AUTOMATE_MD5_HASH_ADDRESS = '0x00000000e7fdc80c0728d856260f92fde10af019';
+
+const defaultState: IAutomateStoreState = {
+  connected: false,
+  account: null,
+  chainId: null,
+  connectionParams: {} as any,
+};
+
+const useStore = create<IAutomateStoreState>(() => defaultState);
+
+let automateConnectionCheckIntervalId: any;
+metamaskStore.subscribe((state, prevState) => {
+  const connectedStateChanged = state.connected !== prevState.connected;
+  if (!connectedStateChanged) {
+    return;
+  }
+
+  clearInterval(automateConnectionCheckIntervalId);
+  if (state.connected) {
+    automateConnectionCheckIntervalId = setInterval(checkConnection, 5 * SECOND_MILLIS);
+  }
+});
+
+async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnectionResult> {
   try {
-    const res = await ethereum?.request({
-      method: 'eth_call',
-      params: [
-        {
-          from: '0x0000000000000000000000000000000000000000',
-          // md5 hash of 'automate'
-          to: '0x00000000e7fdc80c0728d856260f92fde10af019',
-        },
-      ],
-    });
-    if (res.client !== 'automate') {
-      throw new Error('The user is not connected to Automate');
+    const params = await getConnectionParams();
+
+    const ret = { connected: true, connectionParams: params };
+
+    useStore.setState(ret);
+
+    if (desiredNetwork && params.network !== desiredNetwork) {
+      throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
     }
-    const connectedNetowrk = res.params.network;
-    return connectedNetowrk;
+
+    return ret;
   } catch (e) {
-    return 'none';
+    console.error(e);
+    return { connected: false, connectionParams: {} as any };
   }
 }
+
+let triedEagerConnect = false;
+
+function useAutomateConnection(): IAutomateHook {
+  const metamaskState = useMetamask();
+  const automateState = useStore();
+  const { user } = useAuth();
+
+  const reset = useCallback(async () => {
+    metamaskState.reset();
+    useStore.setState(defaultState);
+  }, [metamaskState]);
+
+  const connect = useCallback(
+    async ({
+      notifySuccess,
+      desiredNetwork,
+    }: { notifySuccess?: boolean; desiredNetwork?: Network } = {}): Promise<IAutomateStoreState> => {
+      const mmState = await metamaskState.connect();
+      if (!mmState.connected) {
+        reset();
+
+        return defaultState;
+      }
+
+      const { connected, connectionParams } = await checkConnection(desiredNetwork);
+
+      const ret = {
+        connected,
+        connectionParams,
+        account: mmState.account,
+        chainId: mmState.chainId,
+      };
+
+      useStore.setState(ret);
+
+      if (connected && notifySuccess) {
+        notifications.connectedToAutomate(connectionParams.network);
+      }
+      if (!connected) {
+        throw notifications.notConnectedtoAutomate();
+      }
+      if (user?.login && connectionParams?.email !== user?.login) {
+        throw notifications.userMismatch(user.login, connectionParams.email);
+      }
+
+      return ret;
+    },
+    [metamaskState, reset, user?.login]
+  );
+
+  const eagerConnect = useCallback(async () => {
+    if (!triedEagerConnect && ethereum.selectedAddress) {
+      triedEagerConnect = true;
+      connect();
+    }
+  }, [connect]);
+
+  return {
+    ...automateState,
+    connect,
+    reset,
+    checkConnection,
+    account: metamaskState.account,
+    chainId: metamaskState.chainId,
+    eagerConnect,
+  };
+}
+
+async function getConnectionParams(): Promise<IAutomateConnectionParams> {
+  const res = (await ethereum.request<any>({
+    method: 'eth_call',
+    params: [
+      {
+        from: ZERO_ADDRESS,
+        to: AUTOMATE_MD5_HASH_ADDRESS,
+      },
+    ],
+  }))!;
+  if (res.client !== 'automate') {
+    throw new Error('The user is not connected to Automate');
+  }
+  return res.params;
+}
+
+export { useAutomateConnection };

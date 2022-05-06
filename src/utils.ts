@@ -111,3 +111,16 @@ function setUserSource(name: string): string {
 export function capitalizeFirstLetter(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+export function isValidEthereumAddress(address: string): boolean {
+  try {
+    utils.getAddress(address);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function ethereumAddressValidator(address: string): Promise<void> {
+  return isValidEthereumAddress(address) ? Promise.resolve() : Promise.reject(new Error(`Invalid Ethereum address`));
+}

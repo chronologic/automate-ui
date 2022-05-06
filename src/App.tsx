@@ -21,7 +21,7 @@ import {
 } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
-import { useEagerConnect, useTheme } from './hooks';
+import { useAutomateConnection, useTheme } from './hooks';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
@@ -41,11 +41,13 @@ class Wrapper extends React.Component {
 function App() {
   const { theme } = useTheme();
   const location = useLocation();
-  useEagerConnect();
+  const { eagerConnect } = useAutomateConnection();
 
   if (MAINTENANCE_MODE) {
     return <Maintenance />;
   }
+
+  eagerConnect();
 
   return (
     <Suspense
@@ -70,9 +72,11 @@ function App() {
               </PrivateRoute>
               <Route path="/login" component={Auth} />
               <Route path="/scheduleds" component={Scheduleds} />
+              <PrivateRoute path="/strategies/:id">
+                <StrategyDetails />
+              </PrivateRoute>
               <Route path="/strategies" component={StrategyList} />
-              <Route path="/strategy/bridgeworld-claim-and-send" component={StrategyList} />
-              <Route exact={true} path="/" component={StrategyList} />
+              <Route exact path="/" component={StrategyList} />
               <Route path="*" component={RouteFallback} />
             </Switch>
           </Layout.Content>

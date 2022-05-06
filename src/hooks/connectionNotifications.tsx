@@ -1,13 +1,8 @@
 import { notification } from 'antd';
 
-import { capitalizeFirstLetter } from '../../utils';
+import { capitalizeFirstLetter } from '../utils';
 
 export const notifications = Object.freeze({
-  connectedToAutomate(connectedNetwork: string) {
-    notification.success({
-      message: `You're connected to Automate ${capitalizeFirstLetter(connectedNetwork)} Network!`,
-    });
-  },
   metamaskNotInstalled() {
     notification.error({
       message: (
@@ -18,6 +13,11 @@ export const notifications = Object.freeze({
           is required to connect Automate. Please install it and refresh the page.
         </span>
       ),
+    });
+  },
+  connectedToAutomate(connectedNetwork: string) {
+    notification.success({
+      message: `You're connected to Automate ${capitalizeFirstLetter(connectedNetwork)} Network!`,
     });
   },
   connectedWrongNetwork(connectedNetwork: string, desiredNetwork: string) {
@@ -44,6 +44,15 @@ export const notifications = Object.freeze({
             setup instructions
           </a>{' '}
           correctly.
+        </span>
+      ),
+    });
+  },
+  userMismatch(loggedInUser: string, proxyUser: string) {
+    notification.error({
+      message: (
+        <span>
+          You're logged in as <strong>{loggedInUser}</strong> but Metamask is connected as <strong>{proxyUser}</strong>
         </span>
       ),
     });

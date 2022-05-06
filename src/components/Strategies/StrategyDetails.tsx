@@ -1,136 +1,238 @@
-import { Card, Row, Col, Typography, Input, DatePicker, Radio, Button, Space } from 'antd';
-import { BlockOutlined, GiftOutlined, ExportOutlined, ReloadOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Row, Col, Typography, Button, Space, Form } from 'antd';
+import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { IThemeProps } from '../../types';
+import { useLocation } from 'react-router-dom';
+import Web3 from 'web3';
+
+import {
+  IStrategy,
+  IStrategyPrepResponse,
+  IStrategyPrepTxWithConditions,
+  IStrategyRepetition,
+  IThemeProps,
+  StrategyBlockTxs,
+} from '../../types';
+import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
+import { ChainId, ethereum, Network } from '../../constants';
+import { strategies } from './strategyData';
+import { blockConfig, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
 
-const { RangePicker } = DatePicker;
-
 function StrategyDetails() {
+  const location = useLocation();
+  const [form] = Form.useForm();
+  const txs = useStrategyStore((state) => state.txs);
+  const repetitions = useStrategyStore((state) => state.repetitions);
+  const { prep, cancel } = useStrategyApi();
+  const { account, connect } = useAutomateConnection();
+  const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
+  const [automating, setAutomating] = useState(false);
+
+  const strategyName = useMemo(() => {
+    return location?.pathname?.split('/').reverse()[0];
+  }, [location?.pathname]);
+
+  const strategy = useMemo(() => {
+    return strategies.find((s) => s.url === strategyName)!;
+  }, [strategyName]);
+
+  const txsToSignCount = useMemo(() => {
+    try {
+      const prepTxsJustForCount = buildPrepTxs({
+        strategy,
+        from: account!,
+        txs,
+        repetitions,
+        startNonce: 0,
+      });
+      return prepTxsJustForCount.length;
+    } catch (e) {
+      return 0;
+    }
+  }, [account, repetitions, strategy, txs]);
+
+  const blocks = useMemo(() => {
+    const separator = (
+      <Arrow>
+        <ArrowDownOutlined style={{ color: 'rgb(255 255 255 / 45%)' }} />
+      </Arrow>
+    );
+
+    return strategy?.blocks.map((name, index) => {
+      const Block = blockConfig[name].component;
+      return (
+        <React.Fragment key={name}>
+          {index !== 0 && separator}
+          <Block />
+        </React.Fragment>
+      );
+    });
+  }, [strategy?.blocks]);
+
+  const handleSubmit = useCallback(async () => {
+    try {
+      setAutomating(true);
+
+      await form.validateFields();
+      await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
+      const web3 = new Web3(ethereum as any);
+      const userNonce = await web3!.eth.getTransactionCount(account!);
+
+      const prepTxs = buildPrepTxs({
+        strategy,
+        from: account!,
+        txs,
+        repetitions,
+        startNonce: userNonce,
+      });
+
+      // console.log(prepTxs);
+
+      const prepRes = await prep(prepTxs);
+      setPrepResponse(prepRes);
+
+      // console.log(prepRes);
+
+      // const batch = new web3!.BatchRequest();
+
+      // prepTxs.forEach((tx) =>
+      //   web3!.eth.sendTransaction({
+      //     chainId: strategy.chainId as number,
+      //     from: tx.from,
+      //     to: tx.to,
+      //     data: tx.data,
+      //     // nonce: tx.nonce, // metamask will ignore this
+      //   })
+      // );
+
+      // batch.execute();
+
+      for (const tx of prepTxs) {
+        try {
+          await web3!.eth.sendTransaction({
+            chainId: strategy.chainId as number,
+            from: tx.from,
+            to: tx.to,
+            data: tx.data,
+            // nonce: tx.nonce, // metamask will ignore this
+          });
+        } catch (e: any) {
+          const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
+          if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
+            cancel(prepRes.instanceId);
+            throw e;
+          }
+        }
+      }
+    } finally {
+      setAutomating(false);
+    }
+  }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
+
+  if (!strategy) {
+    return <div>strategy not found</div>;
+  }
+
   return (
     <Container>
-      <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-        <Col span={12}>
-          <Title level={3}>Claim Rewards</Title>
-          <Text type="secondary">
-            Use this combo when you want to periodically claim $MAGIC earned during a vested release. This strategy
-            combines two steps for you: sending $MAGIC to a specified wallet address and setting up recurring payouts.
-          </Text>
-        </Col>
-        <Col span={12}>
-          <div className="outer">
-            <div className="inner">
-              <Card
-                hoverable
-                title={
-                  <>
-                    <GiftOutlined />
-                    <Text className="cardTitle">Claim Rewards</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="14px">
-                  <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
-                </Col>
-                <Col flex="auto">
-                  <div>
-                    <Title className="secondary" level={5}>
-                      Atlas Mine
-                    </Title>
-                    <Text type="secondary">There is nothing to specify at this step.</Text>
-                  </div>
-                </Col>
-              </Card>
-              <Arrow>
-                <ArrowDownOutlined style={{ color: 'rgb(255 255 255 / 45%)' }} />
-              </Arrow>
-              <Card
-                hoverable
-                title={
-                  <>
-                    <ExportOutlined />
-                    <Text className="cardTitle">Send $MAGIC</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="390px">
-                  <Input size="large" placeholder="To address" />
-                </Col>
-                <Col flex="auto">
-                  <Input size="large" placeholder="Amount" />
-                </Col>
-              </Card>
+      <Form form={form}>
+        <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
+          <Col span={24} lg={12}>
+            <Title level={3}>{strategy.title}</Title>
+            <Text type="secondary" className="description">
+              {strategy.description}
+            </Text>
+          </Col>
+          <Col span={24} lg={12}>
+            <div className="outer">
+              <div className="inner">{blocks}</div>
+              <Repeat />
             </div>
-            <Repeat>
-              <Card
-                title={
-                  <>
-                    <ReloadOutlined spin />
-                    <Text className="cardTitle">Repeat</Text>
-                  </>
-                }
-                extra={<BlockOutlined />}
-              >
-                <Col flex="auto">
-                  <RangePicker size="large" />
-                </Col>
-                <Col flex="263px">
-                  <Radio.Group defaultValue="a" size="large">
-                    <Radio.Button value="a">Daily</Radio.Button>
-                    <Radio.Button value="b">Weekly</Radio.Button>
-                    <Radio.Button value="c">Monthly</Radio.Button>
-                  </Radio.Group>
-                </Col>
-              </Card>
-            </Repeat>
-          </div>
-          <Footer>
-            <Space direction="vertical" size="large">
-              <Button type="primary" size="large">
-                Automate!
-              </Button>
-              <Text type="secondary">
-                This automation will generate <strong>14 transactions</strong> for you to sign in Metamask.
-              </Text>
-            </Space>
-          </Footer>
-        </Col>
-      </Row>
+            <Footer>
+              <Space direction="vertical" size="large">
+                <Button type="primary" size="large" disabled={automating} loading={automating} onClick={handleSubmit}>
+                  Automate!
+                </Button>
+                {txsToSignCount > 0 && (
+                  <Text type="secondary" className="txsToSignCount">
+                    This automation will generate <strong>{txsToSignCount} transactions</strong> for you to sign in
+                    Metamask
+                  </Text>
+                )}
+              </Space>
+            </Footer>
+          </Col>
+        </Row>
+      </Form>
     </Container>
   );
 }
-const Repeat = styled.div`
-  .ant-card {
-    border: none;
-    background-color: ${(props: IThemeProps) => props.theme.colors.accent} !important;
-    margin-bottom: 0px !important;
-  }
-  .ant-card-head {
-    border-color: rgb(255 255 255 / 25%);
-  }
-  .ant-card-extra {
-    color: rgb(255 255 255 / 45%) !important;
-  }
-`;
 
-const Footer = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 3em;
-`;
+function buildPrepTxs({
+  strategy,
+  from,
+  txs,
+  repetitions,
+  startNonce,
+}: {
+  strategy: IStrategy;
+  from: string;
+  txs: StrategyBlockTxs;
+  repetitions: IStrategyRepetition[];
+  startNonce: number;
+}): IStrategyPrepTxWithConditions[] {
+  const prepTxs: IStrategyPrepTxWithConditions[] = [];
 
-const Arrow = styled.div`
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2px 0;
-`;
+  let nonce = startNonce;
+  for (const repetition of repetitions) {
+    for (const block of strategy.blocks) {
+      const tx = txs[block];
+      let priority = 1;
+      prepTxs.push({
+        assetType: strategy.assetType,
+        chainId: strategy.chainId,
+        from,
+        to: tx.to,
+        data: tx.data,
+        nonce,
+        priority,
+        conditionAsset: tx.asset,
+        conditionAmount: tx.amount,
+        timeCondition: repetition.time,
+        timeConditionTZ: repetition.tz,
+      });
+
+      const { requiresFallback } = blockConfig[block];
+
+      if (requiresFallback) {
+        const otherBlocks = strategy.blocks.filter((b) => b !== block);
+
+        for (const otherBlock of otherBlocks) {
+          const otherTx = txs[otherBlock];
+          priority += 1;
+          prepTxs.push({
+            assetType: strategy.assetType,
+            chainId: strategy.chainId,
+            from,
+            to: otherTx.to,
+            data: otherTx.data,
+            nonce,
+            priority,
+            conditionAsset: otherTx.asset,
+            conditionAmount: otherTx.amount,
+            timeCondition: repetition.time,
+            timeConditionTZ: repetition.tz,
+          });
+        }
+      }
+      nonce++;
+    }
+  }
+
+  return prepTxs;
+}
 
 const Container = styled.div`
   width: 100%;
@@ -141,6 +243,10 @@ const Container = styled.div`
   align-items: center;
   margin: 0 auto;
 
+  .description {
+    color: rgb(255 255 255 / 45%);
+  }
+
   .outer {
     border: 1px solid ${(props: IThemeProps) => props.theme.colors.accent};
     border-radius: 2px;
@@ -150,21 +256,8 @@ const Container = styled.div`
     padding: 10px 10px 20px;
   }
 
-  .ant-card {
-    border: none;
-    background-color: rgb(245 245 245 / 5%);
-  }
-
-  .ant-typography.ant-typography-secondary {
-    color: rgb(255 255 255 / 45%);
-  }
-
   .ant-card-head {
     color: white;
-  }
-
-  .ant-card-body {
-    display: flex;
   }
 
   .secondary {
@@ -179,6 +272,26 @@ const Container = styled.div`
   .cardTitle {
     margin-left: 10px;
   }
+`;
+
+const Footer = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3em;
+
+  .txsToSignCount {
+    color: rgb(255 255 255 / 45%);
+  }
+`;
+
+const Arrow = styled.div`
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
 `;
 
 export default StrategyDetails;
