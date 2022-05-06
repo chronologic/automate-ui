@@ -66,25 +66,19 @@ function Arbitrum_Magic_Send() {
               name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
               rules={[
                 { required: true, message: 'Amount is required' },
-                // { validator: (_, value) => tokenBalanceValidator(account!, value) },
+                { validator: (_, value) => tokenBalanceValidator(account!, value) },
               ]}
             >
               <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
             </Form.Item>
           </Col>
         </Row>
-        {amount && (
-          <Text className="secondary">
-            You need to have at least {amount} $MAGIC in your wallet right now to be able to Automate the transactions
-          </Text>
-        )}
       </BaseBlock>
     </Container>
   );
 }
 
 async function tokenBalanceValidator(account?: string, amount?: number): Promise<void> {
-  console.log(account, amount);
   if (!amount) {
     return;
   }
@@ -92,9 +86,13 @@ async function tokenBalanceValidator(account?: string, amount?: number): Promise
   if (!ethereum || !account) {
     throw new Error('Connect to Automate to validate amount');
   }
-  const res = await magicContract.methods.balanceOf(account).call();
 
-  console.log(res);
+  const balanceWei = await magicContract.methods.balanceOf(account).call();
+  const balanceEth = Number(web3.utils.fromWei(balanceWei, MAGIC_DECIMAL_UNIT));
+
+  if (balanceEth < amount) {
+    throw new Error(`You need at least ${amount} $MAGIC in your wallet to be able to Automate`);
+  }
 }
 
 const Container = styled.div``;
