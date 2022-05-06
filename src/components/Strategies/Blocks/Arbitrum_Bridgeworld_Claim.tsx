@@ -60,7 +60,7 @@ function Arbitrum_Bridgeworld_Claim() {
                 >
                   this tool
                 </a>{' '}
-                to for an estimate!
+                for an estimate!
               </Text>
             </div>
           </Col>
