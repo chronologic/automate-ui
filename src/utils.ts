@@ -1,6 +1,7 @@
 import { BigNumber, utils } from 'ethers';
 import { parseUrl } from 'query-string';
 
+const DEFAULT_USER_SOURCE = 'magic';
 const USER_SOURCE_STORAGE_KEY = 'source';
 
 export function bigNumberToString(num: BigNumber, decimals = 18, precision = 6): string {
@@ -88,11 +89,12 @@ export function isEmptyName(value: string): boolean {
 }
 
 export function hasNonDefaultUserSource(): boolean {
-  return getUserSource() !== 'automate';
+  return getUserSource() !== DEFAULT_USER_SOURCE;
 }
 
 export function getUserSource(): string {
-  let source = (localStorage.getItem(USER_SOURCE_STORAGE_KEY) as string) || 'automate';
+  // let source = (localStorage.getItem(USER_SOURCE_STORAGE_KEY) as string) || DEFAULT_USER_SOURCE;
+  let source = DEFAULT_USER_SOURCE;
   const parsed = parseUrl(window.location.href);
 
   if (parsed.query?.utm_source) {
