@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Row, Col, Typography, Button, Space, Form } from 'antd';
+import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
@@ -19,6 +19,7 @@ import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
+const web3 = new Web3(ethereum as any);
 
 function StrategyDetails() {
   const location = useLocation();
@@ -77,7 +78,7 @@ function StrategyDetails() {
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
-      const web3 = new Web3(ethereum as any);
+
       const userNonce = await web3!.eth.getTransactionCount(account!);
 
       const prepTxs = buildPrepTxs({
@@ -88,42 +89,15 @@ function StrategyDetails() {
         startNonce: userNonce,
       });
 
-      // console.log(prepTxs);
-
       const prepRes = await prep(prepTxs);
       setPrepResponse(prepRes);
 
-      // console.log(prepRes);
-
-      // const batch = new web3!.BatchRequest();
-
-      // prepTxs.forEach((tx) =>
-      //   web3!.eth.sendTransaction({
-      //     chainId: strategy.chainId as number,
-      //     from: tx.from,
-      //     to: tx.to,
-      //     data: tx.data,
-      //     // nonce: tx.nonce, // metamask will ignore this
-      //   })
-      // );
-
-      // batch.execute();
-
       for (const tx of prepTxs) {
         try {
-          await web3!.eth.sendTransaction({
-            chainId: strategy.chainId as number,
-            from: tx.from,
-            to: tx.to,
-            data: tx.data,
-            // nonce: tx.nonce, // metamask will ignore this
-          });
+          await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
-          const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
-          if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
-            cancel(prepRes.instanceId);
-            throw e;
-          }
+          cancel(prepRes.instanceId);
+          notification.error(e?.message || 'Unknown error');
         }
       }
     } finally {
@@ -232,6 +206,29 @@ function buildPrepTxs({
   }
 
   return prepTxs;
+}
+
+async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) {
+  try {
+    await web3!.eth.sendTransaction({
+      chainId: chainId,
+      from: tx.from,
+      to: tx.to,
+      data: tx.data,
+      // nonce: tx.nonce, // metamask will ignore this
+    });
+  } catch (e: any) {
+    const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
+    const intermittentRpcError = 'unsupported block number';
+    const errorMessage = e?.message || '';
+    if (errorMessage.includes(errorThatIntentionallyPreventsNonceIncrease)) {
+      // suppress error
+    } else if (errorMessage.includes(intermittentRpcError)) {
+      await tryExecuteTx(chainId, tx);
+    } else {
+      throw e;
+    }
+  }
 }
 
 const Container = styled.div`
