@@ -225,6 +225,8 @@ async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) 
       // suppress error
     } else if (errorMessage.includes(intermittentRpcError)) {
       await tryExecuteTx(chainId, tx);
+    } else {
+      throw e;
     }
   }
 }
