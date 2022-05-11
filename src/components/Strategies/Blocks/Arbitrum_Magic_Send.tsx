@@ -7,7 +7,7 @@ import Web3 from 'web3';
 import ERC20ABI from '../../../abi/ERC20.json';
 import { useAutomateConnection, useStrategyStore } from '../../../hooks';
 import { ethereum, StrategyBlock } from '../../../constants';
-import { ethereumAddressValidator } from '../../../utils';
+import { ethereumAddressValidator, retryRpcCallOnIntermittentError } from '../../../utils';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
@@ -89,7 +89,9 @@ async function tokenBalanceValidator(account?: string, amount?: number): Promise
     throw new Error('Connect to Automate to validate amount');
   }
 
-  const balanceWei = await magicContract.methods.balanceOf(account).call();
+  const balanceWei = await retryRpcCallOnIntermittentError<string>(async () =>
+    magicContract.methods.balanceOf(account).call()
+  );
   const balanceEth = Number(web3.utils.fromWei(balanceWei, MAGIC_DECIMAL_UNIT));
 
   if (balanceEth < amount) {

@@ -15,6 +15,7 @@ import {
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
+import { retryRpcCallOnIntermittentError } from '../../utils';
 import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 
@@ -84,8 +85,6 @@ function StrategyDetails() {
         txs,
         repetitions,
       });
-
-      console.log(prepTxs);
 
       const prepRes = await prep(prepTxs);
       setPrepResponse(prepRes);
@@ -207,21 +206,19 @@ function buildPrepTxs({
 
 async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) {
   try {
-    await web3!.eth.sendTransaction({
-      chainId: chainId,
-      from: tx.from,
-      to: tx.to,
-      data: tx.data,
-      // nonce: tx.nonce, // metamask will ignore this
-    });
+    await retryRpcCallOnIntermittentError(async () =>
+      web3!.eth.sendTransaction({
+        chainId: chainId,
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+      })
+    );
   } catch (e: any) {
     const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
-    const intermittentRpcError = 'unsupported block number';
     const errorMessage = e?.message || '';
     if (errorMessage.includes(errorThatIntentionallyPreventsNonceIncrease)) {
       // suppress error
-    } else if (errorMessage.includes(intermittentRpcError)) {
-      await tryExecuteTx(chainId, tx);
     } else {
       throw e;
     }
