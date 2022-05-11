@@ -85,6 +85,8 @@ function StrategyDetails() {
         repetitions,
       });
 
+      console.log(prepTxs);
+
       const prepRes = await prep(prepTxs);
       setPrepResponse(prepRes);
 
@@ -196,6 +198,7 @@ function buildPrepTxs({
           });
         }
       }
+      prepTxs[prepTxs.length - 1].isLastForNonce = true;
     }
   }
 

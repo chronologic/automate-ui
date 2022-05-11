@@ -179,6 +179,7 @@ export interface IStrategyPrepTx {
 
 export interface IStrategyPrepTxWithConditions extends IStrategyPrepTx {
   order: number;
+  isLastForNonce?: boolean;
   priority: number;
   conditionAsset?: string;
   conditionAmount?: string;
