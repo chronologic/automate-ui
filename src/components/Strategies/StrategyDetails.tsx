@@ -46,7 +46,6 @@ function StrategyDetails() {
         from: account!,
         txs,
         repetitions,
-        startNonce: 0,
       });
       return prepTxsJustForCount.length;
     } catch (e) {
@@ -79,14 +78,11 @@ function StrategyDetails() {
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
 
-      const userNonce = await web3!.eth.getTransactionCount(account!);
-
       const prepTxs = buildPrepTxs({
         strategy,
         from: account!,
         txs,
         repetitions,
-        startNonce: userNonce,
       });
 
       const prepRes = await prep(prepTxs);
@@ -97,7 +93,8 @@ function StrategyDetails() {
           await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
           cancel(prepRes.instanceId);
-          notification.error(e?.message || 'Unknown error');
+          notification.error({ message: e?.message || 'Unknown error' });
+          throw e;
         }
       }
     } finally {
@@ -149,17 +146,15 @@ function buildPrepTxs({
   from,
   txs,
   repetitions,
-  startNonce,
 }: {
   strategy: IStrategy;
   from: string;
   txs: StrategyBlockTxs;
   repetitions: IStrategyRepetition[];
-  startNonce: number;
 }): IStrategyPrepTxWithConditions[] {
   const prepTxs: IStrategyPrepTxWithConditions[] = [];
 
-  let nonce = startNonce;
+  let order = 1;
   for (const repetition of repetitions) {
     for (const block of strategy.blocks) {
       const tx = txs[block];
@@ -170,7 +165,7 @@ function buildPrepTxs({
         from,
         to: tx.to,
         data: tx.data,
-        nonce,
+        order: order++,
         priority,
         conditionAsset: tx.asset,
         conditionAmount: tx.amount,
@@ -192,7 +187,7 @@ function buildPrepTxs({
             from,
             to: otherTx.to,
             data: otherTx.data,
-            nonce,
+            order: order++,
             priority,
             conditionAsset: otherTx.asset,
             conditionAmount: otherTx.amount,
@@ -201,7 +196,6 @@ function buildPrepTxs({
           });
         }
       }
-      nonce++;
     }
   }
 

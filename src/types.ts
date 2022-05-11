@@ -175,10 +175,10 @@ export interface IStrategyPrepTx {
   from: string;
   to: string;
   data: string;
-  nonce: number;
 }
 
 export interface IStrategyPrepTxWithConditions extends IStrategyPrepTx {
+  order: number;
   priority: number;
   conditionAsset?: string;
   conditionAmount?: string;
