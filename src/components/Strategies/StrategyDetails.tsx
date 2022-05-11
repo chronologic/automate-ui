@@ -16,7 +16,7 @@ import {
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
 import { strategies } from './strategyData';
-import { blockConfig, Repeat } from './Blocks';
+import { blockConfig, Repeat, SigningPopup } from './Blocks';
 
 const { Title, Text } = Typography;
 
@@ -29,6 +29,7 @@ function StrategyDetails() {
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
   const [automating, setAutomating] = useState(false);
+  const [signPopupDisplay, setSignPopupDisplay] = React.useState(false);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -72,6 +73,8 @@ function StrategyDetails() {
   }, [strategy?.blocks]);
 
   const handleSubmit = useCallback(async () => {
+    setSignPopupDisplay(true);
+    /*
     try {
       setAutomating(true);
 
@@ -129,6 +132,7 @@ function StrategyDetails() {
     } finally {
       setAutomating(false);
     }
+    */
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   if (!strategy) {
@@ -161,6 +165,7 @@ function StrategyDetails() {
                     Metamask
                   </Text>
                 )}
+                <SigningPopup visibility={signPopupDisplay} />
               </Space>
             </Footer>
           </Col>
