@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -27,6 +27,7 @@ function StrategyDetails() {
   const [form] = Form.useForm();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
+  const setChainId = useStrategyStore((state) => state.setChainId);
   const { prep, cancel } = useStrategyApi();
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
@@ -102,6 +103,10 @@ function StrategyDetails() {
       setAutomating(false);
     }
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
+
+  useEffect(() => {
+    setChainId(strategy?.chainId);
+  }, [setChainId, strategy?.chainId]);
 
   if (!strategy) {
     return <div>strategy not found</div>;
