@@ -29,8 +29,8 @@ function StrategyDetails() {
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
   const [automating, setAutomating] = useState(false);
-  const [displaySigningPopup, setDisplaySigningPopup] = React.useState(false);
-  const [currentTxIndex, setCurrentTxIndex] = useState(1);
+  const [displaySigningPopup, setDisplaySigningPopup] = useState(false);
+  const [currentTxIndex, setCurrentTxIndex] = useState(-1);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -73,13 +73,15 @@ function StrategyDetails() {
     });
   }, [strategy?.blocks]);
 
-  const handleModelCancel = () => {
+  const handleModalCancel = () => {
     setDisplaySigningPopup(false);
+    cancel(prepResponse.instanceId);
   };
 
   const handleSubmit = useCallback(async () => {
     try {
       setAutomating(true);
+      setDisplaySigningPopup(true);
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
@@ -118,7 +120,6 @@ function StrategyDetails() {
       for (const tx of prepTxs) {
         const txIndex = prepTxs.indexOf(tx);
         setCurrentTxIndex(txIndex);
-        setDisplaySigningPopup(true);
         try {
           await web3!.eth.sendTransaction({
             chainId: strategy.chainId as number,
@@ -172,7 +173,7 @@ function StrategyDetails() {
                 )}
                 <SigningPopup
                   visible={displaySigningPopup}
-                  onCancel={handleModelCancel}
+                  onCancel={handleModalCancel}
                   currentTxIndex={currentTxIndex}
                   totalTxsToSign={txsToSignCount}
                 />

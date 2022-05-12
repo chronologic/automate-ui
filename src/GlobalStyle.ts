@@ -389,6 +389,9 @@ const GlobalStyle = styled.div<IProps>`
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start::after {
     border-left: 1px dashed ${(props) => props.theme.colors.accent};
   }
+  .ant-progress-status-success .ant-progress-bg {
+    background: ${(props) => props.theme.colors.accent};
+  }
 `;
 
 export default GlobalStyle;
