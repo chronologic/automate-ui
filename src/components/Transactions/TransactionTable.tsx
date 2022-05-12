@@ -356,7 +356,7 @@ function TransactionTable({
         dataIndex: 'assetName',
         render: (assetName: string, record: IScheduledForUser) => {
           return (
-            <AssetSymbolLink assetName={assetName} assetContract={record.transactionHash} chainId={record.chainId} />
+            <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} chainId={record.chainId} />
           );
         },
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),

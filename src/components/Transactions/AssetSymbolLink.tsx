@@ -12,7 +12,7 @@ function AssetSymbolLink({ assetName, assetContract, chainId }: IProps) {
 
   if (assetContract) {
     return (
-      <BlockExplorerLink hash={assetContract} chainId={chainId} type={'tx'}>
+      <BlockExplorerLink hash={assetContract} chainId={chainId} type={'address'}>
         <AssetSymbol name={name} address={assetContract} />
       </BlockExplorerLink>
     );
