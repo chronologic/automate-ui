@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
@@ -15,6 +15,7 @@ import {
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
+import { retryRpcCallOnIntermittentError } from '../../utils';
 import { strategies } from './strategyData';
 import { blockConfig, Repeat, SigningPopup } from './Blocks';
 
@@ -26,6 +27,7 @@ function StrategyDetails() {
   const [form] = Form.useForm();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
+  const setChainId = useStrategyStore((state) => state.setChainId);
   const { prep, cancel } = useStrategyApi();
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
@@ -48,7 +50,6 @@ function StrategyDetails() {
         from: account!,
         txs,
         repetitions,
-        startNonce: 0,
       });
       return prepTxsJustForCount.length;
     } catch (e) {
@@ -87,14 +88,11 @@ function StrategyDetails() {
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
 
-      const userNonce = await web3!.eth.getTransactionCount(account!);
-
       const prepTxs = buildPrepTxs({
         strategy,
         from: account!,
         txs,
         repetitions,
-        startNonce: userNonce,
       });
 
       const prepRes = await prep(prepTxs);
@@ -107,13 +105,18 @@ function StrategyDetails() {
           await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
           cancel(prepRes.instanceId);
-          notification.error(e?.message || 'Unknown error');
+          notification.error({ message: e?.message || 'Unknown error' });
+          throw e;
         }
       }
     } finally {
       setAutomating(false);
     }
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
+
+  useEffect(() => {
+    setChainId(strategy?.chainId);
+  }, [setChainId, strategy?.chainId]);
 
   if (!strategy) {
     return <div>strategy not found</div>;
@@ -165,17 +168,15 @@ function buildPrepTxs({
   from,
   txs,
   repetitions,
-  startNonce,
 }: {
   strategy: IStrategy;
   from: string;
   txs: StrategyBlockTxs;
   repetitions: IStrategyRepetition[];
-  startNonce: number;
 }): IStrategyPrepTxWithConditions[] {
   const prepTxs: IStrategyPrepTxWithConditions[] = [];
 
-  let nonce = startNonce;
+  let order = 1;
   for (const repetition of repetitions) {
     for (const block of strategy.blocks) {
       const tx = txs[block];
@@ -186,7 +187,7 @@ function buildPrepTxs({
         from,
         to: tx.to,
         data: tx.data,
-        nonce,
+        order: order++,
         priority,
         conditionAsset: tx.asset,
         conditionAmount: tx.amount,
@@ -208,7 +209,7 @@ function buildPrepTxs({
             from,
             to: otherTx.to,
             data: otherTx.data,
-            nonce,
+            order: order++,
             priority,
             conditionAsset: otherTx.asset,
             conditionAmount: otherTx.amount,
@@ -217,7 +218,7 @@ function buildPrepTxs({
           });
         }
       }
-      nonce++;
+      prepTxs[prepTxs.length - 1].isLastForNonce = true;
     }
   }
 
@@ -226,21 +227,19 @@ function buildPrepTxs({
 
 async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) {
   try {
-    await web3!.eth.sendTransaction({
-      chainId: chainId,
-      from: tx.from,
-      to: tx.to,
-      data: tx.data,
-      // nonce: tx.nonce, // metamask will ignore this
-    });
+    await retryRpcCallOnIntermittentError(async () =>
+      web3!.eth.sendTransaction({
+        chainId: chainId,
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+      })
+    );
   } catch (e: any) {
     const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
-    const intermittentRpcError = 'unsupported block number';
     const errorMessage = e?.message || '';
     if (errorMessage.includes(errorThatIntentionallyPreventsNonceIncrease)) {
       // suppress error
-    } else if (errorMessage.includes(intermittentRpcError)) {
-      await tryExecuteTx(chainId, tx);
     } else {
       throw e;
     }

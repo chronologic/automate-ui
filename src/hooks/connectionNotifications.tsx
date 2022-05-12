@@ -48,13 +48,9 @@ export const notifications = Object.freeze({
       ),
     });
   },
-  userMismatch(loggedInUser: string, proxyUser: string) {
+  apiKeyMismatch() {
     notification.error({
-      message: (
-        <span>
-          You're logged in as <strong>{loggedInUser}</strong> but Metamask is connected as <strong>{proxyUser}</strong>
-        </span>
-      ),
+      message: <span>API key mismatch. Make sure your Metamask network RPC URL matches your logged in user.</span>,
     });
   },
 });
