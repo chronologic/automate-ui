@@ -126,3 +126,22 @@ export function isValidEthereumAddress(address: string): boolean {
 export function ethereumAddressValidator(address: string): Promise<void> {
   return isValidEthereumAddress(address) ? Promise.resolve() : Promise.reject(new Error(`Invalid Ethereum address`));
 }
+
+export async function retryRpcCallOnIntermittentError<T>(fn: () => Promise<any>): Promise<T> {
+  try {
+    return await fn();
+  } catch (e: any) {
+    const intermittentRpcError = 'unsupported block number';
+    const errorMessage = e?.message || '';
+    if (errorMessage.includes(intermittentRpcError)) {
+      await sleep(500);
+      return await retryRpcCallOnIntermittentError(fn);
+    } else {
+      throw e;
+    }
+  }
+}
+
+export async function sleep(ms: number): Promise<void> {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
