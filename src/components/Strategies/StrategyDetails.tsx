@@ -29,7 +29,8 @@ function StrategyDetails() {
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
   const [automating, setAutomating] = useState(false);
-  const [signPopupDisplay, setSignPopupDisplay] = React.useState(false);
+  const [displaySigningPopup, setDisplaySigningPopup] = React.useState(false);
+  const [currentTxIndex, setCurrentTxIndex] = useState(1);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -72,9 +73,11 @@ function StrategyDetails() {
     });
   }, [strategy?.blocks]);
 
+  const handleModelCancel = () => {
+    setDisplaySigningPopup(false);
+  };
+
   const handleSubmit = useCallback(async () => {
-    setSignPopupDisplay(true);
-    /*
     try {
       setAutomating(true);
 
@@ -113,6 +116,9 @@ function StrategyDetails() {
       // batch.execute();
 
       for (const tx of prepTxs) {
+        const txIndex = prepTxs.indexOf(tx);
+        setCurrentTxIndex(txIndex);
+        setDisplaySigningPopup(true);
         try {
           await web3!.eth.sendTransaction({
             chainId: strategy.chainId as number,
@@ -132,7 +138,6 @@ function StrategyDetails() {
     } finally {
       setAutomating(false);
     }
-    */
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   if (!strategy) {
@@ -165,7 +170,12 @@ function StrategyDetails() {
                     Metamask
                   </Text>
                 )}
-                <SigningPopup visibility={signPopupDisplay} />
+                <SigningPopup
+                  visible={displaySigningPopup}
+                  onCancel={handleModelCancel}
+                  currentTxIndex={currentTxIndex}
+                  totalTxsToSign={txsToSignCount}
+                />
               </Space>
             </Footer>
           </Col>

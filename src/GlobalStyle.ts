@@ -185,7 +185,6 @@ const GlobalStyle = styled.div<IProps>`
       width: 100%;
     }
   }
-
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
     background-color: ${(props) => props.theme.colors.accent};
@@ -300,6 +299,9 @@ const GlobalStyle = styled.div<IProps>`
   .ant-modal-content {
     background-color: ${(props) => props.theme.colors.body};
     box-shadow: ${(props) => props.theme.colors.shadow};
+  }
+  .ant-modal-close-x {
+    color: white;
   }
   .ant-modal-header {
     background-color: ${(props) => props.theme.colors.body};
