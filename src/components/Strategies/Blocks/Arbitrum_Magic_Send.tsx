@@ -19,9 +19,11 @@ const magicContract = new web3.eth.Contract(ERC20ABI as any, MAGIC_ADDRESS);
 
 function Arbitrum_Magic_Send() {
   const setTx = useStrategyStore((state) => state.setTx);
-  const { account } = useAutomateConnection();
+  const { account, chainId } = useAutomateConnection();
+  const strategyChainId = useStrategyStore((state) => state.chainId);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
+  const isCorrectChain = chainId === strategyChainId;
 
   useEffect(() => {
     try {
@@ -68,7 +70,10 @@ function Arbitrum_Magic_Send() {
               validateFirst
               rules={[
                 { required: true, message: 'Amount is required' },
-                { validator: (_, value) => tokenBalanceValidator(account!, value) },
+                {
+                  validator: (_, value) =>
+                    isCorrectChain ? tokenBalanceValidator(account!, value) : Promise.resolve(value),
+                },
               ]}
             >
               <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
