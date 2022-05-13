@@ -34,7 +34,7 @@ function StrategyList() {
         if (user.apiKey) {
           console.log('user var');
         } else {
-          console.log('user yok');
+          history.push('/login/');
         }
         // history.push('/strategies/' + strategy.url);
       }
