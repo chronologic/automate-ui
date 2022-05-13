@@ -81,14 +81,8 @@ function Config() {
   }, [network]);
 
   const handleAlreadyConnected = useCallback(async () => {
-    checkMetamaskInstalled();
-    const connection = await connect();
-    if (connection.connectionParams.network === network) {
-      setAddedConnetionModalDisplay(false);
-      setCompleted(true);
-    } else {
-      setAddedConnetionModalDisplay(true);
-    }
+    await connect({ desiredNetwork: network });
+    setCompleted(true);
   }, [connect, network]);
 
   const handleCancel = useCallback(async () => {

@@ -29,6 +29,7 @@ interface IAutomateStoreMethods {
 interface ICheckConnectionResult {
   connected: boolean;
   connectionParams: IAutomateConnectionParams;
+  wrongNetwork: boolean;
 }
 
 interface IAutomateHook extends IAutomateStoreState, IAutomateStoreMethods {}
@@ -59,21 +60,24 @@ metamaskStore.subscribe((state, prevState) => {
 });
 
 async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnectionResult> {
+  let wrongNetwork = false;
   try {
     const params = await getConnectionParams();
 
-    const ret = { connected: true, connectionParams: params };
-
-    useStore.setState(ret);
-
     if (desiredNetwork && params.network !== desiredNetwork) {
+      wrongNetwork = true;
+      useStore.setState(defaultState);
       throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
     }
+
+    const ret = { connected: true, connectionParams: params, wrongNetwork };
+
+    useStore.setState(ret);
 
     return ret;
   } catch (e) {
     console.error(e);
-    return { connected: false, connectionParams: {} as any };
+    return { connected: false, connectionParams: {} as any, wrongNetwork };
   }
 }
 
@@ -101,16 +105,11 @@ function useAutomateConnection(): IAutomateHook {
         return defaultState;
       }
 
-      const { connected, connectionParams } = await checkConnection(desiredNetwork);
+      const { connected, connectionParams, wrongNetwork } = await checkConnection(desiredNetwork);
 
-      const ret = {
-        connected,
-        connectionParams,
-        account: mmState.account,
-        chainId: mmState.chainId,
-      };
-      useStore.setState(ret);
-
+      if (wrongNetwork) {
+        throw new Error('wrong network');
+      }
       if (!connected) {
         throw notifications.notConnectedtoAutomate();
       }
@@ -120,6 +119,15 @@ function useAutomateConnection(): IAutomateHook {
       if (connected && notifySuccess) {
         notifications.connectedToAutomate(connectionParams.network);
       }
+
+      const ret = {
+        connected,
+        connectionParams,
+        account: mmState.account,
+        chainId: mmState.chainId,
+      };
+
+      useStore.setState(ret);
 
       return ret;
     },
