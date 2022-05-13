@@ -30,7 +30,6 @@ function StrategyList() {
       if (strategy.comingSoon) {
         comingSoonText!.classList.add('visible');
       } else {
-        // check if user is logged in
         if (user.apiKey) {
           history.push('/strategies/' + strategy.url);
         } else {
