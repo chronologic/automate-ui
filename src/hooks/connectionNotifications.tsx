@@ -24,8 +24,8 @@ export const notifications = Object.freeze({
     notification.error({
       message: (
         <span>
-          Metamask is connected to Automate <b> {capitalizeFirstLetter(connectedNetwork)} </b> Network, please change it
-          to Automate's <b>{capitalizeFirstLetter(desiredNetwork)} </b> Network.
+          Metamask is connected to <b>{capitalizeFirstLetter(connectedNetwork)}</b> Network, please change it to
+          Automate's <b>{capitalizeFirstLetter(desiredNetwork)}</b> Network.
         </span>
       ),
     });

@@ -64,14 +64,15 @@ async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnecti
   try {
     const params = await getConnectionParams();
 
+    if (desiredNetwork && params.network !== desiredNetwork) {
+      wrongNetwork = true;
+      useStore.setState(defaultState);
+      throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
+    }
+
     const ret = { connected: true, connectionParams: params, wrongNetwork };
 
     useStore.setState(ret);
-
-    if (desiredNetwork && params.network !== desiredNetwork) {
-      wrongNetwork = true;
-      throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
-    }
 
     return ret;
   } catch (e) {
@@ -106,14 +107,6 @@ function useAutomateConnection(): IAutomateHook {
 
       const { connected, connectionParams, wrongNetwork } = await checkConnection(desiredNetwork);
 
-      const ret = {
-        connected,
-        connectionParams,
-        account: mmState.account,
-        chainId: mmState.chainId,
-      };
-      useStore.setState(ret);
-
       if (wrongNetwork) {
         throw new Error('wrong network');
       }
@@ -126,6 +119,15 @@ function useAutomateConnection(): IAutomateHook {
       if (connected && notifySuccess) {
         notifications.connectedToAutomate(connectionParams.network);
       }
+
+      const ret = {
+        connected,
+        connectionParams,
+        account: mmState.account,
+        chainId: mmState.chainId,
+      };
+
+      useStore.setState(ret);
 
       return ret;
     },
