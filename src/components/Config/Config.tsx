@@ -53,12 +53,6 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, user.apiKey, user.login]);
 
-  const checkMetamaskInstalled = () => {
-    const isMetamaskInstalled = !!ethereum;
-    if (!isMetamaskInstalled) {
-      throw notifications.metamaskNotInstalled();
-    }
-  };
   const handleNetworkSelection = (network: Network) => {
     setNetwork(network);
     if (network === Network.ethereum) {
