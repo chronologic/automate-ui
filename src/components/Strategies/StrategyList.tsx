@@ -32,11 +32,10 @@ function StrategyList() {
       } else {
         // check if user is logged in
         if (user.apiKey) {
-          console.log('user var');
+          history.push('/strategies/' + strategy.url);
         } else {
           history.push('/login/');
         }
-        // history.push('/strategies/' + strategy.url);
       }
     },
     [history]
