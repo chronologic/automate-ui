@@ -109,17 +109,16 @@ function useAutomateConnection(): IAutomateHook {
         account: mmState.account,
         chainId: mmState.chainId,
       };
-
       useStore.setState(ret);
 
-      if (connected && notifySuccess) {
-        notifications.connectedToAutomate(connectionParams.network);
-      }
       if (!connected) {
         throw notifications.notConnectedtoAutomate();
       }
       if (user?.login && connectionParams?.email !== user?.login) {
         throw notifications.userMismatch(user.login, connectionParams.email);
+      }
+      if (connected && notifySuccess) {
+        notifications.connectedToAutomate(connectionParams.network);
       }
 
       return ret;

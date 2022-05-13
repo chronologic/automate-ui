@@ -18,7 +18,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [addedConnection, setAddedConnetion] = useState(false);
+  const [addedConnetionModalDisplay, setAddedConnetionModalDisplay] = useState(false);
   const [network, setNetwork] = useState(Network.none);
 
   const connectionName = useMemo(() => {
@@ -80,12 +80,18 @@ function Config() {
 
   const handleAlreadyConnected = useCallback(async () => {
     checkMetamaskInstalled();
-    await connect({ desiredNetwork: network, notifySuccess: true });
-    console.log('con: ' + connect + 'net: ' + network + '');
+    const connection = await connect();
+    if (connection.connectionParams.network === network) {
+      setAddedConnetionModalDisplay(false);
+      setCompleted(true);
+    } else {
+      setAddedConnetionModalDisplay(true);
+    }
   }, [connect, network]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
+    setAddedConnetionModalDisplay(false);
   }, []);
 
   const handleConfirmConfigured = useCallback(async () => {
@@ -205,13 +211,13 @@ function Config() {
 
       <Modal
         title="I'have already added Metamask connection"
-        visible={addedConnection}
+        visible={addedConnetionModalDisplay}
         onOk={handleConfirmConfigured}
         onCancel={handleCancel}
+        centered
       >
         <MetaMaskConfig>
-          <p>You are connected to the wrong network. Please switch the network in Metamask to </p>
-          {network}
+          <p>You are connected to the wrong network. Please switch the network in Metamask to {connectionName} </p>
         </MetaMaskConfig>
       </Modal>
     </Container>
