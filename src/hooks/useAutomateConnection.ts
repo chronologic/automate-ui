@@ -29,6 +29,7 @@ interface IAutomateStoreMethods {
 interface ICheckConnectionResult {
   connected: boolean;
   connectionParams: IAutomateConnectionParams;
+  wrongNetwork: boolean;
 }
 
 interface IAutomateHook extends IAutomateStoreState, IAutomateStoreMethods {}
@@ -59,21 +60,23 @@ metamaskStore.subscribe((state, prevState) => {
 });
 
 async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnectionResult> {
+  let wrongNetwork = false;
   try {
     const params = await getConnectionParams();
 
-    const ret = { connected: true, connectionParams: params };
+    const ret = { connected: true, connectionParams: params, wrongNetwork };
 
     useStore.setState(ret);
 
     if (desiredNetwork && params.network !== desiredNetwork) {
+      wrongNetwork = true;
       throw notifications.connectedWrongNetwork(params.network, desiredNetwork);
     }
 
     return ret;
   } catch (e) {
     console.error(e);
-    return { connected: false, connectionParams: {} as any };
+    return { connected: false, connectionParams: {} as any, wrongNetwork };
   }
 }
 
@@ -101,7 +104,7 @@ function useAutomateConnection(): IAutomateHook {
         return defaultState;
       }
 
-      const { connected, connectionParams } = await checkConnection(desiredNetwork);
+      const { connected, connectionParams, wrongNetwork } = await checkConnection(desiredNetwork);
 
       const ret = {
         connected,
@@ -111,6 +114,9 @@ function useAutomateConnection(): IAutomateHook {
       };
       useStore.setState(ret);
 
+      if (wrongNetwork) {
+        throw new Error('wrong network');
+      }
       if (!connected) {
         throw notifications.notConnectedtoAutomate();
       }
