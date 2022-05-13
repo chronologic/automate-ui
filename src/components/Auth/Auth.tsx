@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
 import PageTitle from '../PageTitle';
-import { useAuth } from '../../hooks';
+import { useAuth, useAutomateConnection } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
 
@@ -18,6 +18,7 @@ const parsed = parseUrl(window.location.href);
 function Auth() {
   const history = useHistory();
   const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
+  const { connect } = useAutomateConnection();
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
