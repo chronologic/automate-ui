@@ -4,6 +4,7 @@ import { Card, Row, Col, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
+import { useAuth } from '../../hooks/useAuth';
 import { IStrategy } from './../../types';
 import { strategies } from './strategyData';
 
@@ -12,6 +13,7 @@ const { Text } = Typography;
 
 function StrategyList() {
   const history = useHistory();
+  const { user } = useAuth();
 
   const strategyClick = useCallback(
     (strategy: IStrategy) => {
@@ -28,7 +30,13 @@ function StrategyList() {
       if (strategy.comingSoon) {
         comingSoonText!.classList.add('visible');
       } else {
-        history.push('/strategies/' + strategy.url);
+        // check if user is logged in
+        if (user.apiKey) {
+          console.log('user var');
+        } else {
+          console.log('user yok');
+        }
+        // history.push('/strategies/' + strategy.url);
       }
     },
     [history]
