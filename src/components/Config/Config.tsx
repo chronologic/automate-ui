@@ -8,13 +8,10 @@ import CopyInput from '../CopyInput';
 import { capitalizeFirstLetter } from '../../utils';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
-import { notifications } from './Notifications';
-import { useMetamask } from '../../hooks/useMetamask';
 
 function Config() {
   const { connect } = useAutomateConnection();
   const { user } = useAuth();
-  const metamaskState = useMetamask();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
@@ -67,23 +64,21 @@ function Config() {
   };
 
   const handleConnect = useCallback(async () => {
-    metamaskState.connect();
     if (network !== Network.none) {
       setSubmitted(true);
       setCompleted(false);
     }
-  }, [network, metamaskState]);
+  }, [network]);
 
   const handleAlreadyConnected = useCallback(async () => {
-    metamaskState.connect();
-    const connection = await connect();
+    const connection = await connect({ desiredNetwork: network });
     if (connection.connectionParams.network === network) {
       setAddedConnetionModalDisplay(false);
       setCompleted(true);
     } else {
       setAddedConnetionModalDisplay(true);
     }
-  }, [connect, network, metamaskState]);
+  }, [connect, network]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
