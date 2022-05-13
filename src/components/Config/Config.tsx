@@ -18,6 +18,7 @@ function Config() {
   const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
   const [submitted, setSubmitted] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [addedConnection, setAddedConnetion] = useState(false);
   const [network, setNetwork] = useState(Network.none);
 
   const connectionName = useMemo(() => {
@@ -77,6 +78,12 @@ function Config() {
     }
   }, [network]);
 
+  const handleAlreadyConnected = useCallback(async () => {
+    checkMetamaskInstalled();
+    await connect({ desiredNetwork: network, notifySuccess: true });
+    console.log('con: ' + connect + 'net: ' + network + '');
+  }, [connect, network]);
+
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
   }, []);
@@ -91,6 +98,9 @@ function Config() {
     <Container>
       <PageTitle title="Connect" />
       <Typography.Title level={3} className="title">
+        {completed ? '' : 'Connect Automate to MetaMask'}
+      </Typography.Title>
+      <Typography.Title level={3} className="subtitle">
         {completed ? 'Congratulations!' : network === Network.ethereum ? 'Connection Settings' : 'Select Network'}
       </Typography.Title>
       {completed && (
@@ -130,10 +140,19 @@ function Config() {
           <Button
             type="primary"
             size="large"
+            className="AddAutomateButton"
             disabled={network === Network.none ? true : false}
             onClick={() => handleConnect()}
           >
-            Connect to Automate
+            Add Automate to MetaMask
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            disabled={network === Network.none ? true : false}
+            onClick={() => handleAlreadyConnected()}
+          >
+            I've already added MetaMask connection
           </Button>
         </>
       )}
@@ -183,6 +202,18 @@ function Config() {
           </Form>
         </MetaMaskConfig>
       </Modal>
+
+      <Modal
+        title="I'have already added Metamask connection"
+        visible={addedConnection}
+        onOk={handleConfirmConfigured}
+        onCancel={handleCancel}
+      >
+        <MetaMaskConfig>
+          <p>You are connected to the wrong network. Please switch the network in Metamask to </p>
+          {network}
+        </MetaMaskConfig>
+      </Modal>
     </Container>
   );
 }
@@ -199,7 +230,7 @@ const Container = styled.div`
 
   .title {
     font-weight: 300;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
   .subtitle {
     font-weight: 300;
@@ -214,6 +245,9 @@ const Container = styled.div`
   }
   p {
     font-weight: 300;
+  }
+  .AddAutomateButton {
+    margin-bottom: 16px;
   }
 `;
 const MetaMaskConfig = styled.div`
