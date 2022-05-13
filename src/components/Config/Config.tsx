@@ -208,14 +208,17 @@ function Config() {
       </Modal>
 
       <Modal
-        title="I'have already added Metamask connection"
+        title="Wrong Metamask network"
         visible={addedConnetionModalDisplay}
         onOk={handleConfirmConfigured}
         onCancel={handleCancel}
         centered
       >
         <MetaMaskConfig>
-          <p>You are connected to the wrong network. Please switch the network in Metamask to {connectionName} </p>
+          <p>
+            You are connected to the wrong network. Please switch the network in Metamask to{' '}
+            <strong> {connectionName}</strong>{' '}
+          </p>
         </MetaMaskConfig>
       </Modal>
     </Container>
