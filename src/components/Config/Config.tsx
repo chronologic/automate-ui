@@ -71,13 +71,8 @@ function Config() {
   }, [network]);
 
   const handleAlreadyConnected = useCallback(async () => {
-    const connection = await connect({ desiredNetwork: network });
-    if (connection.connectionParams.network === network) {
-      setAddedConnetionModalDisplay(false);
-      setCompleted(true);
-    } else {
-      setAddedConnetionModalDisplay(true);
-    }
+    await connect({ desiredNetwork: network });
+    setAddedConnetionModalDisplay(true);
   }, [connect, network]);
 
   const handleCancel = useCallback(async () => {
