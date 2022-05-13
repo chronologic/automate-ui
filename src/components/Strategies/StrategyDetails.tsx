@@ -17,7 +17,8 @@ import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../h
 import { ChainId, ethereum, Network } from '../../constants';
 import { retryRpcCallOnIntermittentError } from '../../utils';
 import { strategies } from './strategyData';
-import { blockConfig, Repeat, SigningPopup } from './Blocks';
+import { blockConfig, Repeat } from './Blocks';
+import SigningPopup from './SigningPopup';
 
 const { Title, Text } = Typography;
 const web3 = new Web3(ethereum as any);
@@ -34,6 +35,7 @@ function StrategyDetails() {
   const [automating, setAutomating] = useState(false);
   const [displaySigningPopup, setDisplaySigningPopup] = useState(false);
   const [currentTxIndex, setCurrentTxIndex] = useState(-1);
+  const [completedSigning, setCompletedSigning] = useState(false);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -83,6 +85,7 @@ function StrategyDetails() {
   const handleSubmit = useCallback(async () => {
     try {
       setAutomating(true);
+      setCompletedSigning(false);
       setDisplaySigningPopup(true);
 
       await form.validateFields();
@@ -105,6 +108,7 @@ function StrategyDetails() {
           await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
           cancel(prepRes.instanceId);
+          setDisplaySigningPopup(false);
           notification.error({ message: e?.message || 'Unknown error' });
           throw e;
         }
@@ -112,6 +116,7 @@ function StrategyDetails() {
     } finally {
       setAutomating(false);
     }
+    setCompletedSigning(true);
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   useEffect(() => {
@@ -153,6 +158,7 @@ function StrategyDetails() {
                   onCancel={handleModalCancel}
                   currentTxIndex={currentTxIndex}
                   totalTxsToSign={txsToSignCount}
+                  completedSigning={completedSigning}
                 />
               </Space>
             </Footer>

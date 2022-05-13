@@ -13,13 +13,14 @@ interface IProps {
   onCancel: () => void;
   currentTxIndex: number;
   totalTxsToSign: number;
+  completedSigning: boolean;
 }
-function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign }: IProps) {
+function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign, completedSigning }: IProps) {
   const completed = currentTxIndex === totalTxsToSign;
 
   return (
-    <Modal title="Signing transactions" className="modal" visible={visible} onCancel={onCancel} footer={[]}>
-      {!completed && (
+    <Modal title="Signing transactions" centered className="modal" visible={visible} onCancel={onCancel} footer={[]}>
+      {!completedSigning && (
         <>
           <SigningProgress>
             <Text className="descriptionMsg">
@@ -34,7 +35,7 @@ function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign }: IPr
           </SigningProgress>
         </>
       )}
-      {completed && (
+      {completedSigning && (
         <>
           <Completed>
             <CheckCircleFilled className="completedCheck" />
