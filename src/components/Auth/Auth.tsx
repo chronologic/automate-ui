@@ -18,7 +18,6 @@ const parsed = parseUrl(window.location.href);
 function Auth() {
   const history = useHistory();
   const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
-  const { connect } = useAutomateConnection();
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');

@@ -34,6 +34,8 @@ function StrategyList() {
         if (user.apiKey) {
           history.push('/strategies/' + strategy.url);
         } else {
+          const store = window.localStorage;
+          store.setItem('strategyPath', 'strategies/' + strategy.url);
           history.push('/login/');
         }
       }

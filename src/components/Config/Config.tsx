@@ -20,6 +20,8 @@ function Config() {
   const [completed, setCompleted] = useState(false);
   const [addedConnetionModalDisplay, setAddedConnetionModalDisplay] = useState(false);
   const [network, setNetwork] = useState(Network.none);
+  const localStorage = window.localStorage;
+  const redirectPage = localStorage.getItem('strategyPath');
 
   const connectionName = useMemo(() => {
     let name = `Automate ${capitalizeFirstLetter(network)}`;
@@ -111,7 +113,9 @@ function Config() {
       </Typography.Title>
       {completed && (
         <Completed>
-          <p>You can now start scheduling transactions! </p>
+          <p>
+            You can now <a href={'/' + redirectPage}> start scheduling transactions! </a>
+          </p>
         </Completed>
       )}
       {!completed && (
