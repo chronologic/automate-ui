@@ -9,10 +9,12 @@ import { capitalizeFirstLetter } from '../../utils';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import { notifications } from './Notifications';
+import { useMetamask } from '../../hooks/useMetamask';
 
 function Config() {
   const { connect } = useAutomateConnection();
   const { user } = useAuth();
+  const metamaskState = useMetamask();
   const [gasPriceAware, setGasPriceAware] = useState(true);
   const [draft, setDraft] = useState(false);
   const [confirmationTime, setConfirmationTime] = useState(ConfirmationTime.oneDay);
@@ -71,15 +73,15 @@ function Config() {
   };
 
   const handleConnect = useCallback(async () => {
-    checkMetamaskInstalled();
+    metamaskState.connect();
     if (network !== Network.none) {
       setSubmitted(true);
       setCompleted(false);
     }
-  }, [network]);
+  }, [network, metamaskState]);
 
   const handleAlreadyConnected = useCallback(async () => {
-    checkMetamaskInstalled();
+    metamaskState.connect();
     const connection = await connect();
     if (connection.connectionParams.network === network) {
       setAddedConnetionModalDisplay(false);
@@ -87,7 +89,7 @@ function Config() {
     } else {
       setAddedConnetionModalDisplay(true);
     }
-  }, [connect, network]);
+  }, [connect, network, metamaskState]);
 
   const handleCancel = useCallback(async () => {
     setSubmitted(false);
@@ -210,14 +212,17 @@ function Config() {
       </Modal>
 
       <Modal
-        title="I'have already added Metamask connection"
+        title="Wrong Metamask network"
         visible={addedConnetionModalDisplay}
         onOk={handleConfirmConfigured}
         onCancel={handleCancel}
         centered
       >
         <MetaMaskConfig>
-          <p>You are connected to the wrong network. Please switch the network in Metamask to {connectionName} </p>
+          <p>
+            You are connected to the wrong network. Please switch the network in Metamask to{' '}
+            <strong> {connectionName}</strong>{' '}
+          </p>
         </MetaMaskConfig>
       </Modal>
     </Container>
