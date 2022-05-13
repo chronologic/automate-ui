@@ -18,6 +18,7 @@ import { ChainId, ethereum, Network } from '../../constants';
 import { retryRpcCallOnIntermittentError } from '../../utils';
 import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
+import SigningPopup from './SigningPopup';
 
 const { Title, Text } = Typography;
 const web3 = new Web3(ethereum as any);
@@ -32,6 +33,9 @@ function StrategyDetails() {
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
   const [automating, setAutomating] = useState(false);
+  const [displaySigningPopup, setDisplaySigningPopup] = useState(false);
+  const [currentTxIndex, setCurrentTxIndex] = useState(-1);
+  const [completedSigning, setCompletedSigning] = useState(false);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -73,9 +77,16 @@ function StrategyDetails() {
     });
   }, [strategy?.blocks]);
 
+  const handleModalCancel = () => {
+    setDisplaySigningPopup(false);
+    cancel(prepResponse.instanceId);
+  };
+
   const handleSubmit = useCallback(async () => {
     try {
       setAutomating(true);
+      setCompletedSigning(false);
+      setDisplaySigningPopup(true);
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
@@ -91,10 +102,13 @@ function StrategyDetails() {
       setPrepResponse(prepRes);
 
       for (const tx of prepTxs) {
+        const txIndex = prepTxs.indexOf(tx);
+        setCurrentTxIndex(txIndex);
         try {
           await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
           cancel(prepRes.instanceId);
+          setDisplaySigningPopup(false);
           notification.error({ message: e?.message || 'Unknown error' });
           throw e;
         }
@@ -102,6 +116,7 @@ function StrategyDetails() {
     } finally {
       setAutomating(false);
     }
+    setCompletedSigning(true);
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   useEffect(() => {
@@ -138,6 +153,13 @@ function StrategyDetails() {
                     Metamask
                   </Text>
                 )}
+                <SigningPopup
+                  visible={displaySigningPopup}
+                  onCancel={handleModalCancel}
+                  currentTxIndex={currentTxIndex}
+                  totalTxsToSign={txsToSignCount}
+                  completedSigning={completedSigning}
+                />
               </Space>
             </Footer>
           </Col>

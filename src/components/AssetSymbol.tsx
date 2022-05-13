@@ -15,7 +15,6 @@ interface ICache {
 interface IProps {
   name: string;
   address: string;
-  chars?: number;
 }
 
 const cacheStorageKey = 'assetImages';
@@ -32,7 +31,7 @@ const mapping: { [key: string]: string } = {
   [xfai]: xfitToken,
 };
 
-export default function AssetSymbol({ name, address, chars }: IProps) {
+export default function AssetSymbol({ name, address }: IProps) {
   const [url, setUrl] = useState('');
   const [error, setError] = useState(false);
 
@@ -40,9 +39,11 @@ export default function AssetSymbol({ name, address, chars }: IProps) {
     getUrl();
 
     async function getUrl() {
-      const _address = mapping[address.toLowerCase()] || address;
-      const url = await getAssetUrl((name || '').toLowerCase(), _address);
-      setUrl(url);
+      if (address) {
+        const _address = mapping[address.toLowerCase()] || address;
+        const url = await getAssetUrl((name || '').toLowerCase(), _address);
+        setUrl(url);
+      }
     }
   }, [address, name]);
 
@@ -52,7 +53,7 @@ export default function AssetSymbol({ name, address, chars }: IProps) {
   return (
     <Content>
       {(url && !error && <img src={url} alt={title} title={title} onError={() => setError(true)} />) || (
-        <span>{_name || shortAddress(address, chars)}</span>
+        <span>{_name || shortAddress(address, 4)}</span>
       )}
     </Content>
   );

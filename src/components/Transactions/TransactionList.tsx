@@ -33,7 +33,7 @@ interface IListItemProps {
 function TransactionListItem({ item }: IListItemProps) {
   const title = (
     <div className="header">
-      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chainId={item.chainId} chars={3} />
+      <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chainId={item.chainId} />
       <TxStatus status={item.statusName} txHash={item.transactionHash} />
     </div>
   );
