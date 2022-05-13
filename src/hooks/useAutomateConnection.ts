@@ -114,8 +114,8 @@ function useAutomateConnection(): IAutomateHook {
       if (!connected) {
         throw notifications.notConnectedtoAutomate();
       }
-      if (user?.login && connectionParams?.email !== user?.login) {
-        throw notifications.userMismatch(user.login, connectionParams.email);
+      if (user?.apiKey && connectionParams?.apiKey !== user?.apiKey) {
+        throw notifications.apiKeyMismatch();
       }
       if (connected && notifySuccess) {
         notifications.connectedToAutomate(connectionParams.network);
@@ -123,7 +123,7 @@ function useAutomateConnection(): IAutomateHook {
 
       return ret;
     },
-    [metamaskState, reset, user?.login]
+    [metamaskState, reset, user?.apiKey]
   );
 
   const eagerConnect = useCallback(async () => {

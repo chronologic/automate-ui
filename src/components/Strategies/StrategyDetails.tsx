@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Row, Col, Typography, Button, Space, Form } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
@@ -15,16 +15,19 @@ import {
 } from '../../types';
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
+import { retryRpcCallOnIntermittentError } from '../../utils';
 import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 
 const { Title, Text } = Typography;
+const web3 = new Web3(ethereum as any);
 
 function StrategyDetails() {
   const location = useLocation();
   const [form] = Form.useForm();
   const txs = useStrategyStore((state) => state.txs);
   const repetitions = useStrategyStore((state) => state.repetitions);
+  const setChainId = useStrategyStore((state) => state.setChainId);
   const { prep, cancel } = useStrategyApi();
   const { account, connect } = useAutomateConnection();
   const [prepResponse, setPrepResponse] = useState<IStrategyPrepResponse>({} as any);
@@ -45,7 +48,6 @@ function StrategyDetails() {
         from: account!,
         txs,
         repetitions,
-        startNonce: 0,
       });
       return prepTxsJustForCount.length;
     } catch (e) {
@@ -77,59 +79,34 @@ function StrategyDetails() {
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
-      const web3 = new Web3(ethereum as any);
-      const userNonce = await web3!.eth.getTransactionCount(account!);
 
       const prepTxs = buildPrepTxs({
         strategy,
         from: account!,
         txs,
         repetitions,
-        startNonce: userNonce,
       });
-
-      // console.log(prepTxs);
 
       const prepRes = await prep(prepTxs);
       setPrepResponse(prepRes);
 
-      // console.log(prepRes);
-
-      // const batch = new web3!.BatchRequest();
-
-      // prepTxs.forEach((tx) =>
-      //   web3!.eth.sendTransaction({
-      //     chainId: strategy.chainId as number,
-      //     from: tx.from,
-      //     to: tx.to,
-      //     data: tx.data,
-      //     // nonce: tx.nonce, // metamask will ignore this
-      //   })
-      // );
-
-      // batch.execute();
-
       for (const tx of prepTxs) {
         try {
-          await web3!.eth.sendTransaction({
-            chainId: strategy.chainId as number,
-            from: tx.from,
-            to: tx.to,
-            data: tx.data,
-            // nonce: tx.nonce, // metamask will ignore this
-          });
+          await tryExecuteTx(strategy.chainId as number, tx);
         } catch (e: any) {
-          const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
-          if (!e?.message.includes(errorThatIntentionallyPreventsNonceIncrease)) {
-            cancel(prepRes.instanceId);
-            throw e;
-          }
+          cancel(prepRes.instanceId);
+          notification.error({ message: e?.message || 'Unknown error' });
+          throw e;
         }
       }
     } finally {
       setAutomating(false);
     }
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
+
+  useEffect(() => {
+    setChainId(strategy?.chainId);
+  }, [setChainId, strategy?.chainId]);
 
   if (!strategy) {
     return <div>strategy not found</div>;
@@ -175,17 +152,15 @@ function buildPrepTxs({
   from,
   txs,
   repetitions,
-  startNonce,
 }: {
   strategy: IStrategy;
   from: string;
   txs: StrategyBlockTxs;
   repetitions: IStrategyRepetition[];
-  startNonce: number;
 }): IStrategyPrepTxWithConditions[] {
   const prepTxs: IStrategyPrepTxWithConditions[] = [];
 
-  let nonce = startNonce;
+  let order = 1;
   for (const repetition of repetitions) {
     for (const block of strategy.blocks) {
       const tx = txs[block];
@@ -196,7 +171,7 @@ function buildPrepTxs({
         from,
         to: tx.to,
         data: tx.data,
-        nonce,
+        order: order++,
         priority,
         conditionAsset: tx.asset,
         conditionAmount: tx.amount,
@@ -218,7 +193,7 @@ function buildPrepTxs({
             from,
             to: otherTx.to,
             data: otherTx.data,
-            nonce,
+            order: order++,
             priority,
             conditionAsset: otherTx.asset,
             conditionAmount: otherTx.amount,
@@ -227,11 +202,32 @@ function buildPrepTxs({
           });
         }
       }
-      nonce++;
+      prepTxs[prepTxs.length - 1].isLastForNonce = true;
     }
   }
 
   return prepTxs;
+}
+
+async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) {
+  try {
+    await retryRpcCallOnIntermittentError(async () =>
+      web3!.eth.sendTransaction({
+        chainId: chainId,
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+      })
+    );
+  } catch (e: any) {
+    const errorThatIntentionallyPreventsNonceIncrease = '[automate:metamask:nonce]';
+    const errorMessage = e?.message || '';
+    if (errorMessage.includes(errorThatIntentionallyPreventsNonceIncrease)) {
+      // suppress error
+    } else {
+      throw e;
+    }
+  }
 }
 
 const Container = styled.div`
