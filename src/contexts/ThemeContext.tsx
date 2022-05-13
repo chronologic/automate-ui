@@ -3,10 +3,10 @@ import { ThemeProvider as StyledThemeProvider } from 'styled-components';
 
 import { ITheme } from '../types';
 import themes from '../themes';
-import { getUserSource, hasNonDefaultUserSource } from '../utils';
+import { getUserSource } from '../utils';
 
-const defaultThemeName = 'magic';
-const themeStorageKey = 'theme';
+const DEFAULT_THEME_NAME = 'automate';
+const THEME_STORAGE_KEY = 'theme';
 
 export interface IThemeContext {
   theme: ITheme;
@@ -17,7 +17,7 @@ interface IProps {
   children: React.ReactNode;
 }
 
-const initialTheme = forceMagicTheme();
+const initialTheme = _getTheme();
 
 export const ThemeContext = createContext<IThemeContext>({
   theme: initialTheme,
@@ -27,8 +27,7 @@ export const ThemeContext = createContext<IThemeContext>({
 export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [theme, setNewTheme] = useState(initialTheme);
   const setTheme = useCallback((name: string) => {
-    // forced defaultTheme to be 'Magic'.
-    const newTheme = _setTheme(defaultThemeName, initialTheme.name);
+    const newTheme = _setTheme(name, initialTheme.name);
     setNewTheme(newTheme);
   }, []);
 
@@ -40,24 +39,17 @@ export const ThemeProvider: React.FC<IProps> = ({ children }: IProps) => {
 };
 
 function _getTheme(): ITheme {
-  let themeName = localStorage.getItem(themeStorageKey) as string;
-  const source = getUserSource();
-  if (hasNonDefaultUserSource()) {
-    themeName = source;
-  }
+  let themeName = (localStorage.getItem(THEME_STORAGE_KEY) as string) || getUserSource();
 
   return _setTheme(themeName);
 }
 
 function _setTheme(name: string, fallbackThemeName?: string): ITheme {
-  const theme: ITheme = (themes as any)[name || fallbackThemeName || defaultThemeName];
+  // forced magic theme
+  // const theme: ITheme = (themes as any)[name || fallbackThemeName || DEFAULT_THEME_NAME];
+  const theme: ITheme = (themes as any)['magic'];
 
-  localStorage.setItem(themeStorageKey, theme.name);
+  localStorage.setItem(THEME_STORAGE_KEY, theme.name);
 
   return theme;
-}
-
-function forceMagicTheme(): ITheme {
-  let themeName = defaultThemeName;
-  return _setTheme(themeName);
 }
