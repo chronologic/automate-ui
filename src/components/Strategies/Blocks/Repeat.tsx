@@ -67,7 +67,12 @@ function Repeat() {
           </Col>
           <Col span={12}>
             <Form.Item name="repeatStartTime" rules={[{ required: true, message: 'Start time is required' }]}>
-              <TimePicker size="large" placeholder="Start time" onChange={(time) => setStartTime(time as any)} />
+              <TimePicker
+                size="large"
+                placeholder="Start time"
+                use12Hours
+                onChange={(time) => setStartTime(time as any)}
+              />
             </Form.Item>
           </Col>
         </Row>
