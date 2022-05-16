@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { IStrategy } from './../../types';
 import { strategyPathKey } from '../../constants';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../hooks/index';
 import { strategies } from './strategyData';
 
 const { Meta } = Card;
@@ -18,7 +18,6 @@ function StrategyList() {
 
   const redirectingUser = (strategyUrl: string) => {
     if (user.apiKey) {
-      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
       history.push('/strategies/' + strategyUrl);
     } else {
       sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);

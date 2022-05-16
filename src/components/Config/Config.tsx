@@ -19,7 +19,7 @@ function Config() {
   const [completed, setCompleted] = useState(false);
   const [addedConnetionModalDisplay, setAddedConnetionModalDisplay] = useState(false);
   const [network, setNetwork] = useState(Network.none);
-  const redirectPage = sessionStorage.getItem(strategyPathKey);
+  const redirectPage = sessionStorage.getItem(strategyPathKey) || '';
 
   const connectionName = useMemo(() => {
     let name = `Automate ${capitalizeFirstLetter(network)}`;
