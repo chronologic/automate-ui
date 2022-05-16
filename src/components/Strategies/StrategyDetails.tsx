@@ -86,7 +86,6 @@ function StrategyDetails() {
     try {
       setAutomating(true);
       setCompletedSigning(false);
-      setDisplaySigningPopup(true);
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
@@ -101,6 +100,8 @@ function StrategyDetails() {
       const prepRes = await prep(prepTxs);
       setPrepResponse(prepRes);
 
+      setDisplaySigningPopup(true);
+
       for (const tx of prepTxs) {
         const txIndex = prepTxs.indexOf(tx);
         setCurrentTxIndex(txIndex);
@@ -113,10 +114,11 @@ function StrategyDetails() {
           throw e;
         }
       }
+
+      setCompletedSigning(true);
     } finally {
       setAutomating(false);
     }
-    setCompletedSigning(true);
   }, [account, cancel, connect, form, prep, repetitions, strategy, txs]);
 
   useEffect(() => {
