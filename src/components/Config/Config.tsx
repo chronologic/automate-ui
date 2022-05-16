@@ -8,7 +8,6 @@ import { capitalizeFirstLetter } from '../../utils';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
-import { notifications } from './Notifications';
 
 const strategyPathKey = 'strategyPath';
 
@@ -54,12 +53,6 @@ function Config() {
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, user.apiKey, user.login]);
 
-  const checkMetamaskInstalled = () => {
-    const isMetamaskInstalled = !!ethereum;
-    if (!isMetamaskInstalled) {
-      throw notifications.metamaskNotInstalled();
-    }
-  };
   const handleNetworkSelection = (network: Network) => {
     setNetwork(network);
     if (network === Network.ethereum) {
@@ -74,7 +67,6 @@ function Config() {
   };
 
   const handleConnect = useCallback(async () => {
-    checkMetamaskInstalled();
     if (network !== Network.none) {
       setSubmitted(true);
       setCompleted(false);

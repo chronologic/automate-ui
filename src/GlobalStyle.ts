@@ -185,7 +185,6 @@ const GlobalStyle = styled.div<IProps>`
       width: 100%;
     }
   }
-
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
     background-color: ${(props) => props.theme.colors.accent};
@@ -301,6 +300,9 @@ const GlobalStyle = styled.div<IProps>`
     background-color: ${(props) => props.theme.colors.body};
     box-shadow: ${(props) => props.theme.colors.shadow};
   }
+  .ant-modal-close-x {
+    color: white;
+  }
   .ant-modal-header {
     background-color: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.text};
@@ -386,6 +388,9 @@ const GlobalStyle = styled.div<IProps>`
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-edge-start:not(.ant-picker-cell-range-hover-edge-start-near-range)::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start::after {
     border-left: 1px dashed ${(props) => props.theme.colors.accent};
+  }
+  .ant-progress-status-success .ant-progress-bg {
+    background: ${(props) => props.theme.colors.accent};
   }
 `;
 

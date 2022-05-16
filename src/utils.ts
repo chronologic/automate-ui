@@ -84,6 +84,10 @@ export function formatCurrency(value: number, decimals = 2): string {
   return formatter.format(value || 0);
 }
 
+export function calculatePercent(value: number, maxValue: number): number {
+  return Math.round((value / maxValue) * 100);
+}
+
 export function isEmptyName(value: string): boolean {
   return !value || value === '_' || value === '-';
 }
