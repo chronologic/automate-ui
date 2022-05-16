@@ -77,6 +77,7 @@ async function checkConnection(desiredNetwork?: Network): Promise<ICheckConnecti
     return ret;
   } catch (e) {
     console.error(e);
+    useStore.setState(defaultState);
     return { connected: false, connectionParams: {} as any, wrongNetwork };
   }
 }
