@@ -10,6 +10,8 @@ import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import { notifications } from './Notifications';
 
+const strategyPathKey = 'strategyPath';
+
 function Config() {
   const { connect } = useAutomateConnection();
   const { user } = useAuth();
@@ -20,8 +22,7 @@ function Config() {
   const [completed, setCompleted] = useState(false);
   const [addedConnetionModalDisplay, setAddedConnetionModalDisplay] = useState(false);
   const [network, setNetwork] = useState(Network.none);
-  const localStorage = window.localStorage;
-  const redirectPage = localStorage.getItem('strategyPath');
+  const redirectPage = sessionStorage.getItem(strategyPathKey);
 
   const connectionName = useMemo(() => {
     let name = `Automate ${capitalizeFirstLetter(network)}`;

@@ -10,10 +10,21 @@ import { strategies } from './strategyData';
 
 const { Meta } = Card;
 const { Text } = Typography;
+const strategyPathKey = 'strategyPath';
 
 function StrategyList() {
   const history = useHistory();
   const { user } = useAuth();
+
+  const checkUserLoggedIn = (strategyUrl: string) => {
+    if (user.apiKey) {
+      history.push('/strategies/' + strategyUrl);
+      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
+    } else {
+      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
+      history.push('/login/');
+    }
+  };
 
   const strategyClick = useCallback(
     (strategy: IStrategy) => {
@@ -30,13 +41,7 @@ function StrategyList() {
       if (strategy.comingSoon) {
         comingSoonText!.classList.add('visible');
       } else {
-        if (user.apiKey) {
-          history.push('/strategies/' + strategy.url);
-        } else {
-          const store = window.localStorage;
-          store.setItem('strategyPath', 'strategies/' + strategy.url);
-          history.push('/login/');
-        }
+        checkUserLoggedIn(strategy.url);
       }
     },
     [history]
