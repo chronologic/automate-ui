@@ -2,14 +2,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { Form, Modal, Button, Typography, Radio } from 'antd';
 import styled from 'styled-components';
 
-import { Network, ChainId, ConfirmationTime, ethereum } from '../../constants';
+import { Network, ChainId, ConfirmationTime, ethereum, strategyPathKey } from '../../constants';
 import { useAuth, useAutomateConnection } from '../../hooks';
 import { capitalizeFirstLetter } from '../../utils';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
-
-const strategyPathKey = 'strategyPath';
 
 function Config() {
   const { connect } = useAutomateConnection();

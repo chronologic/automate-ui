@@ -5,12 +5,12 @@ import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { IStrategy } from './../../types';
+import { strategyPathKey } from '../../constants';
 import { useAuth } from '../../hooks/useAuth';
 import { strategies } from './strategyData';
 
 const { Meta } = Card;
 const { Text } = Typography;
-const strategyPathKey = 'strategyPath';
 
 function StrategyList() {
   const history = useHistory();
@@ -18,6 +18,7 @@ function StrategyList() {
 
   const checkUserLoggedIn = (strategyUrl: string) => {
     if (user.apiKey) {
+      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
       history.push('/strategies/' + strategyUrl);
     } else {
       sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
