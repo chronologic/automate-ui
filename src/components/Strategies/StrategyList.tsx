@@ -4,8 +4,8 @@ import { Card, Row, Col, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { useAuth } from '../../hooks/useAuth';
 import { IStrategy } from './../../types';
+import { useAuth } from '../../hooks/useAuth';
 import { strategies } from './strategyData';
 
 const { Meta } = Card;
@@ -19,7 +19,6 @@ function StrategyList() {
   const checkUserLoggedIn = (strategyUrl: string) => {
     if (user.apiKey) {
       history.push('/strategies/' + strategyUrl);
-      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
     } else {
       sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
       history.push('/login/');

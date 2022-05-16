@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { Form, Modal, Button, Typography, Radio } from 'antd';
 import styled from 'styled-components';
 
-import { useAuth, useAutomateConnection } from '../../hooks';
 import { Network, ChainId, ConfirmationTime, ethereum } from '../../constants';
-import CopyInput from '../CopyInput';
+import { useAuth, useAutomateConnection } from '../../hooks';
 import { capitalizeFirstLetter } from '../../utils';
+import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import { notifications } from './Notifications';
