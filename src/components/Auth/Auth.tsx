@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
 import PageTitle from '../PageTitle';
-import { useAuth } from '../../hooks';
+import { useAuth, useAutomateConnection } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
 

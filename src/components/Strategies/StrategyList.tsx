@@ -5,6 +5,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { IStrategy } from './../../types';
+import { strategyPathKey } from '../../constants';
+import { useAuth } from '../../hooks';
 import { strategies } from './strategyData';
 
 const { Meta } = Card;
@@ -12,6 +14,16 @@ const { Text } = Typography;
 
 function StrategyList() {
   const history = useHistory();
+  const { user } = useAuth();
+
+  const redirectUser = (strategyUrl: string) => {
+    if (user.apiKey) {
+      history.push('/strategies/' + strategyUrl);
+    } else {
+      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
+      history.push('/login/');
+    }
+  };
 
   const strategyClick = useCallback(
     (strategy: IStrategy) => {
@@ -28,7 +40,7 @@ function StrategyList() {
       if (strategy.comingSoon) {
         comingSoonText!.classList.add('visible');
       } else {
-        history.push('/strategies/' + strategy.url);
+        redirectUser(strategy.url);
       }
     },
     [history]
