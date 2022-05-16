@@ -16,7 +16,7 @@ function StrategyList() {
   const history = useHistory();
   const { user } = useAuth();
 
-  const checkUserLoggedIn = (strategyUrl: string) => {
+  const redirectingUser = (strategyUrl: string) => {
     if (user.apiKey) {
       sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
       history.push('/strategies/' + strategyUrl);
@@ -41,7 +41,7 @@ function StrategyList() {
       if (strategy.comingSoon) {
         comingSoonText!.classList.add('visible');
       } else {
-        checkUserLoggedIn(strategy.url);
+        redirectingUser(strategy.url);
       }
     },
     [history]
