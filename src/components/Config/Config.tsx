@@ -165,7 +165,7 @@ function Config() {
             <br />
             To do that, just follow the instructions{' '}
             <a
-              href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+              href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
               rel="noopener noreferrer"
               target="_blank"
             >

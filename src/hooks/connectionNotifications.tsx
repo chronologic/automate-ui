@@ -37,7 +37,7 @@ export const notifications = Object.freeze({
           You're not connected to Automate. Make sure you followed the
           <br />
           <a
-            href="https://blog.chronologic.network/how-to-use-automate-with-xfai-785065a4f306"
+            href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
             target="_blank"
             rel="noopener noreferrer"
           >
