@@ -9,6 +9,8 @@ import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 
+const { Link } = Typography;
+
 function Config() {
   const { connect } = useAutomateConnection();
   const { user } = useAuth();
@@ -111,14 +113,12 @@ function Config() {
             size="large"
             className="title"
           >
-            <Radio.Button value={Network.ethereum} className="radiobuttons">
-              <img alt="eth-network-icon" src="/assets/eth.svg" width="32" height="32" className="network-icon" />
+            <img alt="eth-network-icon" src="/assets/eth.svg" width="36" height="36" className="network-icon" />
+            <Radio value={Network.ethereum} className="radiobuttons">
               Ethereum
-            </Radio.Button>
-            <Radio.Button value={Network.arbitrum}>
-              <img alt="arb-network-icon" src="/assets/arbitrum.svg" width="32" height="32" className="network-icon" />
-              Arbitrum
-            </Radio.Button>
+            </Radio>
+            <img alt="arb-network-icon" src="/assets/arbitrum.svg" width="36" height="36" className="network-icon" />
+            <Radio value={Network.arbitrum}>Arbitrum (MAGIC)</Radio>
           </Radio.Group>
 
           {network === Network.ethereum && (
@@ -141,14 +141,9 @@ function Config() {
           >
             Add Automate to MetaMask
           </Button>
-          <Button
-            type="primary"
-            size="large"
-            disabled={network === Network.none ? true : false}
-            onClick={() => handleAlreadyConnected()}
-          >
+          <Link disabled={network === Network.none ? true : false} onClick={() => handleAlreadyConnected()}>
             I've already added MetaMask connection
-          </Button>
+          </Link>
         </>
       )}
 
@@ -233,19 +228,23 @@ const Container = styled.div`
   .subtitle {
     font-weight: 300;
     font-size: 1.8rem;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
   }
   .radiobuttons {
-    margin-right: 50px;
+    margin-right: 90px;
   }
   .network-icon {
-    padding: 1px 2px 5px 2px;
+    margin: 0 15px 8px;
   }
   p {
     font-weight: 300;
   }
   .AddAutomateButton {
     margin-bottom: 16px;
+  }
+  a.ant-typography.ant-typography-disabled,
+  a.ant-typography.ant-typography-disabled:hover {
+    color: #3e3e3e;
   }
 `;
 const MetaMaskConfig = styled.div`

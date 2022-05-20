@@ -340,29 +340,39 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-picker:hover,
   .ant-picker-focused,
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):first-child,
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):first-child,
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled) {
     border-color: ${(props) => props.theme.colors.accent};
   }
+
+  .ant-radio-wrapper {
+    color: ${(props) => props.theme.colors.text};
+  }
+
   .ant-picker-header-view button:hover,
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
-  .ant-radio-button-wrapper:hover {
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled),
+  .ant-radio-wrapper:hover {
     color: ${(props) => props.theme.colors.accent};
   }
-  .ant-radio-button-wrapper-checked:not([class*=' ant-radio-button-wrapper-disabled']).ant-radio-button-wrapper:first-child {
+  .ant-radio-wrapper-checked:not([class*=' ant-radio-wrapper-disabled']).ant-radio-wrapper:first-child {
     border-right-color: ${(props) => props.theme.colors.accent};
   }
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before,
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover::before {
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled)::before,
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):hover::before,
+  .ant-radio-inner::after {
     background-color: ${(props) => props.theme.colors.accent};
   }
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):hover,
+  .ant-radio-checked .ant-radio-inner,
+  .ant-radio-wrapper:hover .ant-radio,
+  .ant-radio:hover .ant-radio-inner,
+  .ant-radio-input:focus + .ant-radio-inner {
     color: ${(props) => props.theme.colors.accent};
     border-color: ${(props) => props.theme.colors.accent};
   }
 
-  .ant-radio-button-wrapper:focus-within,
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
+  .ant-radio-wrapper:focus-within,
+  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):focus-within {
     box-shadow: none;
   }
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start:not(.ant-picker-cell-in-range):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::after,
