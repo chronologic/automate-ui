@@ -55,8 +55,8 @@ function Repeat() {
           </>
         }
       >
-        <Row gutter={12}>
-          <Col span={12}>
+        <Row gutter={24}>
+          <Col span={16}>
             <Form.Item name="repeatRange" rules={[{ required: true, message: 'Date range is required' }]}>
               <RangePicker
                 size="large"
@@ -65,7 +65,7 @@ function Repeat() {
               />
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item name="repeatStartTime" rules={[{ required: true, message: 'Start time is required' }]}>
               <TimePicker
                 size="large"
@@ -77,8 +77,8 @@ function Repeat() {
             </Form.Item>
           </Col>
         </Row>
-        <Row>
-          <Col>
+        <Row gutter={24}>
+          <Col span={16}>
             <Form.Item
               name="repeatFrequency"
               initialValue={RepeatFrequency.Daily}
@@ -92,11 +92,10 @@ function Repeat() {
               </Radio.Group>
             </Form.Item>
           </Col>
-        </Row>
-        {repeatFrequency === RepeatFrequency.Hourly && (
-          <Row>
-            <Col span={4}>Repeat every </Col>
-            <Col span={3}>
+
+          {repeatFrequency === RepeatFrequency.Hourly && (
+            <Col span={8} className="frequencyHours">
+              <Text>Repeat every </Text>
               <Form.Item
                 name="frequencyHours"
                 initialValue={defaultFrequencyHours}
@@ -104,6 +103,7 @@ function Repeat() {
               >
                 <InputNumber
                   className="frequencyHoursInput"
+                  size="large"
                   value={frequencyHours}
                   min={1}
                   max={23}
@@ -111,10 +111,10 @@ function Repeat() {
                   onChange={(value) => setFrequencyHours(value)}
                 />{' '}
               </Form.Item>
+              <Text>hour{frequencyHours > 1 && 's'}</Text>
             </Col>
-            <Col>hour{frequencyHours > 1 && 's'}</Col>
-          </Row>
-        )}
+          )}
+        </Row>
       </BaseBlock>
     </Container>
   );
@@ -173,8 +173,21 @@ const Container = styled.div`
     color: ${(props: IThemeProps) => props.theme.colors.text};
   }
 
+  .ant-picker-range {
+    width: 100%;
+  }
+
+  .ant-picker-large {
+    width: 100%;
+  }
+
   .frequencyHoursInput {
     width: 60px;
+    margin: 0 10px;
+  }
+
+  .frequencyHours {
+    display: flex;
   }
 `;
 

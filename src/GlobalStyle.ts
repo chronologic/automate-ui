@@ -433,6 +433,13 @@ const GlobalStyle = styled.div<IProps>`
   .ant-progress-status-success .ant-progress-bg {
     background: ${(props) => props.theme.colors.accent};
   }
+
+  .ant-input-number:hover {
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-input-number {
+    border: 1px solid ${(props) => props.theme.colors.accent};
+  }
 `;
 
 export default GlobalStyle;
