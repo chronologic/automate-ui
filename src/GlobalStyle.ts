@@ -338,6 +338,7 @@ const GlobalStyle = styled.div<IProps>`
   .ant-picker-cell-in-view.ant-picker-cell-in-range::before {
     background: ${(props) => props.theme.colors.text};
   }
+
   .ant-picker:hover,
   .ant-picker-focused,
   .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):first-child,
@@ -371,10 +372,40 @@ const GlobalStyle = styled.div<IProps>`
     border-color: ${(props) => props.theme.colors.accent};
   }
 
-  .ant-radio-wrapper:focus-within,
-  .ant-radio-wrapper-checked:not(.ant-radio-wrapper-disabled):focus-within {
+  .ant-picker:hover,
+  .ant-picker-focused,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):first-child,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-picker-header-view button:hover,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
+  .ant-radio-button-wrapper:hover {
+    color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not([class*=' ant-radio-button-wrapper-disabled']).ant-radio-button-wrapper:first-child {
+    border-right-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover::before,
+  .ant-radio-button-inner::after {
+    background-color: ${(props) => props.theme.colors.accent};
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover,
+  .ant-radio-button-checked .ant-radio-button-inner,
+  .ant-radio-button-wrapper:hover .ant-radio-button,
+  .ant-radio-button:hover .ant-radio-button-inner,
+  .ant-radio-button-input:focus + .ant-radio-button-inner {
+    color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-radio-button-wrapper:focus-within,
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within {
     box-shadow: none;
   }
+
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start:not(.ant-picker-cell-in-range):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-end:not(.ant-picker-cell-in-range):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end)::after,
   .ant-picker-cell-in-view.ant-picker-cell-range-hover-start.ant-picker-cell-range-start-single::after,
