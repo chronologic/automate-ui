@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, Button, Typography, Radio } from 'antd';
+import { Form, Modal, Button, Typography, Radio, Alert } from 'antd';
 import styled from 'styled-components';
 
 import { Network, ChainId, ConfirmationTime, ethereum, strategyPathKey } from '../../constants';
@@ -9,7 +9,7 @@ import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 
-const { Link } = Typography;
+const { Link, Text } = Typography;
 
 function Config() {
   const { connect } = useAutomateConnection();
@@ -144,6 +144,23 @@ function Config() {
           <Link disabled={network === Network.none ? true : false} onClick={() => handleAlreadyConnected()}>
             I've already added MetaMask connection
           </Link>
+          <Alert
+            message="Not sure what to do here?"
+            description={
+              <Text className="alert-txt">
+                Read the tutorial on{' '}
+                <a
+                  href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  How to sign up to Automate and claim your $MAGIC✨ rewards.
+                </a>
+              </Text>
+            }
+            type="info"
+            showIcon
+          />
         </>
       )}
 
@@ -177,7 +194,7 @@ function Config() {
             <Form.Item label="New RPC URL">
               <CopyInput value={rpcUrl} inputTitle="New RPC URL" />
             </Form.Item>
-            <Form.Item label="Chain ID">
+            <Form.Item label="Chain ID (Metamask may highlight red, that is OK)">
               <CopyInput value={ChainId[network].toString()} inputTitle="Chain ID" />
             </Form.Item>
             <Form.Item label="Currency Symbol">
@@ -245,6 +262,12 @@ const Container = styled.div`
   a.ant-typography.ant-typography-disabled,
   a.ant-typography.ant-typography-disabled:hover {
     color: #3e3e3e;
+  }
+  .ant-alert-with-description {
+    margin-top: 60px;
+  }
+  .alert-txt {
+    color: rgba(0, 0, 0, 0.85);
   }
 `;
 const MetaMaskConfig = styled.div`
