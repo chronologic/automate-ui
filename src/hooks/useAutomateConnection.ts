@@ -136,7 +136,7 @@ function useAutomateConnection(): IAutomateHook {
   );
 
   const eagerConnect = useCallback(async () => {
-    if (!triedEagerConnect && ethereum.selectedAddress) {
+    if (!triedEagerConnect && ethereum?.selectedAddress) {
       triedEagerConnect = true;
       connect();
     }
