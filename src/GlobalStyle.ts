@@ -40,7 +40,8 @@ const GlobalStyle = styled.div<IProps>`
   }
 
   a,
-  a.ant-typography {
+  a.ant-typography,
+  a .ant-tag {
     color: ${(props) => props.theme.colors.accent};
 
     &:hover,
@@ -391,6 +392,12 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-progress-status-success .ant-progress-bg {
     background: ${(props) => props.theme.colors.accent};
+  }
+
+  .ant-tag {
+    background: ${(props) => props.theme.colors.body};
+    color: ${(props) => props.theme.colors.text};
+    border-color: ${(props) => props.theme.colors.border};
   }
 `;
 

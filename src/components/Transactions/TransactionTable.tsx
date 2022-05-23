@@ -38,6 +38,7 @@ import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
 import AssetSymbolLink from './AssetSymbolLink';
 import TxStatus from './TxStatus';
+import LabelTag from '../LabelTag';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -305,7 +306,7 @@ function TransactionTable({
       {
         dataIndex: 'from',
         render: (from: string, record: IScheduledForUser) => (
-          <BlockExplorerLink hash={from} chainId={record.chainId} type={'address'} />
+          <BlockExplorerLink hash={from} label={record.fromLabel} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
         title: 'From',
@@ -314,10 +315,18 @@ function TransactionTable({
       {
         dataIndex: 'to',
         render: (to: string, record: IScheduledForUser) => (
-          <BlockExplorerLink hash={to} chainId={record.chainId} type={'address'} />
+          <BlockExplorerLink hash={to} label={record.toLabel} chainId={record.chainId} type={'address'} />
         ),
         sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
         title: 'To',
+        align: 'center' as any,
+      },
+      {
+        dataIndex: 'method',
+        render: (method: string, record: IScheduledForUser) => <LabelTag raw={method} label={record.methodLabel} />,
+        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
+          (a.methodLabel || '').localeCompare(b.methodLabel || ''),
+        title: 'Method',
         align: 'center' as any,
       },
       {
