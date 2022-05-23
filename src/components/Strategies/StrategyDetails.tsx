@@ -263,6 +263,10 @@ const Container = styled.div`
   align-items: center;
   margin: 0 auto;
 
+  .ant-form {
+    width: 100%;
+  }
+
   .description {
     color: rgb(255 255 255 / 45%);
   }

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { useUser } from '../../hooks';
 import { MINUTE_MILLIS, TABLET_SCREEN_THRESHOLD } from '../../constants';
 import { IUserCredits } from '../../types';
-import { Typography } from 'antd';
+import { Typography, Tooltip } from 'antd';
 import { formatNumber } from '../../utils';
 
 function Credits() {
@@ -33,20 +34,30 @@ function Credits() {
 
   return (
     <Container>
-      <div className="titleContainer">
+      {/* <div className="titleContainer">
         <Typography.Title className="title" level={5}>
           CREDITS:
         </Typography.Title>
-      </div>
+      </div> */}
       <div className="statsContainer">
-        <div className="stat">
+        {/* <div className="stat">
           <span className="label">Community</span>
           <span className="value">{formatNumber(credits.community || 0, 0, '0')}</span>
-        </div>
-        <div className="divider">&nbsp;</div>
+        </div> */}
+        {/* <div className="divider">&nbsp;</div> */}
         <div className="stat">
-          <span className="label">Individual</span>
+          <Typography.Title className="title" level={5}>
+            CREDITS:
+          </Typography.Title>
           <span className="value">{formatNumber(credits.user || 0, 0, '0')}</span>
+          <div className="question">
+            <Tooltip
+              placement="bottom"
+              title="Credits are used to schedule transactions. For each transaction 1 credit is deducted from your account."
+            >
+              <QuestionCircleOutlined />
+            </Tooltip>
+          </div>
         </div>
       </div>
     </Container>
@@ -75,6 +86,7 @@ const Container = styled.div`
 
   .stat {
     padding: 8px 4px;
+    display: contents;
   }
 
   .label {
@@ -92,6 +104,9 @@ const Container = styled.div`
     margin: 0 6px;
     align-self: stretch;
     border-left: 1px solid ${(props) => props.theme.colors.border};
+  }
+  .question {
+    margin-left: 5px;
   }
 
   @media (max-width: ${TABLET_SCREEN_THRESHOLD}px) {
