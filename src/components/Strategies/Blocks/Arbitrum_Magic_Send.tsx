@@ -51,8 +51,8 @@ function Arbitrum_Magic_Send() {
           </>
         }
       >
-        <Row gutter={12}>
-          <Col span={18}>
+        <Row gutter={24}>
+          <Col span={16}>
             <Form.Item
               name={`${StrategyBlock.Arbitrum_Magic_Send}_to`}
               validateFirst
@@ -64,7 +64,7 @@ function Arbitrum_Magic_Send() {
               <Input size="large" placeholder="To address" onChange={(e) => setAddress(e.target.value)} />
             </Form.Item>
           </Col>
-          <Col span={6}>
+          <Col span={8}>
             <Form.Item
               name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
               validateFirst

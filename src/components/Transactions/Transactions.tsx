@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Typography } from 'antd';
+import { Typography, Alert } from 'antd';
 import uniqBy from 'lodash/uniqBy';
 import styled from 'styled-components';
 
@@ -99,6 +99,23 @@ function Transactions() {
         <Typography.Title className="title header" level={5}>
           Transaction list
         </Typography.Title>
+        <Alert
+          message={
+            <Typography.Text className="alert-txt">
+              These are the transactions that you scheduled using the{' '}
+              <a
+                href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Automate Network in MetaMask
+              </a>
+            </Typography.Text>
+          }
+          type="warning"
+          showIcon
+          closable
+        />
         <div className="savingsContainer">
           <Typography.Title className="title" level={5}>
             Total gas savings:
@@ -137,6 +154,10 @@ const Container = styled.div`
 
   .table {
     width: 100%;
+  }
+
+  .alert-txt {
+    color: rgba(0, 0, 0, 0.85);
   }
 `;
 
