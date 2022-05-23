@@ -53,7 +53,7 @@ export default function AssetSymbol({ name, address }: IProps) {
   return (
     <Content>
       {(url && !error && <img src={url} alt={title} title={title} onError={() => setError(true)} />) || (
-        <span>{_name || shortAddress(address, 4)}</span>
+        <span>{_name || address ? shortAddress(address, 4) : '-'}</span>
       )}
     </Content>
   );
