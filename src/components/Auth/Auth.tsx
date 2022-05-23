@@ -4,10 +4,11 @@ import { Button, Input, Typography, Form } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
-import PageTitle from '../PageTitle';
 import { useAuth, useAutomateConnection } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
+import PageTitle from '../PageTitle';
+import PasswordReset from './PasswordReset';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
@@ -21,6 +22,7 @@ function Auth() {
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [displayPasswordResetModel, setDisplayPasswordResetModel] = useState(false);
 
   const handleAuth = useCallback(() => {
     onAuthenticate({ login, password, signup, source: getUserSource() });
@@ -37,6 +39,13 @@ function Auth() {
   const handleModeSwitch = useCallback(() => {
     setSignup(!signup);
   }, [signup]);
+
+  const handlePasswordReset = useCallback(() => {
+    setDisplayPasswordResetModel(true);
+  }, []);
+  const handleCancel = () => {
+    setDisplayPasswordResetModel(false);
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -105,7 +114,10 @@ function Auth() {
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
               {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
-            </Typography.Link>
+            </Typography.Link>{' '}
+            <br /> <br />
+            <Typography.Link onClick={handlePasswordReset}>{signup ? '' : 'Forgot Password?'}</Typography.Link>
+            <PasswordReset visible={displayPasswordResetModel} onCancel={handleCancel} />
           </ModeSwitch>
         )}
       </Form>
