@@ -55,18 +55,6 @@ const apiKey = queryParams.query.apiKey as string;
 
 const { TextArea } = Input;
 
-const rowSelection = {
-  onChange: (selectedRowKeys: any, selectedRows: any) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  onSelect: (record: any, selected: any, selectedRows: any) => {
-    console.log(record, selected, selectedRows);
-  },
-  onSelectAll: (selected: any, selectedRows: any, changeRows: any) => {
-    console.log(selected, selectedRows, changeRows);
-  },
-};
-
 function TransactionTable({
   items,
   loading,
@@ -162,8 +150,6 @@ function TransactionTable({
   const handleTimeConditionDateChange = useCallback(
     (date) => {
       setEditedTimeConditionDate(date);
-      const c = console;
-      c.log(editedTimeConditionTime, date, editedTimeConditionTZ);
       if (!editedTimeConditionTime || !date || !editedTimeConditionTZ) {
         setEditedTimeCondition(0);
       } else {
@@ -173,8 +159,6 @@ function TransactionTable({
           .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
           .toDate()
           .getTime();
-        // const c = console;
-        // c.log(newDate, new Date(newDate));
         setEditedTimeCondition(newDate);
       }
     },
@@ -184,8 +168,6 @@ function TransactionTable({
   const handleTimeConditionTimeChange = useCallback(
     (time) => {
       setEditedTimeConditionTime(time);
-      // const c = console;
-      // c.log(editedTimeConditionDate, time, editedTimeConditionTZ);
       if (!editedTimeConditionDate || !time || !editedTimeConditionTZ) {
         setEditedTimeCondition(0);
       } else {
@@ -195,8 +177,6 @@ function TransactionTable({
           .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
           .toDate()
           .getTime();
-        // const c = console;
-        // c.log(newDate, new Date(newDate));
         setEditedTimeCondition(newDate);
       }
     },
@@ -212,8 +192,6 @@ function TransactionTable({
         const timeStr = moment(editedTimeConditionTime).format('HH:mm');
         const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
         const newDate = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', tz).toDate().getTime();
-        // const c = console;
-        // c.log(newDate, new Date(newDate));
         setEditedTimeCondition(newDate);
       }
     },
@@ -315,16 +293,6 @@ function TransactionTable({
 
   const columns = useMemo(() => {
     return [
-      // {
-      //   dataIndex: 'id',
-      //   render: (id: string, record: IScheduledForUser) => (
-      //     <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
-      //       {shortAddress(id)}
-      //     </a>
-      //   ),
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
-      //   title: 'ID',
-      // },
       {
         dataIndex: 'statusName',
         render: (status: string, record: IScheduledForUser) => {
@@ -370,12 +338,6 @@ function TransactionTable({
         title: 'Amount',
         align: 'right' as any,
       },
-      // {
-      //   dataIndex: 'chainId',
-      //   render: (chainId: string) => chainId,
-      //   sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.chainId - b.chainId,
-      //   title: 'Chain ID',
-      // },
       {
         dataIndex: 'nonce',
         render: (nonce: string) => nonce,
@@ -437,19 +399,6 @@ function TransactionTable({
       {
         dataIndex: 'id',
         render: (id: string, record: IScheduledForUser) => {
-          // if (id === editingItem.id) {
-          //   return (
-          //     <div>
-          //       <Button type="primary" size="small" color="green" onClick={handleSave}>
-          //         Save
-          //       </Button>
-          //       <br />
-          //       <Button size="small" color="orange" onClick={handleStopEditingItem}>
-          //         Cancel
-          //       </Button>
-          //     </div>
-          //   );
-          // }
           const handleEdit = () => handleStartEditingItem(record);
           const handleCancel = () => onCancelTx(record);
 
@@ -546,8 +495,6 @@ function TransactionTable({
 
             return <AssetSymbol name={assetName} address={conditionAsset} />;
           },
-          // sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          //   (a.conditionAssetName || a.conditionAsset).localeCompare(b.conditionAssetName || b.conditionAsset),
           title: 'Condition Asset',
           align: 'center' as any,
         },
@@ -567,17 +514,6 @@ function TransactionTable({
 
             return formatNumber(num || 0);
           },
-          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => {
-          //   const aBN = BigNumber.from(a.conditionAmount || '0');
-          //   const bBN = BigNumber.from(b.conditionAmount || '0');
-          //   if (aBN.gt(bBN)) {
-          //     return 1;
-          //   }
-          //   if (aBN.lt(bBN)) {
-          //     return -1;
-          //   }
-          //   return 0;
-          // },
           title: 'Condition Amount',
           align: 'right' as any,
         },
@@ -627,7 +563,6 @@ function TransactionTable({
               );
             }
 
-            // return moment(new Date()).format('d/M/yyyy hh:mm a');
             if (hasTimeCondition) {
               return (
                 <div>
@@ -640,22 +575,9 @@ function TransactionTable({
 
             return '-';
           },
-          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.timeCondition || 0) - (b.timeCondition || 0),
           title: 'Time Condition',
           align: 'right' as any,
         },
-        // {
-        //   dataIndex: 'gasPriceAware',
-        //   render: (aware: boolean, record: IScheduledForUser) => {
-        //     const isEditing = record.id === editingItem.id;
-
-        //     const cb = (e: any) => setEditedGasPriceAware(e.target.checked);
-        //     return <Checkbox defaultChecked={aware} disabled={!isEditing} onChange={cb} />;
-        //   },
-        //   sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-        //     (a.gasPriceAware ? a.gasPriceAware : b.gasPriceAware) as any,
-        //   title: 'Gas Price Aware?',
-        // },
         {
           key: 'notes',
           dataIndex: 'notes',
@@ -669,7 +591,6 @@ function TransactionTable({
 
             return notes;
           },
-          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
           title: 'Notes',
           align: 'right' as any,
         },
@@ -688,7 +609,6 @@ function TransactionTable({
 
             return extra.join(', ');
           },
-          // sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.notes || '').localeCompare(b.notes || ''),
           title: 'Extra',
           align: 'right' as any,
         },
@@ -768,17 +688,13 @@ function TransactionTable({
         rowKey="id"
         columns={columns}
         dataSource={items}
-        rowSelection={rowSelection}
-        // pagination={paginationConfig}
         expandable={{
           expandedRowRender,
-          expandIconColumnIndex: 1,
+          expandIconColumnIndex: 0,
           expandedRowKeys,
           onExpandedRowsChange: handleExpandedRowKeysChange as any,
         }}
         loading={loading}
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // onChange={handleTableChange as any}
         pagination={{ defaultPageSize: 100, showSizeChanger: false }}
       />
     </Container>
