@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Card, Row, Col, Typography } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { PopupButton } from '@typeform/embed-react';
 import styled from 'styled-components';
 
 import { IStrategy } from './../../types';
@@ -63,17 +64,12 @@ function StrategyList() {
         ))}
         <Col span={24} md={12} lg={8}>
           <Create>
-            <div
-              data-tf-popup="qL2sZQN7"
-              data-tf-auto-close="2000"
-              data-tf-iframe-props="title=Automate ideas"
-              data-tf-medium="snippet"
-            >
+            <PopupButton id="qL2sZQN7" className="typeformButton" autoClose={2000}>
               <Card className="antcard" hoverable>
                 <PlusOutlined />
                 <Meta description="Create your own!" />
               </Card>
-            </div>
+            </PopupButton>
           </Create>
         </Col>
       </Row>
@@ -136,6 +132,12 @@ const Create = styled.div`
     font-size: 200%;
     color: rgb(245 245 245 / 45%);
     padding-bottom: 1em;
+  }
+  .typeformButton {
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 0;
   }
 `;
 
