@@ -24,6 +24,11 @@ export const UserAPI = {
     return response.data;
   }),
 
+  resetPassword: withErrorHandler(async (params: IAuthParams): Promise<IUserWithExpiration> => {
+    const response = await api.post('/auth/resetPassword', params);
+    return response.data;
+  }),
+
   getCredits: withErrorHandler(async (apiKey: string): Promise<IUserCredits> => {
     const response = await api.get('/user/credits', {
       headers: {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Input, Typography, Form } from 'antd';
+import { Button, Input, Typography, Form, Modal, notification } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
@@ -8,7 +8,7 @@ import { useAuth, useAutomateConnection } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
 import PageTitle from '../PageTitle';
-import PasswordReset from './PasswordReset';
+// import PasswordReset from './PasswordReset';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
@@ -45,6 +45,15 @@ function Auth() {
   }, []);
   const handleCancel = () => {
     setDisplayPasswordResetModel(false);
+  };
+  const showPassowrdResetNotification = () => {
+    notification['success']({
+      message: 'Password Reset Email Has Been Sent',
+      description: 'We sent you an email with a reset link',
+      duration: 3.5,
+      // close model too
+    });
+    handleCancel();
   };
 
   useEffect(() => {
@@ -117,10 +126,43 @@ function Auth() {
             </Typography.Link>{' '}
             <br /> <br />
             <Typography.Link onClick={handlePasswordReset}>{signup ? '' : 'Forgot Password?'}</Typography.Link>
-            <PasswordReset visible={displayPasswordResetModel} onCancel={handleCancel} />
           </ModeSwitch>
         )}
       </Form>
+      <Modal
+        title="Reset Password"
+        centered
+        className="modal"
+        visible={displayPasswordResetModel}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="submitResetPassword" type="primary" disabled={!login} onClick={showPassowrdResetNotification}>
+            Submit
+          </Button>,
+          <Button key="cancelResetPassword" onClick={handleCancel}>
+            Cancel
+          </Button>,
+        ]}
+      >
+        <Form layout="vertical">
+          <Form.Item
+            name="email"
+            rules={[
+              { required: true, message: 'Email is required' },
+              { pattern: emailRegex, message: 'Invalid email' },
+            ]}
+          >
+            <Input
+              type="email"
+              size="large"
+              placeholder="Please provide your email address that you use to log in"
+              disabled={authenticating}
+              value={login}
+              onChange={handleLoginChange}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Container>
   );
 }
