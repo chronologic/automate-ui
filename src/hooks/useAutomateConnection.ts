@@ -6,6 +6,7 @@ import { ethereum, Network, SECOND_MILLIS } from '../constants';
 import { useMetamask, useStore as metamaskStore } from './useMetamask';
 import { notifications } from './connectionNotifications';
 import { useAuth } from './useAuth';
+import { useEthereum } from './useEthereum';
 
 interface IAutomateStoreState {
   connected: boolean;
@@ -86,6 +87,7 @@ let triedEagerConnect = false;
 
 function useAutomateConnection(): IAutomateHook {
   const metamaskState = useMetamask();
+  const ethereumState = useEthereum();
   const automateState = useStore();
   const { user } = useAuth();
 
@@ -99,6 +101,7 @@ function useAutomateConnection(): IAutomateHook {
       notifySuccess,
       desiredNetwork,
     }: { notifySuccess?: boolean; desiredNetwork?: Network } = {}): Promise<IAutomateStoreState> => {
+      triedEagerConnect = true;
       const mmState = await metamaskState.connect();
       if (!mmState.connected) {
         reset();
@@ -136,11 +139,11 @@ function useAutomateConnection(): IAutomateHook {
   );
 
   const eagerConnect = useCallback(async () => {
-    if (!triedEagerConnect && ethereum?.selectedAddress) {
+    if (!triedEagerConnect && ethereumState.isAddressReady && ethereum?.selectedAddress) {
       triedEagerConnect = true;
       connect();
     }
-  }, [connect]);
+  }, [connect, ethereumState.isAddressReady]);
 
   return {
     ...automateState,
