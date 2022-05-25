@@ -91,7 +91,7 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
   const onPasswordReset = useCallback(async (params: IResetPasswordParams) => {
     const fn = UserAPI.resetPassword;
     try {
-      const user2 = await fn(params);
+      const user = await fn(params);
       setIsPasswordResetted(true);
     } catch (e) {
       console.log(e);
