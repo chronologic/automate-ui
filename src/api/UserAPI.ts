@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { API_URL } from '../env';
-import { IAuthParams, IUserCredits, IUserWithExpiration } from '../types';
+import { IAuthParams, IResetPasswordParams, IUserCredits, IUserWithExpiration } from '../types';
 import { withErrorHandler } from './withErrorHandler';
 
 const api = axios.create({
@@ -24,7 +24,12 @@ export const UserAPI = {
     return response.data;
   }),
 
-  resetPassword: withErrorHandler(async (params: IAuthParams): Promise<IUserWithExpiration> => {
+  requestResetPassword: withErrorHandler(async (params: IResetPasswordParams) => {
+    const response = await api.post('/auth/requestResetPassword', params);
+    return response.data;
+  }),
+
+  resetPassword: withErrorHandler(async (params: IResetPasswordParams) => {
     const response = await api.post('/auth/resetPassword', params);
     return response.data;
   }),

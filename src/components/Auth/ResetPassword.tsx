@@ -1,15 +1,31 @@
 import React from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import qs from 'query-string';
+
 import { Form, Typography, Input, Button, notification } from 'antd';
-import { useAuth, useAutomateConnection } from '../../hooks';
+import { useAuth } from '../../hooks';
 import styled from 'styled-components';
 
 function ResetPassword() {
-  const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
+  const { authenticating, onPasswordReset, isPasswordResetted } = useAuth();
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(' ');
+  const [enableSubmitButton, setEnableSubmitButton] = useState(false);
+
+  const history = useHistory();
+
+  const q = qs.parse(document.location.search);
+  const token = q.token as string;
+  const login = q.email as string;
+
   const handlePasswordChange = useCallback((e: any) => {
     setPassword(e.target.value);
   }, []);
+  const handleconfirmPasswordChange = useCallback((e: any) => {
+    setConfirmPassword(e.target.value);
+  }, []);
+
   const resetSuccessfulNotification = () => {
     notification['success']({
       message: 'Password has been successfully changed.',
@@ -17,19 +33,52 @@ function ResetPassword() {
       duration: 3.5,
       // close model too
     });
-    // handleCancel();
   };
+
+  const handlePasswordReset = useCallback(() => {
+    if (password === confirmPassword) {
+      onPasswordReset({ login, password, token });
+    }
+  }, [login, token, password, confirmPassword, onPasswordReset]);
+
+  async function validatePassword(password: string): Promise<void> {
+    setEnableSubmitButton(false);
+    if (!/(?=.*[A-Z])(?=.*[a-z]).*/.test(password)) {
+      return Promise.reject(new Error('Password must contain lower and uppercase characters'));
+    }
+    if (!/.{8,}/.test(password)) {
+      return Promise.reject(new Error('Password must be at least 8 characters'));
+    }
+    if (!/(?=.*[0-9\W]).*/.test(password)) {
+      return Promise.reject(new Error('Password must contain a number or a symbol'));
+    }
+    setEnableSubmitButton(true);
+  }
+  const checkPasswordMatch = useCallback(() => {
+    if (!(password === confirmPassword)) {
+      return Promise.reject(new Error('Passwords must match'));
+    }
+  }, [password, confirmPassword]);
+
+  useEffect(() => {
+    if (isPasswordResetted) {
+      resetSuccessfulNotification();
+      history.push('/login/');
+    }
+  }, [history, isPasswordResetted]);
+
   return (
     <Container>
       <Form layout="vertical">
         <Typography.Title level={3} className="title">
-          {'Reset Password'}
+          {`Reset Password for ${login.replace(/\s/g, '')}`}
         </Typography.Title>
         <Form.Item
           name="password"
           rules={[
             { required: true, message: 'Password is required' },
             { validator: (_, value) => validatePassword(value) },
+            // { validator: () => checkPasswordMatch() },
           ]}
         >
           <Input
@@ -44,10 +93,11 @@ function ResetPassword() {
           />
         </Form.Item>
         <Form.Item
-          name="password"
+          name="confirmPassword"
           rules={[
-            { required: true, message: 'Password is required' },
+            { required: true, message: 'Confirm password is required' },
             { validator: (_, value) => validatePassword(value) },
+            { validator: () => checkPasswordMatch() },
           ]}
         >
           <Input
@@ -56,9 +106,9 @@ function ResetPassword() {
             style={{ width: '240px' }}
             placeholder="Confirm New Password"
             disabled={authenticating}
-            value={password}
+            value={confirmPassword}
             required={true}
-            onChange={handlePasswordChange}
+            onChange={handleconfirmPasswordChange}
           />
         </Form.Item>
         <Button
@@ -66,9 +116,9 @@ function ResetPassword() {
           size="large"
           htmlType="submit"
           loading={authenticating}
-          disabled={!password}
+          disabled={!(password === confirmPassword) || !enableSubmitButton}
           className="submit-btn"
-          onClick={resetSuccessfulNotification}
+          onClick={handlePasswordReset}
         >
           Reset Password
         </Button>
@@ -103,15 +153,5 @@ const Container = styled.div`
     text-align: center;
   }
 `;
-async function validatePassword(password: string): Promise<void> {
-  if (!/(?=.*[A-Z])(?=.*[a-z]).*/.test(password)) {
-    return Promise.reject(new Error('Password must contain lower and uppercase characters'));
-  }
-  if (!/.{8,}/.test(password)) {
-    return Promise.reject(new Error('Password must be at least 8 characters'));
-  }
-  if (!/(?=.*[0-9\W]).*/.test(password)) {
-    return Promise.reject(new Error('Password must contain a number or a symbol'));
-  }
-}
+
 export default ResetPassword;

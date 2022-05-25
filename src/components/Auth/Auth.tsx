@@ -4,11 +4,10 @@ import { Button, Input, Typography, Form, Modal, notification } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
-import { useAuth, useAutomateConnection } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
 import PageTitle from '../PageTitle';
-// import PasswordReset from './PasswordReset';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
@@ -18,7 +17,7 @@ const parsed = parseUrl(window.location.href);
 
 function Auth() {
   const history = useHistory();
-  const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
+  const { authenticating, isAuthenticated, onAuthenticate, onRequestPasswordReset } = useAuth();
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -40,6 +39,11 @@ function Auth() {
     setSignup(!signup);
   }, [signup]);
 
+  const handleRequestPasswordReset = useCallback(() => {
+    onRequestPasswordReset({ login });
+    showPassowrdResetNotification();
+  }, [login, onRequestPasswordReset]);
+
   const handlePasswordReset = useCallback(() => {
     setDisplayPasswordResetModel(true);
   }, []);
@@ -51,9 +55,8 @@ function Auth() {
       message: 'Password Reset Email Has Been Sent',
       description: 'We sent you an email with a reset link',
       duration: 3.5,
-      // close model too
     });
-    handleCancel();
+    setDisplayPasswordResetModel(false);
   };
 
   useEffect(() => {
@@ -136,7 +139,7 @@ function Auth() {
         visible={displayPasswordResetModel}
         onCancel={handleCancel}
         footer={[
-          <Button key="submitResetPassword" type="primary" disabled={!login} onClick={showPassowrdResetNotification}>
+          <Button key="submitResetPassword" type="primary" disabled={!login} onClick={handleRequestPasswordReset}>
             Submit
           </Button>,
           <Button key="cancelResetPassword" onClick={handleCancel}>

@@ -149,6 +149,12 @@ export interface IAuthParams {
   signup: boolean;
 }
 
+export interface IResetPasswordParams {
+  login: string;
+  password?: string;
+  token?: string;
+}
+
 export interface IStrategy {
   id: number;
   url: string;
