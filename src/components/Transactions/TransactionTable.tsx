@@ -8,42 +8,36 @@ import {
   FileTextOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import {
-  Button,
-  DatePicker,
-  Dropdown,
-  Input,
-  InputNumber,
-  Menu,
-  Modal,
-  Select,
-  Table,
-  TimePicker,
-  Tooltip,
-} from 'antd';
-import { BigNumber } from 'ethers';
+import { Button, DatePicker, Dropdown, Input, InputNumber, Menu, Select, Table, TimePicker, Tooltip } from 'antd';
+import { BigNumber, ethers } from 'ethers';
 import moment from 'moment-timezone';
-import queryString from 'query-string';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { TokenAPI } from '../../api/TokenAPI';
-import { bigNumberToNumber, formatCurrency, formatNumber, normalizeBigNumber, numberToBn } from '../../utils';
+import { bigNumberToNumber, formatCurrency, formatNumber, numberToBn } from '../../utils';
 import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
 import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import { IScheduledForUser } from '../../types';
+import { IAssetStorageItem } from '../../hooks';
 import { BlockExplorerLink } from '../Transactions';
 import AssetSymbol from '../AssetSymbol';
-import { IAssetStorageItem } from './assetStorage';
-import assetStorage from './assetStorage';
+import LabelTag from '../LabelTag';
 import AssetSymbolLink from './AssetSymbolLink';
 import TxStatus from './TxStatus';
-import LabelTag from '../LabelTag';
+import { canEditTx } from './useTxEdit';
+import TimeCondition from './TimeCondition';
+import ConditionAsset from './ConditionAsset';
 
 interface IProps {
   items: IScheduledForUser[];
   loading: boolean;
+  apiKey: string;
   assetOptions: IAssetStorageItem[];
+  editing: boolean;
+  editingItem: IScheduledForUser | undefined;
+  onStartEdit: (tx: IScheduledForUser) => void;
+  onStopEdit: () => void;
+  onUpdateEditingItem: (partial: Partial<IScheduledForUser>) => void;
   onSetLoading: (loading: boolean) => void;
   onEditTx: ({
     request,
@@ -54,156 +48,61 @@ interface IProps {
   }) => Promise<IScheduledForUser>;
   onCancelTx: (record: IScheduledForUser) => void;
   onRefresh: () => void;
-  onUpdateAssetOptions: (newItems?: IScheduledForUser[]) => void;
+  onOpenAddAssetModal: () => void;
 }
-
-const queryParams = queryString.parseUrl(window.location.href);
-const apiKey = queryParams.query.apiKey as string;
 
 const { TextArea } = Input;
 
 function TransactionTable({
   items,
   loading,
+  apiKey,
   assetOptions,
+  editing,
+  editingItem,
+  onStartEdit,
+  onStopEdit,
+  onUpdateEditingItem,
   onSetLoading,
   onEditTx,
   onCancelTx,
   onRefresh,
-  onUpdateAssetOptions,
+  onOpenAddAssetModal,
 }: IProps) {
-  const [editingItem, setEditingItem] = useState<IScheduledForUser>({} as any);
-  const [editedConditionAsset, setEditedConditionAsset] = useState('');
-  const [editedConditionAmount, setEditedConditionAmount] = useState('');
-  const [editedConditionDecimals, setEditedConditionDecimals] = useState(18);
-  const [editedTimeConditionDate, setEditedTimeConditionDate] = useState();
-  const [editedTimeConditionTime, setEditedTimeConditionTime] = useState();
-  const [editedTimeCondition, setEditedTimeCondition] = useState(0);
-  const [editedTimeConditionTZ, setEditedTimeConditionTZ] = useState('');
-  const [editedGasPriceAware, setEditedGasPriceAware] = useState(false);
-  const [editedNotes, setEditedNotes] = useState<string>('');
-  const [addAssetModalVisible, setAddAssetModalVisible] = useState(false);
-  const [addAssetAddress, setAddAssetAddress] = useState('');
-  const [addAssetName, setAddAssetName] = useState('');
-  const [addAssetDecimals, setAddAssetDecimals] = useState(18);
-  const [addAssetError, setAddAssetError] = useState('');
-  const [fetchingAsset, setFetchingAsset] = useState(false);
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
   const handleStartEditingItem = useCallback(
     (record: IScheduledForUser) => {
-      setEditingItem(record);
+      onStartEdit(record);
       if (!expandedRowKeys.includes(record.id)) {
         setExpandedRowKeys([...expandedRowKeys, record.id]);
       }
-      setEditedConditionAsset(record.conditionAsset);
-      setEditedConditionAmount(record.conditionAmount);
-      setEditedConditionDecimals(record.conditionAssetDecimals);
-      setEditedTimeCondition(record.timeCondition);
-      if (record.timeCondition && record.timeConditionTZ) {
-        const date = moment.tz(record.timeCondition, record.timeConditionTZ);
-        setEditedTimeConditionDate(date as any);
-        setEditedTimeConditionTime(date as any);
-      } else {
-        setEditedTimeConditionTime(moment().startOf('day') as any);
-      }
-      setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
-      setEditedNotes(record.notes);
-      setEditedGasPriceAware(record.gasPriceAware);
+      // onUpdateEditingItem({
+      //   conditionAsset: record.conditionAsset,
+      //   conditionAmount: record.conditionAmount,
+      //   conditionAssetDecimals: record.conditionAssetDecimals,
+      // })
+      // setEditedConditionAsset(record.conditionAsset);
+      // setEditedConditionAmount();
+      // setEditedConditionDecimals();
+      // setEditedTimeCondition(record.timeCondition);
+      // if (record.timeCondition && record.timeConditionTZ) {
+      //   const date = moment.tz(record.timeCondition, record.timeConditionTZ);
+      //   setEditedTimeConditionDate(date as any);
+      //   setEditedTimeConditionTime(date as any);
+      // } else {
+      //   setEditedTimeConditionTime(moment().startOf('day') as any);
+      // }
+      // setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
+      // setEditedNotes(record.notes);
+      // setEditedGasPriceAware(record.gasPriceAware);
     },
-    [expandedRowKeys]
+    [expandedRowKeys, onStartEdit]
   );
-
-  const handleOpenAddAssetModal = useCallback(() => {
-    setAddAssetModalVisible(true);
-  }, []);
 
   const handleExpandedRowKeysChange = useCallback((keys: string[]) => {
     setExpandedRowKeys(keys);
   }, []);
-
-  const handleStopEditingItem = useCallback(() => {
-    setEditingItem({} as any);
-  }, []);
-
-  const handleConditionAmountChange = useCallback(
-    (amount) => {
-      const newAmount = amount ? numberToBn(amount, editedConditionDecimals).toString() : '';
-      setEditedConditionAmount(newAmount);
-    },
-    [editedConditionDecimals]
-  );
-
-  const handleConditionAssetChange = useCallback(
-    (contractAddress: string, newAsset?: IAssetStorageItem) => {
-      const asset = newAsset || assetOptions.find((a) => a.address === contractAddress);
-      setEditedConditionAsset(contractAddress);
-      const oldDecimals = editedConditionDecimals;
-      const newDecimals = asset?.decimals || 18;
-      setEditedConditionDecimals(newDecimals);
-
-      if (newDecimals !== oldDecimals) {
-        const newAmount = normalizeBigNumber(
-          BigNumber.from(editedConditionAmount),
-          oldDecimals,
-          newDecimals
-        ).toString();
-        setEditedConditionAmount(newAmount);
-      }
-    },
-    [assetOptions, editedConditionDecimals, editedConditionAmount]
-  );
-
-  const handleTimeConditionDateChange = useCallback(
-    (date) => {
-      setEditedTimeConditionDate(date);
-      if (!editedTimeConditionTime || !date || !editedTimeConditionTZ) {
-        setEditedTimeCondition(0);
-      } else {
-        const dateStr = moment(date).format('YYYY.MM.DD');
-        const timeStr = moment(editedTimeConditionTime).format('HH:mm');
-        const newDate = moment
-          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
-          .toDate()
-          .getTime();
-        setEditedTimeCondition(newDate);
-      }
-    },
-    [editedTimeConditionTime, editedTimeConditionTZ]
-  );
-
-  const handleTimeConditionTimeChange = useCallback(
-    (time) => {
-      setEditedTimeConditionTime(time);
-      if (!editedTimeConditionDate || !time || !editedTimeConditionTZ) {
-        setEditedTimeCondition(0);
-      } else {
-        const timeStr = moment(time).format('HH:mm');
-        const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
-        const newDate = moment
-          .tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTimeConditionTZ)
-          .toDate()
-          .getTime();
-        setEditedTimeCondition(newDate);
-      }
-    },
-    [editedTimeConditionDate, editedTimeConditionTZ]
-  );
-
-  const handleTimeConditionTZChange = useCallback(
-    (tz) => {
-      setEditedTimeConditionTZ(tz);
-      if (!editedTimeConditionTime || !tz || !editedTimeConditionDate) {
-        setEditedTimeCondition(0);
-      } else {
-        const timeStr = moment(editedTimeConditionTime).format('HH:mm');
-        const dateStr = moment(editedTimeConditionDate).format('YYYY.MM.DD');
-        const newDate = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', tz).toDate().getTime();
-        setEditedTimeCondition(newDate);
-      }
-    },
-    [editedTimeConditionTime, editedTimeConditionDate]
-  );
 
   const handleSave = useCallback(async () => {
     try {
@@ -211,82 +110,21 @@ function TransactionTable({
 
       await onEditTx({
         request: {
-          assetType: editingItem.assetType,
-          conditionAmount: editedConditionAmount,
-          conditionAsset: editedConditionAsset,
-          gasPriceAware: editedGasPriceAware,
-          notes: editedNotes,
+          ...editingItem!,
           paymentEmail: '',
           paymentRefundAddress: '',
-          signedTransaction: editingItem.signedTransaction,
-          timeCondition: editedTimeCondition,
-          timeConditionTZ: editedTimeConditionTZ,
         },
         queryParams: {
           apiKey,
         },
       });
-      setEditingItem({} as any);
+      onStopEdit();
 
       onRefresh();
     } finally {
       onSetLoading(false);
     }
-  }, [
-    editedConditionAmount,
-    editedConditionAsset,
-    editedGasPriceAware,
-    editedNotes,
-    editedTimeCondition,
-    editedTimeConditionTZ,
-    editingItem.assetType,
-    editingItem.signedTransaction,
-    onEditTx,
-    onRefresh,
-    onSetLoading,
-  ]);
-
-  const handleFetchAsset = useCallback(
-    async (e: any) => {
-      try {
-        setFetchingAsset(true);
-        const inputAddress = e.target.value || '';
-
-        const { address, decimals, symbol, name, validationError } = await TokenAPI.resolveToken(
-          inputAddress,
-          editingItem.chainId
-        );
-
-        setAddAssetAddress(address);
-        setAddAssetError(validationError);
-        setAddAssetDecimals(decimals);
-        setAddAssetName(symbol || name);
-      } finally {
-        setFetchingAsset(false);
-      }
-    },
-    [editingItem.chainId]
-  );
-
-  const handleAddAsset = useCallback(() => {
-    const newAsset: IAssetStorageItem = {
-      address: addAssetAddress,
-      decimals: addAssetDecimals,
-      name: addAssetName,
-    };
-    if (addAssetName) {
-      assetStorage.add(newAsset);
-      onUpdateAssetOptions();
-      handleConditionAssetChange(addAssetAddress, newAsset);
-    }
-    setAddAssetError('');
-    setAddAssetAddress('');
-    setAddAssetDecimals(18);
-    setAddAssetName('');
-    setAddAssetModalVisible(false);
-  }, [addAssetAddress, addAssetDecimals, addAssetName, onUpdateAssetOptions, handleConditionAssetChange]);
-
-  const handleDismissAddAsset = useCallback(() => setAddAssetModalVisible(false), []);
+  }, [apiKey, editingItem, onEditTx, onRefresh, onSetLoading, onStopEdit]);
 
   const columns = useMemo(() => {
     return [
@@ -407,7 +245,7 @@ function TransactionTable({
           const handleEdit = () => handleStartEditingItem(record);
           const handleCancel = () => onCancelTx(record);
 
-          const showCancel = ['Draft', 'Pending'].includes(record.statusName);
+          const showCancel = canEditTx(record.statusName);
           const showEtherscan = !['Draft', 'Pending', 'Cancelled'].includes(record.statusName);
           const networkName: string = ChainId[record.chainId];
           const networkExplorerName: string = ' ' + BlockExplorerName[networkName as keyof typeof BlockExplorerUrl];
@@ -462,43 +300,34 @@ function TransactionTable({
           key: 'conditionAsset',
           dataIndex: 'conditionAsset',
           render: (conditionAsset: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem.id;
-            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+            const isEditing = record.id === editingItem?.id;
+            const canEdit = canEditTx(record.statusName);
 
-            if (isEditing && canEdit) {
-              const handler = (value: string) => handleConditionAssetChange(value);
-              return (
-                <div>
-                  <Select value={editedConditionAsset} style={{ width: '100px' }} onChange={handler}>
-                    {assetOptions.map((asset) => (
-                      <Select.Option key={asset.address} value={asset.address}>
-                        {asset.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                  <br />
-                  <Button
-                    type="ghost"
-                    style={{ border: '0px', background: 'transparent' }}
-                    onClick={handleOpenAddAssetModal}
-                  >
-                    <PlusOutlined /> Add
-                  </Button>
-                </div>
-              );
-            }
+            const changeHandler = ({
+              conditionAsset,
+              conditionAssetName,
+              conditionAssetDecimals,
+            }: {
+              conditionAsset: string;
+              conditionAssetName: string;
+              conditionAssetDecimals: number;
+            }) => {
+              onUpdateEditingItem({ conditionAsset, conditionAssetName, conditionAssetDecimals });
+            };
 
-            const assetName = (record.conditionAssetName || '').toUpperCase();
-
-            if (conditionAsset) {
-              return (
-                <BlockExplorerLink hash={assetName || conditionAsset} chainId={record.chainId} type={'address'}>
-                  <AssetSymbol name={assetName} address={conditionAsset} />
-                </BlockExplorerLink>
-              );
-            }
-
-            return <AssetSymbol name={assetName} address={conditionAsset} />;
+            return (
+              <ConditionAsset
+                editing={isEditing}
+                canEdit={canEdit}
+                assetType={record.assetType}
+                chainId={record.chainId}
+                address={isEditing ? editingItem?.conditionAsset : conditionAsset}
+                name={record.conditionAssetName}
+                assetOptions={assetOptions}
+                onOpenAddAssetModal={onOpenAddAssetModal}
+                onChange={changeHandler}
+              />
+            );
           },
           title: 'Condition Asset',
           align: 'center' as any,
@@ -507,14 +336,19 @@ function TransactionTable({
           key: 'conditionAmount',
           dataIndex: 'conditionAmount',
           render: (amount: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem.id;
-            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+            const isEditing = record.id === editingItem?.id;
+            const canEdit = canEditTx(record.statusName);
 
-            const num = amount ? bigNumberToNumber(amount as any, record.conditionAssetDecimals) : '';
+            const num = amount ? Number(ethers.utils.formatUnits(amount as any, record.conditionAssetDecimals)) : '';
 
             if (isEditing && canEdit) {
-              const handler = (val: any) => handleConditionAmountChange(val);
-              return <InputNumber min={0} defaultValue={num} onChange={handler} />;
+              const changeHandler = (val: any) => {
+                const newAmount = amount
+                  ? ethers.utils.parseUnits(`${val || 0}`, record.conditionAssetDecimals).toString()
+                  : '';
+                onUpdateEditingItem({ conditionAmount: newAmount });
+              };
+              return <InputNumber min={0} defaultValue={num} onChange={changeHandler} />;
             }
 
             return formatNumber(num || 0);
@@ -525,60 +359,22 @@ function TransactionTable({
         {
           key: 'timeCondition',
           dataIndex: 'timeCondition',
-          render: (timeCondition: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem.id;
-            const canEdit = ['Draft', 'Pending'].includes(record.statusName);
+          render: (timeCondition: number, record: IScheduledForUser) => {
+            const isEditing = record.id === editingItem?.id;
+            const canEdit = canEditTx(record.statusName);
 
-            const hasTimeCondition = timeCondition && timeCondition !== '0';
-            const timeConditionLocal = hasTimeCondition ? moment(timeCondition) : '';
-            const timeConditionForTz = hasTimeCondition
-              ? (timeConditionLocal as any).clone().tz(record.timeConditionTZ)
-              : '';
-            const timeConditionTime = timeConditionForTz || moment().startOf('day');
+            const changeHandler = ({ timeCondition, timeConditionTZ }: any) =>
+              onUpdateEditingItem({ timeCondition, timeConditionTZ });
 
-            if (isEditing && canEdit) {
-              return (
-                <>
-                  <DatePicker
-                    format={'MMM D yyyy'}
-                    defaultValue={timeConditionForTz as any}
-                    onChange={handleTimeConditionDateChange}
-                  />
-                  <br />
-                  <TimePicker
-                    format={'hh:mm a'}
-                    use12Hours={true}
-                    defaultValue={timeConditionTime as any}
-                    onChange={handleTimeConditionTimeChange}
-                  />
-                  <br />
-                  <Select
-                    showSearch={true}
-                    defaultValue={record.timeConditionTZ || moment.tz.guess()}
-                    style={{ minWidth: '120px' }}
-                    onChange={handleTimeConditionTZChange}
-                  >
-                    {moment.tz.names().map((tz, index) => (
-                      <Select.Option key={index} value={tz}>
-                        {tz}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </>
-              );
-            }
-
-            if (hasTimeCondition) {
-              return (
-                <div>
-                  {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {record.timeConditionTZ}
-                  <br />
-                  <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
-                </div>
-              );
-            }
-
-            return '-';
+            return (
+              <TimeCondition
+                editing={isEditing}
+                canEdit={canEdit}
+                timeCondition={timeCondition}
+                timeConditionTZ={record.timeConditionTZ}
+                onChange={changeHandler}
+              />
+            );
           },
           title: 'Time Condition',
           align: 'right' as any,
@@ -587,11 +383,11 @@ function TransactionTable({
           key: 'notes',
           dataIndex: 'notes',
           render: (notes: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem.id;
+            const isEditing = record.id === editingItem?.id;
 
             if (isEditing) {
-              const cb = (e: any) => setEditedNotes(e.target.value);
-              return <TextArea defaultValue={notes} onChange={cb} />;
+              const changeHandler = (e: any) => onUpdateEditingItem({ notes: e.target.value });
+              return <TextArea defaultValue={notes} onChange={changeHandler} />;
             }
 
             return notes;
@@ -621,7 +417,7 @@ function TransactionTable({
           key: 'actions',
           dataIndex: 'id',
           render: (id: string, record: IScheduledForUser) => {
-            if (id === editingItem.id) {
+            if (id === editingItem?.id) {
               return (
                 <div>
                   <Button type="primary" color="green" onClick={handleSave}>
@@ -629,7 +425,7 @@ function TransactionTable({
                   </Button>
                   <br />
                   <br />
-                  <Button color="orange" onClick={handleStopEditingItem}>
+                  <Button color="orange" onClick={onStopEdit}>
                     Cancel
                   </Button>
                 </div>
@@ -647,41 +443,17 @@ function TransactionTable({
     },
     [
       assetOptions,
-      editedConditionAsset,
-      editingItem.id,
-      handleConditionAmountChange,
-      handleConditionAssetChange,
-      handleOpenAddAssetModal,
+      editingItem?.conditionAsset,
+      editingItem?.id,
       handleSave,
-      handleStopEditingItem,
-      handleTimeConditionDateChange,
-      handleTimeConditionTZChange,
-      handleTimeConditionTimeChange,
+      onOpenAddAssetModal,
+      onStopEdit,
+      onUpdateEditingItem,
     ]
   );
 
   return (
     <Container>
-      <Modal
-        visible={addAssetModalVisible}
-        onCancel={handleDismissAddAsset}
-        onOk={handleAddAsset}
-        confirmLoading={fetchingAsset}
-        okButtonProps={{
-          disabled: !addAssetName || !!addAssetError,
-        }}
-      >
-        <br />
-        <Input type="text" placeholder="Contract address" value={addAssetAddress} onChange={handleFetchAsset} />
-        <br />
-        <br />
-        <Input type="text" placeholder="Symbol" disabled={true} value={addAssetName} />
-        <br />
-        <br />
-        <Input type="text" placeholder="Decimals" disabled={true} value={addAssetAddress ? addAssetDecimals : ''} />
-        {addAssetError && <div style={{ color: 'red' }}>{addAssetError}</div>}
-        <br />
-      </Modal>
       <Table
         className="table"
         size="small"

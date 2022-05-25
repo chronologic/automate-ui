@@ -49,11 +49,12 @@ export default function AssetSymbol({ name, address }: IProps) {
 
   const _name = isEmptyName(name) ? '' : name;
   const title = _name || address;
+  const displayName = _name ? _name : address ? shortAddress(address, 4) : '-';
 
   return (
     <Content>
       {(url && !error && <img src={url} alt={title} title={title} onError={() => setError(true)} />) || (
-        <span>{_name || address ? shortAddress(address, 4) : '-'}</span>
+        <span>{displayName}</span>
       )}
     </Content>
   );

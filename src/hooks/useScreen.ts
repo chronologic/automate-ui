@@ -16,25 +16,22 @@ interface IScreenStoreMethods {}
 
 interface IScreenHook extends IScreenStoreState, IScreenStoreMethods {}
 
-const defaultState: IScreenStoreState = {
-  isXs: false,
-  isSm: false,
-  isMd: false,
-  isLg: false,
-  isXl: false,
-  isXxl: false,
-};
+const defaultState = getScreenState();
 
-const useStore = create<IScreenStoreState>(() => defaultState);
+const useScreenStore = create<IScreenStoreState>(() => defaultState);
 
 const updateScreenThrottled = throttle(() => updateScreen(), 100);
 
 window.addEventListener('resize', updateScreenThrottled);
 
 function updateScreen() {
+  useScreenStore.setState(getScreenState());
+}
+
+function getScreenState(): IScreenStoreState {
   const width = window.innerWidth;
 
-  const newState: IScreenStoreState = {
+  return {
     isXs: true,
     isSm: width >= SCREEN_BREAKPOINT.SM,
     isMd: width >= SCREEN_BREAKPOINT.MD,
@@ -42,14 +39,12 @@ function updateScreen() {
     isXl: width > SCREEN_BREAKPOINT.XL,
     isXxl: width > SCREEN_BREAKPOINT.XXL,
   };
-
-  useStore.setState(newState);
 }
 
 const useScreen = (): IScreenHook => {
-  const state = useStore();
+  const state = useScreenStore();
 
   return state;
 };
 
-export { useScreen, useStore };
+export { useScreen, useScreenStore };

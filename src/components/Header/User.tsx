@@ -11,10 +11,10 @@ import { SCREEN_BREAKPOINT } from '../../constants';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
-  const { isXs } = useScreen();
+  const { isLg } = useScreen();
 
   const loginShort = useMemo(() => {
-    return user.login.split('@')[0] || user.login.substr(0, 10);
+    return user.login.split('@')[0] || user.login.slice(0, 10);
   }, [user.login]);
 
   if (isAuthenticated) {
@@ -37,7 +37,7 @@ function HeaderMain() {
       <Container>
         <Dropdown overlay={menu} trigger={['click']}>
           <Login>
-            <span>{isXs ? loginShort : user.login}</span> <DownOutlined />
+            <span>{isLg ? user.login : loginShort}</span> <DownOutlined />
           </Login>
         </Dropdown>
       </Container>

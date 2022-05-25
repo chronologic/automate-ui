@@ -1,5 +1,6 @@
 export * from './useAuth';
 export * from './useAutomateConnection';
+export * from './useAssetOptions';
 export * from './useScreen';
 export * from './useTheme';
 export * from './useTransactions';

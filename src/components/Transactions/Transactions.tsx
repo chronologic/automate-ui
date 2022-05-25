@@ -1,70 +1,66 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Typography, Alert } from 'antd';
-import uniqBy from 'lodash/uniqBy';
 import styled from 'styled-components';
+import queryString from 'query-string';
 
 import { formatCurrency } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import { useTransactions, useScreen } from '../../hooks';
+import { useTransactions, useScreen, useAssetOptions, IAssetStorageItem } from '../../hooks';
 import { SCREEN_BREAKPOINT } from '../../constants';
 import PageTitle from '../PageTitle';
-import { IAssetStorageItem } from './assetStorage';
-import assetStorage from './assetStorage';
 import TransactionTable from './TransactionTable';
 import TransactionList from './TransactionList';
+import { useAddAssetModal } from './useAddAssetModal';
+import { useTxEdit } from './useTxEdit';
+
+const queryParams = queryString.parseUrl(window.location.href);
+const apiKey = queryParams.query.apiKey as string;
 
 function Transactions() {
   const { isLg, isXxl } = useScreen();
   const { getList, editTx, cancelTx } = useTransactions();
+  const { assetOptions, addAssets } = useAssetOptions();
+  const addAssetModal = useAddAssetModal();
+  const txEdit = useTxEdit();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
-  const [assetOptions, setAssetOptions] = useState<IAssetStorageItem[]>([]);
 
   const totalGasSavings = useMemo(() => {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
-  const updateAssetOptions = useCallback(
-    (newItems?: IScheduledForUser[]) => {
-      const localItems = newItems || items;
-      const uniqueAssets: IAssetStorageItem[] = uniqBy(
-        [
-          { address: '', name: 'ETH', decimals: 18 } as IAssetStorageItem,
-          ...[
-            ...assetStorage.getItems(),
-            ...localItems.map((item) => {
-              return {
-                address: item.conditionAsset,
-                decimals: item.conditionAssetDecimals,
-                name: item.conditionAssetName,
-              };
-            }),
-            ...localItems.map((item) => {
-              return {
-                address: item.assetContract,
-                decimals: item.assetDecimals,
-                name: item.assetName,
-              };
-            }),
-          ].filter((item) => item.address && item.decimals && item.name),
-        ],
-        'address'
-      );
-      setAssetOptions(uniqueAssets);
-    },
-    [items]
-  );
-
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getList();
+      const res = await getList(apiKey);
       setItems(res);
-      updateAssetOptions(res);
+      const resAssetOptions: IAssetStorageItem[] = [
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.conditionAsset,
+              decimals: item.conditionAssetDecimals,
+              name: item.conditionAssetName,
+            } as IAssetStorageItem)
+        ),
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.assetContract,
+              decimals: item.assetDecimals,
+              name: item.assetName,
+            } as IAssetStorageItem)
+        ),
+      ];
+      addAssets(resAssetOptions);
     } finally {
       setLoading(false);
     }
-  }, [getList, updateAssetOptions]);
+  }, [addAssets, getList]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {
@@ -88,6 +84,20 @@ function Transactions() {
     [cancelTx, refresh]
   );
 
+  const handleOpenAddAssetModal = useCallback(() => {
+    addAssetModal.open({
+      assetType: txEdit.tx?.assetType!,
+      chainId: txEdit.tx?.chainId!,
+      onSubmit: (asset) => {
+        txEdit.updateTx({
+          conditionAsset: asset.address,
+          conditionAssetName: asset.name,
+          conditionAssetDecimals: asset.decimals,
+        });
+      },
+    });
+  }, [addAssetModal, txEdit]);
+
   useEffect(() => {
     refresh();
     // only execute once on load
@@ -100,16 +110,23 @@ function Transactions() {
         assetOptions={assetOptions}
         items={items}
         loading={loading}
+        apiKey={apiKey}
+        editing={txEdit.editing}
+        editingItem={txEdit.tx}
+        onStartEdit={txEdit.startEdit}
+        onStopEdit={txEdit.stopEdit}
+        onUpdateEditingItem={txEdit.updateTx}
         onCancelTx={handleCancelTx}
         onEditTx={editTx}
         onRefresh={refresh}
         onSetLoading={setLoading}
-        onUpdateAssetOptions={updateAssetOptions}
+        onOpenAddAssetModal={handleOpenAddAssetModal}
       />
     )) || <TransactionList items={items} loading={loading} />;
 
   return (
     <Container>
+      {addAssetModal.modal}
       <PageTitle title="Transactions" />
       <TableHeader>
         <Typography.Title className="title header" level={5}>

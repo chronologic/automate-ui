@@ -13,7 +13,7 @@ import uniqBy from 'lodash/uniqBy';
 import moment from 'moment-timezone';
 import queryString from 'query-string';
 
-import { bigNumberToNumber, normalizeBigNumber, numberToBn, shortAddress } from '../../utils';
+import { bigNumberToNumber, convertDecimals, numberToBn, shortAddress } from '../../utils';
 import { SentinelAPI } from '../../api/SentinelAPI';
 import { TokenAPI } from '../../api/TokenAPI';
 import { IScheduledForUser } from '../../types';
@@ -132,11 +132,7 @@ function TransactionTableWide() {
       setEditedConditionDecimals(newDecimals);
 
       if (newDecimals !== oldDecimals) {
-        const newAmount = normalizeBigNumber(
-          BigNumber.from(editedConditionAmount),
-          oldDecimals,
-          newDecimals
-        ).toString();
+        const newAmount = convertDecimals(BigNumber.from(editedConditionAmount), oldDecimals, newDecimals).toString();
         setEditedConditionAmount(newAmount);
       }
     },
