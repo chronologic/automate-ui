@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 import { calculatePercent } from '../../utils';
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 interface IProps {
   visible: boolean;
@@ -19,7 +19,7 @@ function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign, compl
   const completed = currentTxIndex === totalTxsToSign;
 
   return (
-    <Modal title="Signing transactions" centered className="modal" visible={visible} onCancel={onCancel} footer={[]}>
+    <Modal title="Signing transactions" centered className="modal" visible={visible} onCancel={onCancel} footer={null}>
       {!completedSigning && (
         <>
           <SigningProgress>
@@ -39,14 +39,15 @@ function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign, compl
         <>
           <Completed>
             <CheckCircleFilled className="completedCheck" />
-            <Text className="congratulationsMsg">
-              Congratulations! Your Automation is ready! <br /> We will notify you via email whenever a transaction is
-              executed.
-            </Text>
+            <Title level={5} className="congratulationsMsg">
+              Your Automation is ready! <br /> We'll notify you via email whenever a transaction is executed.
+            </Title>
             <ProgressBar>
               <Progress percent={100} />
             </ProgressBar>
             <Text className="bottomMsg">
+              IMPORTANT!
+              <br />
               If you want to use the nonces you just signed for other transactions, you will have to{' '}
               <a
                 href="https://metamask.zendesk.com/hc/en-us/articles/360015488891-How-to-reset-your-account"
@@ -54,7 +55,16 @@ function SigningPopup({ visible, onCancel, currentTxIndex, totalTxsToSign, compl
                 rel="noopener noreferrer"
               >
                 reset your Metamask account.
-              </a>
+              </a>{' '}
+              And remember to{' '}
+              <a
+                href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3#8256"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                switch back to non-Automate Network
+              </a>{' '}
+              in MetaMask.
             </Text>
             <Link to="/transactions">
               <Button key="okButton" className="okButton">
@@ -122,7 +132,9 @@ const Completed = styled.div`
     color: ${(props) => props.theme.colors.accent};
   }
   .okButton {
-    margin-left: 50%;
+    margin-left: 25%;
+    margin-top: 16px;
+    margin-bottom: 8px;
     background-color: ${(props) => props.theme.colors.accent};
     color: white;
   }

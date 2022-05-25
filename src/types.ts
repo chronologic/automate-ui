@@ -114,7 +114,11 @@ export interface IScheduledForUser {
   transactionHash: string;
   error: string;
   from: string;
+  fromLabel: string;
   to: string;
+  toLabel: string;
+  method: string;
+  methodLabel: string;
   nonce: number;
   chainId: number;
   conditionBlock: number;

@@ -1,6 +1,7 @@
 import create from 'zustand';
 
 import { ethereum } from '../constants';
+import { useStore as useEthereumStore } from './useEthereum';
 import { notifications } from './connectionNotifications';
 
 interface IMetamaskStoreState {
@@ -25,7 +26,7 @@ const defaultState: IMetamaskStoreState = {
 const useStore = create<IMetamaskStoreState>(() => defaultState);
 
 async function connect(): Promise<IMetamaskStoreState> {
-  const isMetamaskInstalled = !!ethereum;
+  const isMetamaskInstalled = !!(ethereum as any)?.isMetaMask;
   if (!isMetamaskInstalled) {
     reset();
     throw notifications.metamaskNotInstalled();
@@ -58,13 +59,16 @@ async function reset() {
   useStore.setState(defaultState);
 }
 
-ethereum?.on('accountsChanged', handleAccountsChanged as any);
+useEthereumStore.subscribe((state) => {
+  if (state.isReady) {
+    ethereum.on('accountsChanged', handleAccountsChanged as any);
+    ethereum.on('chainChanged', handleChainChanged as any);
+  }
+});
 
 function handleAccountsChanged(accounts: string[]) {
   useStore.setState({ account: accounts[0] });
 }
-
-ethereum?.on('chainChanged', handleChainChanged as any);
 
 function handleChainChanged(chainIdHex: string) {
   useStore.setState({ chainId: Number(chainIdHex) });

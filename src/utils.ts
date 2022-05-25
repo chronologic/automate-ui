@@ -57,7 +57,7 @@ export function isTruthy(value: string): boolean {
 
 export function shortAddress(address?: string | null | undefined, chars = 4): string {
   const addr = (address || '').toUpperCase();
-  return `0x${addr.substr(2, chars)}...${addr.substr(-chars)}`;
+  return `0x${addr.substr(2, chars - 1)}...${addr.substr(-chars)}`;
 }
 
 export function formatNumber(value: number, decimals = 4, fallbackValue = '-'): string {
