@@ -72,6 +72,7 @@ function Repeat() {
                 placeholder="Start time"
                 use12Hours
                 format="h:mm a"
+                placement="topLeft"
                 onChange={(time) => setStartTime(time as any)}
               />
             </Form.Item>
