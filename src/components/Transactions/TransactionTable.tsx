@@ -1,26 +1,23 @@
 import { useCallback, useMemo, useState } from 'react';
 import {
   DeleteOutlined,
-  PlusOutlined,
   MoreOutlined,
   EditOutlined,
   ExportOutlined,
   FileTextOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
-import { Button, DatePicker, Dropdown, Input, InputNumber, Menu, Select, Table, TimePicker, Tooltip } from 'antd';
+import { Button, Dropdown, Input, InputNumber, Menu, Table, Tooltip } from 'antd';
 import { BigNumber, ethers } from 'ethers';
-import moment from 'moment-timezone';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { bigNumberToNumber, formatCurrency, formatNumber, numberToBn } from '../../utils';
+import { bigNumberToNumber, formatCurrency, formatNumber } from '../../utils';
 import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
 import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from '../../hooks';
 import { BlockExplorerLink } from '../Transactions';
-import AssetSymbol from '../AssetSymbol';
 import LabelTag from '../LabelTag';
 import AssetSymbolLink from './AssetSymbolLink';
 import TxStatus from './TxStatus';
