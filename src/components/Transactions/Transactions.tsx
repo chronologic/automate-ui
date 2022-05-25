@@ -12,6 +12,7 @@ import TransactionTable from './TransactionTable';
 import TransactionList from './TransactionList';
 import { useAddAssetModal } from './useAddAssetModal';
 import { useTxEdit } from './useTxEdit';
+import TransactionTableWide from './TransactionTableWide';
 
 const queryParams = queryString.parseUrl(window.location.href);
 const apiKey = queryParams.query.apiKey as string;
@@ -62,6 +63,28 @@ function Transactions() {
     }
   }, [addAssets, getList]);
 
+  const handleSave = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      await editTx({
+        request: {
+          ...txEdit.tx!,
+          paymentEmail: '',
+          paymentRefundAddress: '',
+        },
+        queryParams: {
+          apiKey,
+        },
+      });
+      txEdit.stopEdit();
+
+      refresh();
+    } finally {
+      setLoading(false);
+    }
+  }, [editTx, refresh, txEdit]);
+
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {
       try {
@@ -104,68 +127,100 @@ function Transactions() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const transactionsComponent = (isXxl && <div />) ||
+  const transactionsComponent = (isXxl && (
+    <TransactionTableWide
+      assetOptions={assetOptions}
+      items={items}
+      loading={loading}
+      editingItem={txEdit.tx}
+      onStartEdit={txEdit.startEdit}
+      onStopEdit={txEdit.stopEdit}
+      onUpdateEditingItem={txEdit.updateTx}
+      onSave={handleSave}
+      onCancelTx={handleCancelTx}
+      onOpenAddAssetModal={handleOpenAddAssetModal}
+    />
+  )) ||
     (isLg && (
       <TransactionTable
         assetOptions={assetOptions}
         items={items}
         loading={loading}
-        apiKey={apiKey}
         editingItem={txEdit.tx}
         onStartEdit={txEdit.startEdit}
         onStopEdit={txEdit.stopEdit}
         onUpdateEditingItem={txEdit.updateTx}
+        onSave={handleSave}
         onCancelTx={handleCancelTx}
-        onEditTx={editTx}
-        onRefresh={refresh}
-        onSetLoading={setLoading}
         onOpenAddAssetModal={handleOpenAddAssetModal}
       />
     )) || <TransactionList items={items} loading={loading} />;
 
   return (
     <Container>
-      {addAssetModal.modal}
       <PageTitle title="Transactions" />
-      <TableHeader>
-        <Typography.Title className="title header" level={5}>
-          Transaction list
-        </Typography.Title>
-        <Alert
-          message={
-            <Typography.Text className="alert-txt">
-              These are the transactions that you scheduled using the{' '}
-              <a
-                href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Automate Network in MetaMask
-              </a>
-            </Typography.Text>
-          }
-          type="warning"
-          showIcon
-          closable
-        />
-        <div className="savingsContainer">
-          <Typography.Title className="title" level={5}>
-            Total gas savings:
+      {addAssetModal.modal}
+      <HeaderContainer>
+        <TableHeader>
+          <Typography.Title className="title header" level={5}>
+            Transaction list
           </Typography.Title>
-          <Typography.Title className="title savings" level={3}>
-            {formatCurrency(totalGasSavings)}
-          </Typography.Title>
-        </div>
-      </TableHeader>
-      {transactionsComponent}
+          <Alert
+            message={
+              <Typography.Text className="alert-txt">
+                These are the transactions that you scheduled using the{' '}
+                <a
+                  href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Automate Network in MetaMask
+                </a>
+              </Typography.Text>
+            }
+            type="warning"
+            showIcon
+            closable
+          />
+          <div className="savingsContainer">
+            <Typography.Title className="title" level={5}>
+              Total gas savings:
+            </Typography.Title>
+            <Typography.Title className="title savings" level={3}>
+              {formatCurrency(totalGasSavings)}
+            </Typography.Title>
+          </div>
+        </TableHeader>
+      </HeaderContainer>
+      <TableContainer>{transactionsComponent}</TableContainer>
     </Container>
   );
 }
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1220px;
   padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+
+  .alert-txt {
+    color: rgba(0, 0, 0, 0.85);
+  }
+`;
+
+const HeaderContainer = styled.div`
+  width: 100%;
+  max-width: 1220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+`;
+
+const TableContainer = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -175,8 +230,9 @@ const Container = styled.div`
     width: 100%;
   }
 
-  .alert-txt {
-    color: rgba(0, 0, 0, 0.85);
+  .ant-table.ant-table-small .ant-table-thead > tr > th,
+  .ant-table.ant-table-small .ant-table-tbody > tr > td {
+    padding: 4px 2px;
   }
 `;
 

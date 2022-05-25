@@ -14,7 +14,6 @@ import { Link } from 'react-router-dom';
 
 import { bigNumberToNumber, formatCurrency, formatNumber } from '../../utils';
 import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
-import { IScheduleParams, IScheduleRequest } from '../../api/SentinelAPI';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from '../../hooks';
 import { BlockExplorerLink } from '../Transactions';
@@ -28,22 +27,13 @@ import ConditionAsset from './ConditionAsset';
 interface IProps {
   items: IScheduledForUser[];
   loading: boolean;
-  apiKey: string;
   assetOptions: IAssetStorageItem[];
   editingItem: IScheduledForUser | undefined;
   onStartEdit: (tx: IScheduledForUser) => void;
   onStopEdit: () => void;
   onUpdateEditingItem: (partial: Partial<IScheduledForUser>) => void;
-  onSetLoading: (loading: boolean) => void;
-  onEditTx: ({
-    request,
-    queryParams,
-  }: {
-    request: IScheduleRequest;
-    queryParams?: IScheduleParams | undefined;
-  }) => Promise<IScheduledForUser>;
+  onSave: () => void;
   onCancelTx: (record: IScheduledForUser) => void;
-  onRefresh: () => void;
   onOpenAddAssetModal: () => void;
 }
 
@@ -52,16 +42,13 @@ const { TextArea } = Input;
 function TransactionTable({
   items,
   loading,
-  apiKey,
   assetOptions,
   editingItem,
   onStartEdit,
   onStopEdit,
   onUpdateEditingItem,
-  onSetLoading,
-  onEditTx,
+  onSave,
   onCancelTx,
-  onRefresh,
   onOpenAddAssetModal,
 }: IProps) {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
@@ -79,28 +66,6 @@ function TransactionTable({
   const handleExpandedRowKeysChange = useCallback((keys: string[]) => {
     setExpandedRowKeys(keys);
   }, []);
-
-  const handleSave = useCallback(async () => {
-    try {
-      onSetLoading(true);
-
-      await onEditTx({
-        request: {
-          ...editingItem!,
-          paymentEmail: '',
-          paymentRefundAddress: '',
-        },
-        queryParams: {
-          apiKey,
-        },
-      });
-      onStopEdit();
-
-      onRefresh();
-    } finally {
-      onSetLoading(false);
-    }
-  }, [apiKey, editingItem, onEditTx, onRefresh, onSetLoading, onStopEdit]);
 
   const columns = useMemo(() => {
     return [
@@ -396,7 +361,7 @@ function TransactionTable({
             if (id === editingItem?.id) {
               return (
                 <div>
-                  <Button type="primary" color="green" onClick={handleSave}>
+                  <Button type="primary" color="green" onClick={onSave}>
                     Save
                   </Button>
                   <br />
@@ -421,8 +386,8 @@ function TransactionTable({
       assetOptions,
       editingItem?.conditionAsset,
       editingItem?.id,
-      handleSave,
       onOpenAddAssetModal,
+      onSave,
       onStopEdit,
       onUpdateEditingItem,
     ]
@@ -456,12 +421,6 @@ function TransactionTable({
 
 const Container = styled.div`
   width: 100%;
-  max-width: 1220px;
-  padding: 40px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
 
   .table {
     width: 100%;
