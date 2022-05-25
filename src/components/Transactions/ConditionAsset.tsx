@@ -80,8 +80,6 @@ function ConditionAsset({
 
   const assetName = (name || matchedOption?.name || '').toUpperCase();
 
-  console.log({ address, matchedOption, name });
-
   if (address) {
     return (
       <BlockExplorerLink hash={address} chainId={chainId} type={'address'}>
