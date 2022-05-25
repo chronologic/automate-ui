@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import { SMALL_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 import { BlockExplorerLink } from '../Transactions';
 import TxStatus from './TxStatus';
 import AssetSymbolLink from './AssetSymbolLink';
@@ -78,7 +78,7 @@ function TransactionListItem({ item }: IListItemProps) {
 
 const Container = styled.div`
   width: 100%;
-  max-width: ${SMALL_SCREEN_THRESHOLD}px;
+  max-width: ${SCREEN_BREAKPOINT.SM}px;
   padding: 40px 20px;
   display: flex;
   flex-direction: row;

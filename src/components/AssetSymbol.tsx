@@ -88,7 +88,7 @@ async function getAssetUrl(name: string, address: string): Promise<string> {
       const { data: assetForAddress } = await (name === 'eth'
         ? coingeckoApi.get('/coins/ethereum')
         : coingeckoApi.get(`/coins/ethereum/contract/${address}`));
-      const url = assetForAddress.image.small;
+      const url = assetForAddress.image.SM;
       if (address) {
         updateCache(address, url);
       }

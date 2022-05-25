@@ -7,11 +7,11 @@ import styled from 'styled-components';
 import { useAuth, useScreen } from '../../hooks';
 import { IThemeProps } from '../../types';
 import { ALLOW_SIGNUP } from '../../env';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
-  const { isMobile } = useScreen();
+  const { isXs } = useScreen();
 
   const loginShort = useMemo(() => {
     return user.login.split('@')[0] || user.login.substr(0, 10);
@@ -37,7 +37,7 @@ function HeaderMain() {
       <Container>
         <Dropdown overlay={menu} trigger={['click']}>
           <Login>
-            <span>{isMobile ? loginShort : user.login}</span> <DownOutlined />
+            <span>{isXs ? loginShort : user.login}</span> <DownOutlined />
           </Login>
         </Dropdown>
       </Container>
@@ -55,7 +55,7 @@ const Container = styled.div`
   color: ${(props: IThemeProps) => props.theme.colors.accent};
   margin-right: 40px;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     margin-right: 0;
 
     .ant-dropdown-trigger {

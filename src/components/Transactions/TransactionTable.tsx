@@ -45,7 +45,13 @@ interface IProps {
   loading: boolean;
   assetOptions: IAssetStorageItem[];
   onSetLoading: (loading: boolean) => void;
-  onEditTx: (request: IScheduleRequest, queryParams?: IScheduleParams | undefined) => Promise<IScheduledForUser>;
+  onEditTx: ({
+    request,
+    queryParams,
+  }: {
+    request: IScheduleRequest;
+    queryParams?: IScheduleParams | undefined;
+  }) => Promise<IScheduledForUser>;
   onCancelTx: (record: IScheduledForUser) => void;
   onRefresh: () => void;
   onUpdateAssetOptions: (newItems?: IScheduledForUser[]) => void;
@@ -200,21 +206,11 @@ function TransactionTable({
   );
 
   const handleSave = useCallback(async () => {
-    const c = console;
-    c.log({
-      editedConditionAmount,
-      editedConditionAsset,
-      editedGasPriceAware,
-      editedNotes,
-      editedTimeCondition,
-      editedTimeConditionTZ,
-    });
-
     try {
       onSetLoading(true);
 
-      await onEditTx(
-        {
+      await onEditTx({
+        request: {
           assetType: editingItem.assetType,
           conditionAmount: editedConditionAmount,
           conditionAsset: editedConditionAsset,
@@ -226,10 +222,10 @@ function TransactionTable({
           timeCondition: editedTimeCondition,
           timeConditionTZ: editedTimeConditionTZ,
         },
-        {
+        queryParams: {
           apiKey,
-        }
-      );
+        },
+      });
       setEditingItem({} as any);
 
       onRefresh();

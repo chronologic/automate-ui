@@ -5,16 +5,16 @@ import styled from 'styled-components';
 
 import { formatCurrency } from '../../utils';
 import { IScheduledForUser } from '../../types';
+import { useTransactions, useScreen } from '../../hooks';
+import { SCREEN_BREAKPOINT } from '../../constants';
+import PageTitle from '../PageTitle';
 import { IAssetStorageItem } from './assetStorage';
 import assetStorage from './assetStorage';
-import { useTransactions, useScreen } from '../../hooks';
-import PageTitle from '../PageTitle';
 import TransactionTable from './TransactionTable';
 import TransactionList from './TransactionList';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
 
 function Transactions() {
-  const { isSmall } = useScreen();
+  const { isLg, isXxl } = useScreen();
   const { getList, editTx, cancelTx } = useTransactions();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
@@ -72,10 +72,12 @@ function Transactions() {
         setLoading(true);
 
         await cancelTx({
-          id: record.id,
-          key: record.txKey,
-          createdAt: record.createdAt,
-          paymentAddress: '',
+          params: {
+            id: record.id,
+            key: record.txKey,
+            createdAt: record.createdAt,
+            paymentAddress: '',
+          },
         });
 
         refresh();
@@ -91,6 +93,20 @@ function Transactions() {
     // only execute once on load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const transactionsComponent = (isXxl && <div />) ||
+    (isLg && (
+      <TransactionTable
+        assetOptions={assetOptions}
+        items={items}
+        loading={loading}
+        onCancelTx={handleCancelTx}
+        onEditTx={editTx}
+        onRefresh={refresh}
+        onSetLoading={setLoading}
+        onUpdateAssetOptions={updateAssetOptions}
+      />
+    )) || <TransactionList items={items} loading={loading} />;
 
   return (
     <Container>
@@ -125,20 +141,7 @@ function Transactions() {
           </Typography.Title>
         </div>
       </TableHeader>
-      {isSmall ? (
-        <TransactionList items={items} loading={loading} />
-      ) : (
-        <TransactionTable
-          assetOptions={assetOptions}
-          items={items}
-          loading={loading}
-          onCancelTx={handleCancelTx}
-          onEditTx={editTx}
-          onRefresh={refresh}
-          onSetLoading={setLoading}
-          onUpdateAssetOptions={updateAssetOptions}
-        />
-      )}
+      {transactionsComponent}
     </Container>
   );
 }
@@ -183,7 +186,7 @@ const TableHeader = styled.div`
     color: ${(props) => props.theme.colors.accent};
   }
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     justify-content: center;
     margin-bottom: 16px;
 
