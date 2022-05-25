@@ -111,7 +111,6 @@ function Transactions() {
         items={items}
         loading={loading}
         apiKey={apiKey}
-        editing={txEdit.editing}
         editingItem={txEdit.tx}
         onStartEdit={txEdit.startEdit}
         onStopEdit={txEdit.stopEdit}

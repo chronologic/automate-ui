@@ -30,7 +30,6 @@ interface IProps {
   loading: boolean;
   apiKey: string;
   assetOptions: IAssetStorageItem[];
-  editing: boolean;
   editingItem: IScheduledForUser | undefined;
   onStartEdit: (tx: IScheduledForUser) => void;
   onStopEdit: () => void;
@@ -55,7 +54,6 @@ function TransactionTable({
   loading,
   apiKey,
   assetOptions,
-  editing,
   editingItem,
   onStartEdit,
   onStopEdit,
@@ -74,25 +72,6 @@ function TransactionTable({
       if (!expandedRowKeys.includes(record.id)) {
         setExpandedRowKeys([...expandedRowKeys, record.id]);
       }
-      // onUpdateEditingItem({
-      //   conditionAsset: record.conditionAsset,
-      //   conditionAmount: record.conditionAmount,
-      //   conditionAssetDecimals: record.conditionAssetDecimals,
-      // })
-      // setEditedConditionAsset(record.conditionAsset);
-      // setEditedConditionAmount();
-      // setEditedConditionDecimals();
-      // setEditedTimeCondition(record.timeCondition);
-      // if (record.timeCondition && record.timeConditionTZ) {
-      //   const date = moment.tz(record.timeCondition, record.timeConditionTZ);
-      //   setEditedTimeConditionDate(date as any);
-      //   setEditedTimeConditionTime(date as any);
-      // } else {
-      //   setEditedTimeConditionTime(moment().startOf('day') as any);
-      // }
-      // setEditedTimeConditionTZ(record.timeConditionTZ || moment.tz.guess());
-      // setEditedNotes(record.notes);
-      // setEditedGasPriceAware(record.gasPriceAware);
     },
     [expandedRowKeys, onStartEdit]
   );
