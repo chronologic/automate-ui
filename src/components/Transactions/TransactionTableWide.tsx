@@ -47,11 +47,6 @@ function TransactionTableWide({
         editingItem,
         onUpdateEditingItem,
       }),
-      // {
-      //   title: 'Gas',
-      //   children: [
-      //   ],
-      // },
       cols.conditionAsset({
         assetOptions,
         editingItem,
@@ -66,11 +61,6 @@ function TransactionTableWide({
         editingItem,
         onUpdateEditingItem,
       }),
-      // {
-      //   title: 'Condition',
-      //   children: [
-      //   ],
-      // },
       cols.notes({
         editingItem,
         onUpdateEditingItem,
