@@ -1,11 +1,11 @@
 import React from 'react';
 import { useState, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Form, Typography, Input, Button, notification } from 'antd';
+import styled from 'styled-components';
 import qs from 'query-string';
 
-import { Form, Typography, Input, Button, notification } from 'antd';
 import { useAuth } from '../../hooks';
-import styled from 'styled-components';
 
 function ResetPassword() {
   const { authenticating, onPasswordReset, isPasswordResetted } = useAuth();
@@ -27,11 +27,10 @@ function ResetPassword() {
   }, []);
 
   const resetSuccessfulNotification = () => {
-    notification['success']({
+    notification.success({
       message: 'Password has been successfully changed.',
       description: 'Your password has been successfully changed. You can log in with your new password now.',
       duration: 3.5,
-      // close model too
     });
   };
 
@@ -78,7 +77,6 @@ function ResetPassword() {
           rules={[
             { required: true, message: 'Password is required' },
             { validator: (_, value) => validatePassword(value) },
-            // { validator: () => checkPasswordMatch() },
           ]}
         >
           <Input

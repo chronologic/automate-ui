@@ -21,7 +21,7 @@ function Auth() {
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [displayPasswordResetModel, setDisplayPasswordResetModel] = useState(false);
+  const [showPwResetModel, setShowPwResetModal] = useState(false);
 
   const handleAuth = useCallback(() => {
     onAuthenticate({ login, password, signup, source: getUserSource() });
@@ -41,22 +41,22 @@ function Auth() {
 
   const handleRequestPasswordReset = useCallback(() => {
     onRequestPasswordReset({ login });
-    showPassowrdResetNotification();
+    showPwResetNotification();
   }, [login, onRequestPasswordReset]);
 
   const handlePasswordReset = useCallback(() => {
-    setDisplayPasswordResetModel(true);
+    setShowPwResetModal(true);
   }, []);
   const handleCancel = () => {
-    setDisplayPasswordResetModel(false);
+    setShowPwResetModal(false);
   };
-  const showPassowrdResetNotification = () => {
-    notification['success']({
+  const showPwResetNotification = () => {
+    notification.success({
       message: 'Password Reset Email Has Been Sent',
       description: 'We sent you an email with a reset link',
       duration: 3.5,
     });
-    setDisplayPasswordResetModel(false);
+    setShowPwResetModal(false);
   };
 
   useEffect(() => {
@@ -128,7 +128,7 @@ function Auth() {
               {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
             </Typography.Link>{' '}
             <br /> <br />
-            <Typography.Link onClick={handlePasswordReset}>{signup ? '' : 'Forgot Password?'}</Typography.Link>
+            {!signup && <Typography.Link onClick={handlePasswordReset}>'Forgot Password?'</Typography.Link>}
           </ModeSwitch>
         )}
       </Form>
@@ -136,7 +136,7 @@ function Auth() {
         title="Reset Password"
         centered
         className="modal"
-        visible={displayPasswordResetModel}
+        visible={showPwResetModel}
         onCancel={handleCancel}
         footer={[
           <Button key="submitResetPassword" type="primary" disabled={!login} onClick={handleRequestPasswordReset}>
