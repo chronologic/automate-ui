@@ -49,7 +49,7 @@ const statusConfig: IStatusConfig = {
   StaleNonce: {
     color: 'pink',
     description:
-      "StaleNonce - the transaction's nonce is lower than the last nonce on the Ethereum network. This means the transaction can not be executed. You can reschedule this transaction with a higher nonce.",
+      'StaleNonce - another transaction with the same nonce has been executed before this one, so it can no longer be executed',
     icon: <WarningOutlined />,
   },
   Error: {

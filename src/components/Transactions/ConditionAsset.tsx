@@ -83,7 +83,7 @@ function ConditionAsset({
   if (address) {
     return (
       <BlockExplorerLink hash={address} chainId={chainId} type={'address'}>
-        <AssetSymbol name={assetName} address={address} />
+        <AssetSymbol chainId={chainId} name={assetName} address={address} />
       </BlockExplorerLink>
     );
   }
