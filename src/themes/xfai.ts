@@ -13,6 +13,8 @@ const theme: ITheme = {
       '0 3px 6px -4px rgb(255 255 255 / 12%), 0 6px 16px 0 rgb(255 255 255 / 8%), 0 9px 28px 8px rgb(255 255 255 / 5%)',
     border: '#3e3e3e',
     weak: '#232323',
+    disabled: '#e9e9e9',
+    disabledText: '#bfbfbf',
   },
   assets: {
     logoMain: '/assets/themes/xfai__logo_main.svg',
