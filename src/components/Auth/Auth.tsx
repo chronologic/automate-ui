@@ -202,7 +202,7 @@ const ModeSwitch = styled.div`
   margin-bottom: 32px;
 `;
 
-async function validatePassword(password: string): Promise<void> {
+export async function validatePassword(password: string): Promise<void> {
   if (!/(?=.*[A-Z])(?=.*[a-z]).*/.test(password)) {
     return Promise.reject(new Error('Password must contain lower and uppercase characters'));
   }

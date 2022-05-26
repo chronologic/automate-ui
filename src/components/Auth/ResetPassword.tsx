@@ -6,18 +6,19 @@ import styled from 'styled-components';
 import qs from 'query-string';
 
 import { useAuth } from '../../hooks';
+import { validatePassword } from './Auth';
 
 function ResetPassword() {
+  const [form] = Form.useForm();
   const { authenticating, onPasswordReset, isPasswordResetted } = useAuth();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState(' ');
-  const [enableSubmitButton, setEnableSubmitButton] = useState(false);
 
   const history = useHistory();
 
   const q = qs.parse(document.location.search);
   const token = q.token as string;
-  const login = q.email as string;
+  const login = (q.email as string) || '';
 
   const handlePasswordChange = useCallback((e: any) => {
     setPassword(e.target.value);
@@ -34,25 +35,13 @@ function ResetPassword() {
     });
   };
 
-  const handlePasswordReset = useCallback(() => {
+  const handlePasswordReset = useCallback(async () => {
+    await form.validateFields();
     if (password === confirmPassword) {
       onPasswordReset({ login, password, token });
     }
-  }, [login, token, password, confirmPassword, onPasswordReset]);
+  }, [login, token, password, confirmPassword, onPasswordReset, form]);
 
-  async function validatePassword(password: string): Promise<void> {
-    setEnableSubmitButton(false);
-    if (!/(?=.*[A-Z])(?=.*[a-z]).*/.test(password)) {
-      return Promise.reject(new Error('Password must contain lower and uppercase characters'));
-    }
-    if (!/.{8,}/.test(password)) {
-      return Promise.reject(new Error('Password must be at least 8 characters'));
-    }
-    if (!/(?=.*[0-9\W]).*/.test(password)) {
-      return Promise.reject(new Error('Password must contain a number or a symbol'));
-    }
-    setEnableSubmitButton(true);
-  }
   const checkPasswordMatch = useCallback(() => {
     if (!(password === confirmPassword)) {
       return Promise.reject(new Error('Passwords must match'));
@@ -114,7 +103,6 @@ function ResetPassword() {
           size="large"
           htmlType="submit"
           loading={authenticating}
-          disabled={!(password === confirmPassword) || !enableSubmitButton}
           className="submit-btn"
           onClick={handlePasswordReset}
         >
