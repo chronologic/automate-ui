@@ -43,7 +43,7 @@ export function status() {
   return {
     dataIndex: 'statusName',
     render: (status: string, record: IScheduledForUser) => {
-      return <TxStatus status={status} txHash={record.transactionHash} />;
+      return <TxStatus status={status} txHash={record.transactionHash} chainId={record.chainId} />;
     },
     sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
     title: 'Status',

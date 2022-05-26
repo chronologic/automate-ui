@@ -8,7 +8,11 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 
+import { ChainId } from '../../constants';
+import BlockExplorerLink from './BlockExplorerLink';
+
 interface IProps {
+  chainId: ChainId;
   status: string;
   txHash: string;
 }
@@ -55,14 +59,16 @@ const statusConfig: IStatusConfig = {
   },
 };
 
-function TxStatus({ status }: IProps) {
+function TxStatus({ status, txHash, chainId }: IProps) {
   const cfg = statusConfig[status];
 
   if (cfg) {
     return (
-      <Tooltip placement="right" title={cfg.description}>
-        <span style={{ color: cfg.color }}>{cfg.icon}</span>
-      </Tooltip>
+      <BlockExplorerLink chainId={chainId} hash={txHash} type="tx" title={''}>
+        <Tooltip placement="right" title={cfg.description}>
+          <span style={{ color: cfg.color }}>{cfg.icon}</span>
+        </Tooltip>
+      </BlockExplorerLink>
     );
   }
 
