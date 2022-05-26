@@ -1,28 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  DeleteOutlined,
-  MoreOutlined,
-  EditOutlined,
-  ExportOutlined,
-  FileTextOutlined,
-  InfoCircleOutlined,
-} from '@ant-design/icons';
-import { Button, Dropdown, Input, InputNumber, Menu, Table, Tooltip } from 'antd';
-import { BigNumber, ethers } from 'ethers';
+import { Table } from 'antd';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
-import { bigNumberToNumber, formatCurrency, formatNumber } from '../../utils';
-import { ChainId, BlockExplorerUrl, BlockExplorerName } from '../../constants';
 import { IScheduledForUser } from '../../types';
 import { IAssetStorageItem } from '../../hooks';
-import { BlockExplorerLink } from '../Transactions';
-import LabelTag from '../LabelTag';
-import AssetSymbolLink from './AssetSymbolLink';
-import TxStatus from './TxStatus';
-import { canEditTx } from './useTxEdit';
-import TimeCondition from './TimeCondition';
-import ConditionAsset from './ConditionAsset';
+import * as cols from './tableColumns';
 
 interface IProps {
   items: IScheduledForUser[];
@@ -36,8 +18,6 @@ interface IProps {
   onCancelTx: (record: IScheduledForUser) => void;
   onOpenAddAssetModal: () => void;
 }
-
-const { TextArea } = Input;
 
 function TransactionTable({
   items,
@@ -69,328 +49,55 @@ function TransactionTable({
 
   const columns = useMemo(() => {
     return [
-      {
-        dataIndex: 'statusName',
-        render: (status: string, record: IScheduledForUser) => {
-          return <TxStatus status={status} txHash={record.transactionHash} />;
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.statusName.localeCompare(b.statusName),
-        title: 'Status',
-        align: 'center' as any,
-      },
-      {
-        dataIndex: 'from',
-        render: (from: string, record: IScheduledForUser) => (
-          <BlockExplorerLink hash={from} label={record.fromLabel} chainId={record.chainId} type={'address'} />
-        ),
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.from.localeCompare(b.from),
-        title: 'From',
-        align: 'center' as any,
-      },
-      {
-        dataIndex: 'to',
-        render: (to: string, record: IScheduledForUser) => (
-          <BlockExplorerLink hash={to} label={record.toLabel} chainId={record.chainId} type={'address'} />
-        ),
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.to || '').localeCompare(b.to || ''),
-        title: 'To',
-        align: 'center' as any,
-      },
-      {
-        dataIndex: 'method',
-        render: (method: string, record: IScheduledForUser) => <LabelTag raw={method} label={record.methodLabel} />,
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          (a.methodLabel || '').localeCompare(b.methodLabel || ''),
-        title: 'Method',
-        align: 'center' as any,
-      },
-      {
-        dataIndex: 'assetName',
-        render: (assetName: string, record: IScheduledForUser) => {
-          return (
-            <AssetSymbolLink assetName={assetName} assetContract={record.assetContract} chainId={record.chainId} />
-          );
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetName || '').localeCompare(b.assetName || ''),
-        title: 'Asset',
-        align: 'center' as any,
-      },
-      {
-        dataIndex: 'assetAmount',
-        render: (assetAmount: number) => formatNumber(assetAmount),
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.assetAmount || 0) - (b.assetAmount || 0),
-        title: 'Amount',
-        align: 'right' as any,
-      },
-      {
-        dataIndex: 'nonce',
-        render: (nonce: string) => nonce,
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.nonce - b.nonce,
-        title: 'Nonce',
-        align: 'right' as any,
-      },
-      {
-        dataIndex: 'gasPrice',
-        render: (gasPrice: any) => formatNumber(bigNumberToNumber(gasPrice, 9), 0),
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
-          BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
-        title: 'Gas Price',
-        align: 'right' as any,
-      },
-
-      {
-        dataIndex: 'gasPaid',
-        render: (gasPaid: number, record: IScheduledForUser) => {
-          let info = <div />;
-          if (!['Completed'].includes(record.statusName)) {
-            info = (
-              <Tooltip title="Estimated value">
-                <InfoCircleOutlined />
-              </Tooltip>
-            );
-          }
-          return (
-            <div>
-              {info} {formatCurrency(gasPaid)}
-            </div>
-          );
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.gasPaid || 0) - (b.gasPaid || 0),
-        title: 'Gas Paid',
-        align: 'right' as any,
-      },
-      {
-        dataIndex: 'gasSaved',
-        render: (gasSaved: number, record: IScheduledForUser) => {
-          let info = <div />;
-          if (!['Completed'].includes(record.statusName)) {
-            info = (
-              <Tooltip title="Estimated value">
-                <InfoCircleOutlined />
-              </Tooltip>
-            );
-          }
-          return (
-            <div>
-              {info} {formatCurrency(gasSaved)}
-            </div>
-          );
-        },
-        sorter: (a: IScheduledForUser, b: IScheduledForUser) => (a.gasSaved || 0) - (b.gasSaved || 0),
-        title: 'Gas Saved',
-        align: 'right' as any,
-      },
-      {
-        dataIndex: 'id',
-        render: (id: string, record: IScheduledForUser) => {
-          const handleEdit = () => handleStartEditingItem(record);
-          const handleCancel = () => onCancelTx(record);
-
-          const showCancel = canEditTx(record.statusName);
-          const showEtherscan = !['Draft', 'Pending', 'Cancelled'].includes(record.statusName);
-          const networkName: string = ChainId[record.chainId];
-          const networkExplorerName: string = ' ' + BlockExplorerName[networkName as keyof typeof BlockExplorerUrl];
-
-          const menu = (
-            <Menu>
-              <Menu.Item key="0" onClick={handleEdit}>
-                <EditOutlined /> Edit
-              </Menu.Item>
-              <Menu.Item key="1">
-                <Link to={`/legacy/view/${record.id}/${record.txKey}`} target="_blank">
-                  <FileTextOutlined /> Details
-                </Link>
-              </Menu.Item>
-              {showEtherscan && (
-                <Menu.Item key="2">
-                  <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
-                    <ExportOutlined />
-                    {networkExplorerName}
-                  </BlockExplorerLink>
-                </Menu.Item>
-              )}
-              {showCancel && (
-                <>
-                  <Menu.Divider />
-                  <Menu.Item key="3" onClick={handleCancel}>
-                    <DeleteOutlined /> Cancel
-                  </Menu.Item>
-                </>
-              )}
-            </Menu>
-          );
-
-          return (
-            <Dropdown overlay={menu} trigger={['click']}>
-              <Actions>
-                <MoreOutlined />
-              </Actions>
-            </Dropdown>
-          );
-        },
-        title: '',
-        align: 'center' as any,
-      },
+      cols.status(),
+      cols.from(),
+      cols.to(),
+      cols.method(),
+      cols.assetName(),
+      cols.assetAmount(),
+      cols.nonce(),
+      cols.gasPrice(),
+      cols.gasPaid(),
+      cols.gasSaved(),
+      cols.actionsDropdown({
+        onStartEdit: handleStartEditingItem,
+        onCancelTx,
+      }),
     ];
   }, [handleStartEditingItem, onCancelTx]);
 
   const expandedRowRender = useCallback(
     (record: IScheduledForUser) => {
       const columns = [
-        {
-          key: 'conditionAsset',
-          dataIndex: 'conditionAsset',
-          render: (conditionAsset: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem?.id;
-            const canEdit = canEditTx(record.statusName);
-
-            const changeHandler = ({
-              conditionAsset,
-              conditionAssetName,
-              conditionAssetDecimals,
-            }: {
-              conditionAsset: string;
-              conditionAssetName: string;
-              conditionAssetDecimals: number;
-            }) => {
-              onUpdateEditingItem({ conditionAsset, conditionAssetName, conditionAssetDecimals });
-            };
-
-            return (
-              <ConditionAsset
-                editing={isEditing}
-                canEdit={canEdit}
-                assetType={record.assetType}
-                chainId={record.chainId}
-                address={isEditing ? editingItem?.conditionAsset : conditionAsset}
-                name={record.conditionAssetName}
-                assetOptions={assetOptions}
-                onOpenAddAssetModal={onOpenAddAssetModal}
-                onChange={changeHandler}
-              />
-            );
-          },
-          title: 'Condition Asset',
-          align: 'center' as any,
-        },
-        {
-          key: 'conditionAmount',
-          dataIndex: 'conditionAmount',
-          render: (amount: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem?.id;
-            const canEdit = canEditTx(record.statusName);
-
-            const num = amount ? Number(ethers.utils.formatUnits(amount as any, record.conditionAssetDecimals)) : '';
-
-            if (isEditing && canEdit) {
-              const changeHandler = (val: any) => {
-                const newAmount = amount
-                  ? ethers.utils.parseUnits(`${val || 0}`, record.conditionAssetDecimals).toString()
-                  : '';
-                onUpdateEditingItem({ conditionAmount: newAmount });
-              };
-              return <InputNumber min={0} defaultValue={num} onChange={changeHandler} />;
-            }
-
-            return formatNumber(num || 0);
-          },
-          title: 'Condition Amount',
-          align: 'right' as any,
-        },
-        {
-          key: 'timeCondition',
-          dataIndex: 'timeCondition',
-          render: (timeCondition: number, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem?.id;
-            const canEdit = canEditTx(record.statusName);
-
-            const changeHandler = ({ timeCondition, timeConditionTZ }: any) =>
-              onUpdateEditingItem({ timeCondition, timeConditionTZ });
-
-            return (
-              <TimeCondition
-                editing={isEditing}
-                canEdit={canEdit}
-                timeCondition={timeCondition}
-                timeConditionTZ={record.timeConditionTZ}
-                onChange={changeHandler}
-              />
-            );
-          },
-          title: 'Time Condition',
-          align: 'right' as any,
-        },
-        {
-          key: 'notes',
-          dataIndex: 'notes',
-          render: (notes: string, record: IScheduledForUser) => {
-            const isEditing = record.id === editingItem?.id;
-
-            if (isEditing) {
-              const changeHandler = (e: any) => onUpdateEditingItem({ notes: e.target.value });
-              return <TextArea defaultValue={notes} onChange={changeHandler} />;
-            }
-
-            return notes;
-          },
-          title: 'Notes',
-          align: 'right' as any,
-        },
-        {
-          key: 'extra',
-          dataIndex: 'id',
-          render: (id: string, record: IScheduledForUser) => {
-            const extra = [];
-            // eslint-disable-next-line eqeqeq
-            if (record.chainId != 1) {
-              extra.push(`chain id ${record.chainId}`);
-            }
-            if (!record.gasPriceAware) {
-              extra.push(`not gas price aware`);
-            }
-
-            return extra.join(', ');
-          },
-          title: 'Extra',
-          align: 'right' as any,
-        },
-        {
-          key: 'actions',
-          dataIndex: 'id',
-          render: (id: string, record: IScheduledForUser) => {
-            if (id === editingItem?.id) {
-              return (
-                <div>
-                  <Button type="primary" color="green" onClick={onSave}>
-                    Save
-                  </Button>
-                  <br />
-                  <br />
-                  <Button color="orange" onClick={onStopEdit}>
-                    Cancel
-                  </Button>
-                </div>
-              );
-            }
-
-            return '';
-          },
-          title: '',
-          align: 'center' as any,
-        },
+        cols.conditionAsset({
+          assetOptions,
+          editingItem,
+          onOpenAddAssetModal,
+          onUpdateEditingItem,
+        }),
+        cols.conditionAmount({
+          editingItem,
+          onUpdateEditingItem,
+        }),
+        cols.timeCondition({
+          editingItem,
+          onUpdateEditingItem,
+        }),
+        cols.notes({
+          editingItem,
+          onUpdateEditingItem,
+        }),
+        cols.extra(),
+        cols.actionsInEditMode({
+          editingItem,
+          onSave,
+          onStopEdit,
+        }),
       ];
 
       return <Table columns={columns} dataSource={[record]} pagination={false} rowKey="id" />;
     },
-    [
-      assetOptions,
-      editingItem?.conditionAsset,
-      editingItem?.id,
-      onOpenAddAssetModal,
-      onSave,
-      onStopEdit,
-      onUpdateEditingItem,
-    ]
+    [assetOptions, editingItem, onOpenAddAssetModal, onSave, onStopEdit, onUpdateEditingItem]
   );
 
   return (
@@ -424,18 +131,6 @@ const Container = styled.div`
 
   .table {
     width: 100%;
-  }
-`;
-
-const Actions = styled.div`
-  cursor: pointer;
-
-  &:hover {
-    color: ${(props) => props.theme.colors.accent};
-  }
-
-  .anticon {
-    font-size: 2.6rem;
   }
 `;
 

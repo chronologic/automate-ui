@@ -199,7 +199,6 @@ function Transactions() {
 
 const Container = styled.div`
   width: 100%;
-  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -213,6 +212,7 @@ const Container = styled.div`
 const HeaderContainer = styled.div`
   width: 100%;
   max-width: 1220px;
+  padding: 40px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -232,7 +232,7 @@ const TableContainer = styled.div`
 
   .ant-table.ant-table-small .ant-table-thead > tr > th,
   .ant-table.ant-table-small .ant-table-tbody > tr > td {
-    padding: 4px 2px;
+    padding: 4px 4px;
   }
 `;
 
@@ -242,7 +242,6 @@ const TableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
 
   .title.title {
     font-weight: 300;

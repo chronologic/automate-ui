@@ -9,10 +9,12 @@ interface ITxEditStoreState {
   tx: IScheduledForUser | undefined;
 }
 
+export type UpdateTx = (partialTx: Partial<IScheduledForUser>) => void;
+
 interface ITxEditStoreMethods {
   startEdit: (tx: IScheduledForUser) => void;
   stopEdit: () => void;
-  updateTx: (partialTx: Partial<IScheduledForUser>) => void;
+  updateTx: UpdateTx;
 }
 
 interface ITxEditHook extends ITxEditStoreState, ITxEditStoreMethods {}

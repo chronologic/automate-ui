@@ -57,8 +57,14 @@ export function isTruthy(value: string): boolean {
 }
 
 export function shortAddress(address?: string | null | undefined, chars = 4): string {
-  const addr = (address || '').toUpperCase();
-  return `0x${addr.substr(2, chars - 1)}...${addr.substr(-chars)}`;
+  const prefix = (address || '').slice(0, 2);
+  const id = (address || '').slice(prefix.length);
+  return `${prefix}${shortId(id)}`;
+}
+
+export function shortId(id?: string | null | undefined, chars = 4): string {
+  const _id = (id || '').toUpperCase();
+  return `${_id.slice(0, chars - 1)}...${_id.slice(-chars)}`;
 }
 
 export function formatNumber(value: number, decimals = 4, fallbackValue = '-'): string {

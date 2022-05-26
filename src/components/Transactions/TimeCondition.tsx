@@ -102,7 +102,9 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
   if (hasTimeCondition) {
     return (
       <div>
-        {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')} {timeConditionTZ}
+        {moment(timeConditionForTz).format('MMM D yyyy hh:mm a')}
+        <br />
+        {timeConditionTZ}
         <br />
         <i style={{ color: 'gray' }}>(local: {moment(timeConditionLocal).format('MMM D yyyy hh:mm a')})</i>
       </div>
