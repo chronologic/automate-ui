@@ -8,8 +8,31 @@ import { capitalizeFirstLetter } from '../../utils';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
+import { detect } from 'detect-browser';
 
 const { Link, Text } = Typography;
+
+function FirefoxAlertMessage() {
+  return (
+    <Alert
+      message="Warning"
+      className="FirefoxAlert"
+      description="Adding a new network might not work for you in Firefox. We recommend using Chrome or Brave."
+      type="error"
+      showIcon
+    />
+  );
+}
+
+function FirefoxAlert() {
+  const browser = detect();
+
+  if (browser && browser.name === 'firefox') {
+    return <FirefoxAlertMessage />;
+  } else {
+    return null;
+  }
+}
 
 function Config() {
   const { connect } = useAutomateConnection();
@@ -171,6 +194,7 @@ function Config() {
         onCancel={handleCancel}
       >
         <MetaMaskConfig>
+          <FirefoxAlert />
           <p>Almost there!</p>
           <p>
             Now you just need to add the Automate network configuration to your MetaMask.

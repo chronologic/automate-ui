@@ -299,7 +299,7 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-modal-content {
     background-color: ${(props) => props.theme.colors.body};
-    box-shadow: ${(props) => props.theme.colors.shadow};
+    box-shadow: none;
   }
   .ant-modal-close-x {
     color: white;
@@ -446,6 +446,10 @@ const GlobalStyle = styled.div<IProps>`
     background: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.text};
     border-color: ${(props) => props.theme.colors.border};
+  }
+
+  .FirefoxAlert {
+    margin-bottom: 16px;
   }
 `;
 
