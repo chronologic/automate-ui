@@ -12,23 +12,19 @@ import { detect } from 'detect-browser';
 
 const { Link, Text } = Typography;
 
-function FirefoxAlertMessage() {
-  return (
-    <Alert
-      message="Warning"
-      className="FirefoxAlert"
-      description="Adding a new network might not work for you in Firefox. We recommend using Chrome or Brave."
-      type="error"
-      showIcon
-    />
-  );
-}
-
 function FirefoxAlert() {
   const browser = detect();
 
   if (browser && browser.name === 'firefox') {
-    return <FirefoxAlertMessage />;
+    return (
+      <Alert
+        message="Warning"
+        className="FirefoxAlert"
+        description="Adding a new network might not work for you in Firefox. We recommend using Chrome or Brave."
+        type="error"
+        showIcon
+      />
+    );
   } else {
     return null;
   }
