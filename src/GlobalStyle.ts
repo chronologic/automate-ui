@@ -447,10 +447,6 @@ const GlobalStyle = styled.div<IProps>`
     color: ${(props) => props.theme.colors.text};
     border-color: ${(props) => props.theme.colors.border};
   }
-
-  .FirefoxAlert {
-    margin-bottom: 16px;
-  }
 `;
 
 export default GlobalStyle;

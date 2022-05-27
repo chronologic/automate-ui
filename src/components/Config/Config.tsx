@@ -8,27 +8,9 @@ import { capitalizeFirstLetter } from '../../utils';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
-import { detect } from 'detect-browser';
+import FirefoxAlert from './FirefoxAlert';
 
 const { Link, Text } = Typography;
-
-function FirefoxAlert() {
-  const browser = detect();
-
-  if (browser && browser.name === 'firefox') {
-    return (
-      <Alert
-        message="Warning"
-        className="FirefoxAlert"
-        description="Adding a new network might not work for you in Firefox. We recommend using Chrome or Brave."
-        type="error"
-        showIcon
-      />
-    );
-  } else {
-    return null;
-  }
-}
 
 function Config() {
   const { connect } = useAutomateConnection();
