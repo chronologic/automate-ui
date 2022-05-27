@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
+import ReactPlayer from 'react-player';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import Web3 from 'web3';
@@ -138,6 +139,9 @@ function StrategyDetails() {
             <Text type="secondary" className="description">
               {strategy.description}
             </Text>
+            <br />
+            <br />
+            <ReactPlayer url="https://youtu.be/IKcruLqdTSs" width="540px" controls />
           </Col>
           <Col span={24} lg={12}>
             <div className="outer">
