@@ -8,6 +8,7 @@ import { capitalizeFirstLetter } from '../../utils';
 import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
+import FirefoxAlert from './FirefoxAlert';
 
 const { Link, Text } = Typography;
 
@@ -171,6 +172,7 @@ function Config() {
         onCancel={handleCancel}
       >
         <MetaMaskConfig>
+          <FirefoxAlert />
           <p>Almost there!</p>
           <p>
             Now you just need to add the Automate network configuration to your MetaMask.

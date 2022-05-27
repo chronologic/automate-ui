@@ -34,7 +34,8 @@ export const notifications = Object.freeze({
     notification.error({
       message: (
         <span>
-          You're not connected to Automate. Make sure you followed the
+          You're not connected to Automate. Make sure to select Automate Network in MetaMask's network dropdown or
+          follow the
           <br />
           <a
             href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
@@ -43,9 +44,10 @@ export const notifications = Object.freeze({
           >
             setup instructions
           </a>{' '}
-          correctly.
+          to add the network.
         </span>
       ),
+      duration: 5,
     });
   },
   apiKeyMismatch() {

@@ -299,7 +299,7 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-modal-content {
     background-color: ${(props) => props.theme.colors.body};
-    box-shadow: ${(props) => props.theme.colors.shadow};
+    box-shadow: none;
   }
   .ant-modal-close-x {
     color: white;
