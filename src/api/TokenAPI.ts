@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 
 import { IAssetState } from '../types';
+import { ChainId } from '../constants';
+import { getProvider } from '../utils';
 import { ERC20 } from './erc20';
 
 export const ETH = { name: 'ETH', symbol: 'ETH', decimals: 18 };
@@ -18,11 +20,12 @@ export class TokenAPI {
     if (address === '') {
       return ETH;
     }
-    const token = new ethers.Contract(address, ERC20, ethers.getDefaultProvider(ethers.providers.getNetwork(chainId)));
+    const token = new ethers.Contract(address, ERC20, getProvider(chainId));
     let name = '';
     try {
       name = await token.name();
     } catch (e) {
+      console.error(e);
       return ETH;
     }
 
@@ -31,7 +34,7 @@ export class TokenAPI {
     try {
       symbol = await token.symbol();
     } catch (e) {
-      //
+      console.error(e);
     }
 
     const decimals = await token.decimals();
@@ -39,7 +42,7 @@ export class TokenAPI {
     return { name, symbol, decimals };
   }
 
-  public static async resolveToken(address: string, chainId: number): Promise<IAssetState> {
+  public static async resolveToken(address: string, chainId: ChainId): Promise<IAssetState> {
     let validationError = '';
     let { name, decimals } = ETH;
 
@@ -59,6 +62,7 @@ export class TokenAPI {
         name = tokenInfo.name;
         symbol = tokenInfo.symbol;
       } catch (e) {
+        console.error(e);
         validationError = 'Asset is not ERC-20 compatible';
       }
     }

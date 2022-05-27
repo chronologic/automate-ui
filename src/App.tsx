@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import { MAINTENANCE_MODE } from './env';
 import {
   Auth,
-  Scheduleds,
   StrategyList,
   StrategyDetails,
   Maintenance,
@@ -71,7 +70,7 @@ function App() {
                 <Config />
               </PrivateRoute>
               <Route path="/login" component={Auth} />
-              <Route path="/scheduleds" component={Scheduleds} />
+              <Route path="/scheduleds" component={Transactions} />
               <PrivateRoute path="/strategies/:id">
                 <StrategyDetails />
               </PrivateRoute>
