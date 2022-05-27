@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Row, Col, Typography, Button, Space, Form, notification } from 'antd';
+import { Row, Col, Typography, Button, Space, Form, Modal, notification } from 'antd';
 import { ArrowDownOutlined } from '@ant-design/icons';
+import ReactPlayer from 'react-player';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import Web3 from 'web3';
@@ -20,7 +21,7 @@ import { strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 import SigningPopup from './SigningPopup';
 
-const { Title, Text } = Typography;
+const { Title, Text, Link } = Typography;
 const web3 = new Web3(ethereum as any);
 
 function StrategyDetails() {
@@ -36,6 +37,8 @@ function StrategyDetails() {
   const [displaySigningPopup, setDisplaySigningPopup] = useState(false);
   const [currentTxIndex, setCurrentTxIndex] = useState(-1);
   const [completedSigning, setCompletedSigning] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
+  const [play] = useState(true);
 
   const strategyName = useMemo(() => {
     return location?.pathname?.split('/').reverse()[0];
@@ -138,6 +141,20 @@ function StrategyDetails() {
             <Text type="secondary" className="description">
               {strategy.description}
             </Text>
+            <br />
+            <br />
+            <Link onClick={() => setModal2Visible(true)}>Watch Tutorial</Link>
+            <Modal
+              title="How to sign up to Automate and claim your $MAGIC✨ rewards"
+              centered
+              width={590}
+              footer={null}
+              visible={modal2Visible}
+              destroyOnClose={true}
+              onCancel={() => setModal2Visible(false)}
+            >
+              <ReactPlayer url="https://youtu.be/IKcruLqdTSs" width="100%" controls playing={play} />
+            </Modal>
           </Col>
           <Col span={24} lg={12}>
             <div className="outer">
