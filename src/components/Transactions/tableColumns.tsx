@@ -10,6 +10,7 @@ import {
   FileTextOutlined,
   InfoCircleOutlined,
 } from '@ant-design/icons';
+import debounce from 'lodash/debounce';
 
 import { IScheduledForUser } from '../../types';
 import { BlockExplorerName, BlockExplorerUrl, ChainId } from '../../constants';
@@ -255,7 +256,7 @@ export function notes({
       const isEditing = record.id === editingItem?.id;
 
       if (isEditing) {
-        const changeHandler = (e: any) => onUpdateEditingItem({ notes: e.target.value });
+        const changeHandler = debounce((e: any) => onUpdateEditingItem({ notes: e.target.value }), 300);
         return <TextArea defaultValue={notes} onChange={changeHandler} />;
       }
 
