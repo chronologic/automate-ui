@@ -22,10 +22,14 @@ const useStore = create<IEthereumStoreState>(() => defaultState);
 init();
 
 async function init() {
-  await waitForEthereum();
-  useStore.setState({ isReady: true });
-  await waitForAddress();
-  useStore.setState({ isAddressReady: true });
+  try {
+    await waitForEthereum();
+    useStore.setState({ isReady: true });
+    await waitForAddress();
+    useStore.setState({ isAddressReady: true });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 async function waitForEthereum(): Promise<void> {

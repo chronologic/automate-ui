@@ -6,7 +6,7 @@ import WalletConnector from '../WalletConnector';
 import FlexSpacer from '../FlexSpacer';
 import User from './User';
 import Credits from './Credits';
-import { SMALL_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 import { TreasureEcosystemButton } from './TreasureEcosystem';
 
 function HeaderMain() {
@@ -50,7 +50,7 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 16px 0;
 
-  @media (max-width: ${SMALL_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     padding: 16px;
 
     .walletConnector {
@@ -75,7 +75,7 @@ const Logos = styled.div`
     margin-right: 16px;
   }
 
-  @media (max-width: ${SMALL_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     .logo {
       height: 50px;
     }

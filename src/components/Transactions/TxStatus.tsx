@@ -8,7 +8,11 @@ import {
   WarningOutlined,
 } from '@ant-design/icons';
 
+import { ChainId } from '../../constants';
+import BlockExplorerLink from './BlockExplorerLink';
+
 interface IProps {
+  chainId: ChainId;
   status: string;
   txHash: string;
 }
@@ -45,7 +49,7 @@ const statusConfig: IStatusConfig = {
   StaleNonce: {
     color: 'pink',
     description:
-      "StaleNonce - the transaction's nonce is lower than the last nonce on the Ethereum network. This means the transaction can not be executed. You can reschedule this transaction with a higher nonce.",
+      'StaleNonce - another transaction with the same nonce has been executed before this one, so it can no longer be executed',
     icon: <WarningOutlined />,
   },
   Error: {
@@ -55,14 +59,16 @@ const statusConfig: IStatusConfig = {
   },
 };
 
-function TxStatus({ status }: IProps) {
+function TxStatus({ status, txHash, chainId }: IProps) {
   const cfg = statusConfig[status];
 
   if (cfg) {
     return (
-      <Tooltip placement="right" title={cfg.description}>
-        <span style={{ color: cfg.color }}>{cfg.icon}</span>
-      </Tooltip>
+      <BlockExplorerLink chainId={chainId} hash={txHash} type="tx" title={''}>
+        <Tooltip placement="right" title={cfg.description}>
+          <span style={{ color: cfg.color }}>{cfg.icon}</span>
+        </Tooltip>
+      </BlockExplorerLink>
     );
   }
 

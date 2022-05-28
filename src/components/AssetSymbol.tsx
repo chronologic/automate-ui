@@ -3,24 +3,32 @@ import styled from 'styled-components';
 import axios from 'axios';
 
 import { isEmptyName, shortAddress } from '../utils';
+import { ChainId } from '../constants';
 
 interface IRawCache {
   [key: string]: string;
 }
 
-interface ICache {
+interface IPromiseCache {
   [key: string]: Promise<string>;
 }
 
 interface IProps {
+  chainId: ChainId;
   name: string;
   address: string;
 }
 
 const cacheStorageKey = 'assetImages';
-const cache: ICache = {};
+const promiseCache: IPromiseCache = {};
 const rawCache: IRawCache = {};
 const coingeckoApi = axios.create({ baseURL: 'https://api.coingecko.com/api/v3' });
+const coingeckoPlatformForChainId: {
+  [key in ChainId]?: string;
+} = {
+  [ChainId.arbitrum]: 'arbitrum-one',
+  [ChainId.ethereum]: 'ethereum',
+};
 
 initCache();
 
@@ -31,29 +39,27 @@ const mapping: { [key: string]: string } = {
   [xfai]: xfitToken,
 };
 
-export default function AssetSymbol({ name, address }: IProps) {
-  const [url, setUrl] = useState('');
+export default function AssetSymbol({ chainId, name, address }: IProps) {
+  const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    getUrl();
+    _getImageUrl();
 
-    async function getUrl() {
-      if (address) {
-        const _address = mapping[address.toLowerCase()] || address;
-        const url = await getAssetUrl((name || '').toLowerCase(), _address);
-        setUrl(url);
-      }
+    async function _getImageUrl() {
+      const url = await getImageUrl(chainId, name, address);
+      setImageUrl(url);
     }
-  }, [address, name]);
+  }, [address, chainId, name]);
 
   const _name = isEmptyName(name) ? '' : name;
   const title = _name || address;
+  const displayName = _name ? _name : address ? shortAddress(address, 4) : '-';
 
   return (
     <Content>
-      {(url && !error && <img src={url} alt={title} title={title} onError={() => setError(true)} />) || (
-        <span>{_name || address ? shortAddress(address, 4) : '-'}</span>
+      {(imageUrl && !error && <img src={imageUrl} alt={title} title={title} onError={() => setError(true)} />) || (
+        <span>{displayName}</span>
       )}
     </Content>
   );
@@ -70,45 +76,37 @@ function initCache(): void {
   const _rawCache: IRawCache = JSON.parse(localStorage.getItem(cacheStorageKey) || '{}');
   Object.keys(_rawCache).forEach((key) => {
     rawCache[key] = _rawCache[key];
-    cache[key] = Promise.resolve(_rawCache[key]);
+    promiseCache[key] = Promise.resolve(_rawCache[key]);
   });
 }
 
-async function getAssetUrl(name: string, address: string): Promise<string> {
-  if (cache[name] != null) {
-    return cache[name];
-  }
+async function getImageUrl(chainId: ChainId, name: string, address: string): Promise<string> {
+  const safeName = (name || '').toLowerCase();
+  const safeAddress = (address || '').toLowerCase();
+  const mappedAddress = mapping[safeAddress] || safeAddress;
+  const key = `${chainId}.${safeName}.${mappedAddress || ''}`;
 
-  if (cache[address] != null) {
-    return cache[address];
+  if (promiseCache[key] != null) {
+    return promiseCache[key];
   }
 
   const promise = (async () => {
     try {
-      const { data: assetForAddress } = await (name === 'eth'
+      const platform = coingeckoPlatformForChainId[chainId];
+      const { data: assetData } = await (safeName === 'eth'
         ? coingeckoApi.get('/coins/ethereum')
-        : coingeckoApi.get(`/coins/ethereum/contract/${address}`));
-      const url = assetForAddress.image.small;
-      if (address) {
-        updateCache(address, url);
-      }
-      if (!isEmptyName(name)) {
-        updateCache(name, url);
-      }
+        : coingeckoApi.get(`/coins/${platform}/contract/${mappedAddress}`));
+      const url = assetData.image.thumb;
+      updateCache(key, url);
 
       return url;
     } catch (e) {
       console.error(e);
-      updateCache(address, '');
+      updateCache(key, '');
     }
   })();
 
-  if (address) {
-    cache[address] = promise;
-  }
-  if (!isEmptyName(name)) {
-    cache[name] = cache[address];
-  }
+  promiseCache[key] = promise;
 
   return promise;
 }

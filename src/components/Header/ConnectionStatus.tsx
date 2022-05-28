@@ -4,7 +4,7 @@ import { Alert } from 'antd';
 import styled from 'styled-components';
 
 import { useAutomateConnection } from '../../hooks';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 import { capitalizeFirstLetter } from '../../utils';
 
 function ConnectionStatus() {
@@ -33,7 +33,7 @@ function ConnectionStatus() {
 const Container = styled.div`
   cursor: pointer;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     display: none;
   }
 

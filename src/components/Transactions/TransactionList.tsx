@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import { SMALL_SCREEN_THRESHOLD } from '../../constants';
 import { BlockExplorerLink } from '../Transactions';
 import TxStatus from './TxStatus';
 import AssetSymbolLink from './AssetSymbolLink';
@@ -34,7 +33,7 @@ function TransactionListItem({ item }: IListItemProps) {
   const title = (
     <div className="header">
       <AssetSymbolLink assetName={item.assetName} assetContract={item.assetContract} chainId={item.chainId} />
-      <TxStatus status={item.statusName} txHash={item.transactionHash} />
+      <TxStatus status={item.statusName} txHash={item.transactionHash} chainId={item.chainId} />
     </div>
   );
   return (
@@ -78,7 +77,6 @@ function TransactionListItem({ item }: IListItemProps) {
 
 const Container = styled.div`
   width: 100%;
-  max-width: ${SMALL_SCREEN_THRESHOLD}px;
   padding: 40px 20px;
   display: flex;
   flex-direction: row;

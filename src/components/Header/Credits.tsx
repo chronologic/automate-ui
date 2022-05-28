@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { useUser } from '../../hooks';
-import { MINUTE_MILLIS, TABLET_SCREEN_THRESHOLD } from '../../constants';
+import { MINUTE_MILLIS, SCREEN_BREAKPOINT } from '../../constants';
 import { IUserCredits } from '../../types';
 import { Typography, Tooltip } from 'antd';
 import { formatNumber } from '../../utils';
@@ -109,7 +109,7 @@ const Container = styled.div`
     margin-left: 5px;
   }
 
-  @media (max-width: ${TABLET_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.LG}px) {
     flex-direction: column;
 
     .title {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { AuthProvider, ThemeProvider, AutomateConnectionProvider, ScreenProvider } from './contexts';
+import { AuthProvider, ThemeProvider, AutomateConnectionProvider } from './contexts';
 
 interface IProps {
   children: React.ReactNode;
@@ -8,12 +8,10 @@ interface IProps {
 
 export function Providers({ children }: IProps) {
   return (
-    <ScreenProvider>
-      <AutomateConnectionProvider>
-        <AuthProvider>
-          <ThemeProvider>{children}</ThemeProvider>
-        </AuthProvider>
-      </AutomateConnectionProvider>
-    </ScreenProvider>
+    <AutomateConnectionProvider>
+      <AuthProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+      </AuthProvider>
+    </AutomateConnectionProvider>
   );
 }

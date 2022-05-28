@@ -47,7 +47,7 @@ function Arbitrum_Bridgeworld_Claim() {
           <Col>
             <div>
               <Title className="secondary" level={5}>
-                Atlas Mine
+                Bridgeworld (Atlas Mine)
               </Title>
               <Text type="secondary">
                 Wondering how much you will be claiming?

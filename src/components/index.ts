@@ -6,7 +6,5 @@ export { default as Header } from './Header';
 export { default as Footer } from './Footer';
 export { default as Maintenance } from './Maintenance';
 export { default as PrivateRoute } from './PrivateRoute';
-export { default as Scheduleds } from './Scheduleds';
 export { default as Transactions } from './Transactions';
-export { StrategyList } from './Strategies';
-export { StrategyDetails } from './Strategies';
+export { StrategyList, StrategyDetails } from './Strategies';
