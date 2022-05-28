@@ -3,7 +3,7 @@ import CountUp from 'react-countup';
 import styled from 'styled-components';
 
 import { IStatsItem, StatsAPI } from '../../api/StatsAPI';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 import { IThemeProps } from '../../types';
 
 function Stats() {
@@ -56,7 +56,7 @@ const Container = styled.div`
   font-size: 1.2rem;
   font-weight: 300;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     padding: 8px;
     font-size: 1rem;
   }
@@ -68,7 +68,7 @@ const StatsElement = styled.div`
     font-weight: normal;
   }
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     .header-countup {
       font-size: 1.2rem;
     }

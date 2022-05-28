@@ -299,7 +299,7 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-modal-content {
     background-color: ${(props) => props.theme.colors.body};
-    box-shadow: ${(props) => props.theme.colors.shadow};
+    box-shadow: none;
   }
   .ant-modal-close-x {
     color: white;
@@ -324,6 +324,9 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-card-head {
     border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
+    background: ${(props) => props.theme.colors.text};
   }
   .ant-picker-range .ant-picker-active-bar {
     background: ${(props) => props.theme.colors.accent};
@@ -446,6 +449,14 @@ const GlobalStyle = styled.div<IProps>`
     background: ${(props) => props.theme.colors.body};
     color: ${(props) => props.theme.colors.text};
     border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-btn-primary[disabled],
+  .ant-btn-primary[disabled]:hover,
+  .ant-btn-primary[disabled]:focus,
+  .ant-btn-primary[disabled]:active {
+    background-color: ${(props) => props.theme.colors.disabled};
+    border-color: ${(props) => props.theme.colors.disabled};
+    color: ${(props) => props.theme.colors.disabledText};
   }
 `;
 

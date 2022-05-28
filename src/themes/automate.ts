@@ -12,6 +12,8 @@ const theme: ITheme = {
     shadow: '0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%)',
     border: '#d9d9d9',
     weak: '#fafafa',
+    disabled: '#e9e9e9',
+    disabledText: '#bfbfbf',
   },
   assets: {
     logoMain: '/assets/themes/automate__logo_main.svg',

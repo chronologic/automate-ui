@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Checkbox, Typography, Slider } from 'antd';
 import styled from 'styled-components';
-import { MOBILE_SCREEN_THRESHOLD, ConfirmationTime } from '../../constants';
+import { SCREEN_BREAKPOINT, ConfirmationTime } from '../../constants';
 
 interface IProps {
   gasPriceAware?: boolean;
@@ -106,7 +106,7 @@ const Checkboxes = styled.div`
   flex-direction: row;
   margin-bottom: 24px;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     flex-direction: column;
   }
 `;
@@ -123,7 +123,7 @@ const SliderContainer = styled.div`
   width: 100%;
   margin-bottom: 100px;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     width: 90%;
     margin-left: auto;
     margin-right: auto;

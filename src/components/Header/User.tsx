@@ -7,18 +7,18 @@ import styled from 'styled-components';
 import { useAuth, useScreen } from '../../hooks';
 import { IThemeProps } from '../../types';
 import { ALLOW_SIGNUP } from '../../env';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { SCREEN_BREAKPOINT } from '../../constants';
 
 function HeaderMain() {
   const { isAuthenticated, user, onLogout } = useAuth();
-  const { isMobile } = useScreen();
+  const { isLg } = useScreen();
 
   const login = useMemo(() => {
-    if (isMobile) {
+    if (isLg) {
       return user.login.split('@')[0] || user.login.substr(0, 10);
     }
     return user.login;
-  }, [user.login, isMobile]);
+  }, [user.login, isLg]);
 
   if (isAuthenticated) {
     const menu = (
@@ -58,7 +58,7 @@ const Container = styled.div`
   color: ${(props: IThemeProps) => props.theme.colors.accent};
   margin-right: 40px;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     margin-right: 0;
 
     .ant-dropdown-trigger {

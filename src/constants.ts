@@ -1,8 +1,14 @@
 import { MetaMaskInpageProvider } from '@metamask/providers';
 
-export const MOBILE_SCREEN_THRESHOLD = 800;
-export const SMALL_SCREEN_THRESHOLD = 960;
-export const TABLET_SCREEN_THRESHOLD = 1200;
+// matches Antd https://ant.design/components/grid/#Col
+export const SCREEN_BREAKPOINT = Object.freeze({
+  XXL: 1600,
+  XL: 1200,
+  LG: 992,
+  MD: 768,
+  SM: 576,
+});
+
 export const SECOND_MILLIS = 1000;
 export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 
