@@ -4,9 +4,10 @@ import { Button, Input, Typography, Form, Modal, notification } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
-import { useAuth } from '../../hooks';
-import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
+import { ALLOW_SIGNUP } from '../../env';
+import { useAuth } from '../../hooks';
+import { UserAPI } from '../../api';
 import PageTitle from '../PageTitle';
 
 const emailRegex =
@@ -17,11 +18,11 @@ const parsed = parseUrl(window.location.href);
 
 function Auth() {
   const history = useHistory();
-  const { authenticating, isAuthenticated, onAuthenticate, onRequestPasswordReset } = useAuth();
+  const { authenticating, isAuthenticated, onAuthenticate } = useAuth();
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [showPwResetModel, setShowPwResetModal] = useState(false);
+  const [showPwResetModal, setShowPwResetModal] = useState(false);
 
   const handleAuth = useCallback(() => {
     onAuthenticate({ login, password, signup, source: getUserSource() });
@@ -39,10 +40,12 @@ function Auth() {
     setSignup(!signup);
   }, [signup]);
 
-  const handleRequestPasswordReset = useCallback(() => {
-    onRequestPasswordReset({ login });
-    showPwResetNotification();
-  }, [login, onRequestPasswordReset]);
+  const handleRequestPasswordReset = useCallback(async () => {
+    const resetRequest = await UserAPI.requestResetPassword({ login });
+    if (resetRequest) {
+      showPwResetNotification();
+    }
+  }, [login]);
 
   const handlePasswordReset = useCallback(() => {
     setShowPwResetModal(true);
@@ -128,7 +131,7 @@ function Auth() {
               {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
             </Typography.Link>{' '}
             <br /> <br />
-            {!signup && <Typography.Link onClick={handlePasswordReset}>'Forgot Password?'</Typography.Link>}
+            {!signup && <Typography.Link onClick={handlePasswordReset}>Forgot Password?</Typography.Link>}
           </ModeSwitch>
         )}
       </Form>
@@ -136,7 +139,7 @@ function Auth() {
         title="Reset Password"
         centered
         className="modal"
-        visible={showPwResetModel}
+        visible={showPwResetModal}
         onCancel={handleCancel}
         footer={[
           <Button key="submitResetPassword" type="primary" disabled={!login} onClick={handleRequestPasswordReset}>

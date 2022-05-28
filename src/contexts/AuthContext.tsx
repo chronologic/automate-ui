@@ -1,17 +1,14 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
 import moment from 'moment';
 
-import { IAuthParams, IUser, IUserWithExpiration, IResetPasswordParams } from '../types';
+import { IAuthParams, IUser, IUserWithExpiration } from '../types';
 import { UserAPI } from '../api';
 
 export interface IAuthContext {
   isAuthenticated: boolean;
   authenticating: boolean;
-  isPasswordResetted: boolean;
   user: IUser;
   onAuthenticate: (params: IAuthParams) => void;
-  onRequestPasswordReset: (params: IResetPasswordParams) => void;
-  onPasswordReset: (params: IResetPasswordParams) => void;
   onLogout: () => void;
 }
 
@@ -30,19 +27,15 @@ const defaultUser: IUser = {
 export const AuthContext = createContext<IAuthContext>({
   isAuthenticated: false,
   authenticating: false,
-  isPasswordResetted: false,
   user: defaultUser,
   onAuthenticate: () => {},
   onLogout: () => {},
-  onRequestPasswordReset: () => {},
-  onPasswordReset: () => {},
 });
 
 export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
   const [initialized, setInitialized] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isPasswordResetted, setIsPasswordResetted] = useState(false);
   const [user, setUser] = useState<IUser>({
     login: '',
     apiKey: '',
@@ -79,24 +72,6 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     },
     [onAuthenticated]
   );
-  const onRequestPasswordReset = useCallback(async (params: IResetPasswordParams) => {
-    const fn = UserAPI.requestResetPassword;
-    try {
-      const user = await fn(params);
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
-
-  const onPasswordReset = useCallback(async (params: IResetPasswordParams) => {
-    const fn = UserAPI.resetPassword;
-    try {
-      const user = await fn(params);
-      setIsPasswordResetted(true);
-    } catch (e) {
-      console.log(e);
-    }
-  }, []);
 
   useEffect(() => {
     let user: IUserWithExpiration | null = JSON.parse(localStorage.getItem(USER_STORAGE_KEY) || 'null');
@@ -137,12 +112,9 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
       value={{
         user,
         isAuthenticated,
-        isPasswordResetted,
         authenticating,
         onAuthenticate,
         onLogout,
-        onRequestPasswordReset,
-        onPasswordReset,
       }}
     >
       {initialized && children}

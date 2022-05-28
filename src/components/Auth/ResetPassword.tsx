@@ -1,18 +1,19 @@
 import React from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Typography, Input, Button, notification } from 'antd';
 import styled from 'styled-components';
 import qs from 'query-string';
 
 import { useAuth } from '../../hooks';
+import { UserAPI } from '../../api';
 import { validatePassword } from './Auth';
 
 function ResetPassword() {
   const [form] = Form.useForm();
-  const { authenticating, onPasswordReset, isPasswordResetted } = useAuth();
+  const { authenticating } = useAuth();
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(' ');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const history = useHistory();
 
@@ -27,7 +28,7 @@ function ResetPassword() {
     setConfirmPassword(e.target.value);
   }, []);
 
-  const resetSuccessfulNotification = () => {
+  const showResetSuccessNotification = () => {
     notification.success({
       message: 'Password has been successfully changed.',
       description: 'Your password has been successfully changed. You can log in with your new password now.',
@@ -37,29 +38,24 @@ function ResetPassword() {
 
   const handlePasswordReset = useCallback(async () => {
     await form.validateFields();
-    if (password === confirmPassword) {
-      onPasswordReset({ login, password, token });
+    history.push('/login/');
+    const resetPassword = await UserAPI.resetPassword({ login, password, token });
+    if (resetPassword) {
+      showResetSuccessNotification();
     }
-  }, [login, token, password, confirmPassword, onPasswordReset, form]);
+  }, [login, token, password, form, history]);
 
-  const checkPasswordMatch = useCallback(() => {
+  async function checkPasswordMatch() {
     if (!(password === confirmPassword)) {
       return Promise.reject(new Error('Passwords must match'));
     }
-  }, [password, confirmPassword]);
-
-  useEffect(() => {
-    if (isPasswordResetted) {
-      resetSuccessfulNotification();
-      history.push('/login/');
-    }
-  }, [history, isPasswordResetted]);
+  }
 
   return (
     <Container>
-      <Form layout="vertical">
+      <Form form={form}>
         <Typography.Title level={3} className="title">
-          {`Reset Password for ${login.replace(/\s/g, '')}`}
+          {`Reset Password ${login.replace(/\s/g, '')}`}
         </Typography.Title>
         <Form.Item
           name="password"
@@ -81,6 +77,7 @@ function ResetPassword() {
         </Form.Item>
         <Form.Item
           name="confirmPassword"
+          dependencies={['password']}
           rules={[
             { required: true, message: 'Confirm password is required' },
             { validator: (_, value) => validatePassword(value) },
@@ -98,14 +95,7 @@ function ResetPassword() {
             onChange={handleconfirmPasswordChange}
           />
         </Form.Item>
-        <Button
-          type="primary"
-          size="large"
-          htmlType="submit"
-          loading={authenticating}
-          className="submit-btn"
-          onClick={handlePasswordReset}
-        >
+        <Button type="primary" size="large" htmlType="submit" className="submit-btn" onClick={handlePasswordReset}>
           Reset Password
         </Button>
       </Form>
