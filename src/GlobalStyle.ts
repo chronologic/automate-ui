@@ -324,6 +324,7 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-card-head {
     border-color: ${(props) => props.theme.colors.border};
+    color: ${(props) => props.theme.colors.text};
   }
   .ant-picker-range .ant-picker-active-bar {
     background: ${(props) => props.theme.colors.accent};
