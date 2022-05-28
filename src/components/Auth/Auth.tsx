@@ -4,10 +4,10 @@ import { Button, Input, Typography, Form } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
-import PageTitle from '../PageTitle';
-import { useAuth, useAutomateConnection } from '../../hooks';
+import { useAuth } from '../../hooks';
 import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
+import PageTitle from '../PageTitle';
 
 const emailRegex =
   // eslint-disable-next-line no-control-regex
