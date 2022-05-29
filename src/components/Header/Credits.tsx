@@ -96,6 +96,7 @@ const Container = styled.div`
   .value {
     color: ${(props) => props.theme.colors.accent};
     /* font-weight: bold; */
+    margin-left: 5px;
     font-size: 1.6rem;
   }
 
@@ -113,24 +114,24 @@ const Container = styled.div`
     flex-direction: column;
 
     .title {
-      font-size: 1.2rem;
       margin: 0;
     }
 
     .statsContainer {
-      flex-direction: column;
       border: none;
       padding: 4px;
     }
 
     .stat {
-      padding: 0;
-      font-size: 1.2rem;
+      padding: 0px;
+      font-size: 1.6rem;
     }
 
+    /*
     .value {
       font-size: 1.2rem;
     }
+    */
 
     .divider {
       display: none;

@@ -155,7 +155,11 @@ const Container = styled.div`
   .table {
     width: 100%;
   }
-
+  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+    .alert-txt {
+      display: none;
+    }
+  }
   .alert-txt {
     color: rgba(0, 0, 0, 0.85);
   }
