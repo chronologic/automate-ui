@@ -79,7 +79,7 @@ function TransactionListItem({ item }: IListItemProps) {
 const Container = styled.div`
   width: 100%;
   max-width: ${SMALL_SCREEN_THRESHOLD}px;
-  padding: 40px 20px;
+  padding: 10px 20px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

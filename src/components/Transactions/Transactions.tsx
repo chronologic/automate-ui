@@ -99,23 +99,7 @@ function Transactions() {
         <Typography.Title className="title header" level={5}>
           Transaction list
         </Typography.Title>
-        <Alert
-          message={
-            <Typography.Text className="alert-txt">
-              These are the transactions that you scheduled using the{' '}
-              <a
-                href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Automate Network in MetaMask
-              </a>
-            </Typography.Text>
-          }
-          type="warning"
-          showIcon
-          closable
-        />
+
         <div className="savingsContainer">
           <Typography.Title className="title" level={5}>
             Total gas savings:
@@ -125,6 +109,23 @@ function Transactions() {
           </Typography.Title>
         </div>
       </TableHeader>
+      <Alert
+        message={
+          <Typography.Text className="alert-txt">
+            These are the transactions that you scheduled using the{' '}
+            <a
+              href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Automate Network in MetaMask
+            </a>
+          </Typography.Text>
+        }
+        type="info"
+        showIcon
+        closable
+      />
       {isSmall ? (
         <TransactionList items={items} loading={loading} />
       ) : (
@@ -157,7 +158,7 @@ const Container = styled.div`
   }
   @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
     .alert-txt {
-      display: none;
+      // display: none;
     }
   }
   .alert-txt {
@@ -171,7 +172,7 @@ const TableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 32px;
+  margin-top: 10px;
 
   .title.title {
     font-weight: 300;
@@ -190,6 +191,7 @@ const TableHeader = styled.div`
   @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
     justify-content: center;
     margin-bottom: 16px;
+    justify-content: space-around;
 
     .title.header {
       display: none;
