@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Typography, Tooltip } from 'antd';
 
 import { useUser } from '../../hooks';
 import { MINUTE_MILLIS, SCREEN_BREAKPOINT } from '../../constants';
 import { IUserCredits } from '../../types';
-import { Typography, Tooltip } from 'antd';
 import { formatNumber } from '../../utils';
+import BuyCreditsModal from './BuyCreditsModal';
 
 function Credits() {
   const { getCredits } = useUser();
@@ -60,22 +61,28 @@ function Credits() {
           </div>
         </div>
       </div>
+      <BuyCreditsModal>
+        <Typography.Link className="buyCredits">
+          <ShoppingCartOutlined /> Buy Credits
+        </Typography.Link>
+      </BuyCreditsModal>
     </Container>
   );
 }
 
 const Container = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
 
   .statsContainer {
+    border: 1px solid ${(props) => props.theme.colors.border};
+    border-radius: 3px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    border: 1px solid ${(props) => props.theme.colors.border};
-    border-radius: 3px;
-    padding: 8px 6px;
+    padding: 4px 6px;
   }
 
   .title {
@@ -109,17 +116,20 @@ const Container = styled.div`
     margin-left: 5px;
   }
 
-  @media (max-width: ${SCREEN_BREAKPOINT.LG}px) {
-    flex-direction: column;
+  .buyCredits {
+    display: block;
+    margin-top: 6px;
+  }
 
+  @media (max-width: ${SCREEN_BREAKPOINT.LG}px) {
     .title {
       font-size: 1.2rem;
       margin: 0;
     }
 
     .statsContainer {
-      flex-direction: column;
       border: none;
+      flex-direction: column;
       padding: 4px;
     }
 
@@ -133,6 +143,10 @@ const Container = styled.div`
     }
 
     .divider {
+      display: none;
+    }
+
+    .buyCredits {
       display: none;
     }
   }

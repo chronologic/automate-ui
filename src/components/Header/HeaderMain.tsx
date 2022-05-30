@@ -48,9 +48,9 @@ const Container = styled.div`
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 16px 0;
+  padding: 16px 4px;
 
-  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.MD}px) {
     padding: 16px;
 
     .walletConnector {
@@ -75,7 +75,7 @@ const Logos = styled.div`
     margin-right: 16px;
   }
 
-  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.MD}px) {
     .logo {
       height: 50px;
     }
