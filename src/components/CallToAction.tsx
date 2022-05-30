@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { MOBILE_SCREEN_THRESHOLD } from '../constants';
+import { SCREEN_BREAKPOINT } from '../constants';
 import { useTheme } from '../hooks';
 
 function CallToAction() {
@@ -48,7 +48,7 @@ const Container = styled.div`
   align-items: stretch;
   width: 100%;
 
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     flex-direction: column;
   }
 `;
@@ -79,7 +79,7 @@ const Action = styled.div`
       background-color: ${(props) => props.theme.colors.weak};
       opacity: 0.5;
     }
-    @media (min-width: ${MOBILE_SCREEN_THRESHOLD + 1}px) {
+    @media (min-width: ${SCREEN_BREAKPOINT.SM + 1}px) {
       &.right {
         align-items: flex-end;
         .content {
@@ -96,7 +96,7 @@ const Action = styled.div`
       background-color: ${(props) => props.theme.colors.border};
       opacity: 0.5;
     }
-    @media (min-width: ${MOBILE_SCREEN_THRESHOLD + 1}px) {
+    @media (min-width: ${SCREEN_BREAKPOINT.SM + 1}px) {
       &.left {
         align-items: flex-start;
         .content {

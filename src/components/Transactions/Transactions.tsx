@@ -1,70 +1,89 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Typography, Alert } from 'antd';
-import uniqBy from 'lodash/uniqBy';
 import styled from 'styled-components';
+import queryString from 'query-string';
 
 import { formatCurrency } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import { IAssetStorageItem } from './assetStorage';
-import assetStorage from './assetStorage';
-import { useTransactions, useScreen } from '../../hooks';
+import { useTransactions, useScreen, useAssetOptions, IAssetStorageItem } from '../../hooks';
+import { SCREEN_BREAKPOINT } from '../../constants';
 import PageTitle from '../PageTitle';
 import TransactionTable from './TransactionTable';
 import TransactionList from './TransactionList';
-import { MOBILE_SCREEN_THRESHOLD } from '../../constants';
+import { useAddAssetModal } from './useAddAssetModal';
+import { useTxEdit } from './useTxEdit';
+import TransactionTableWide from './TransactionTableWide';
+
+const queryParams = queryString.parseUrl(window.location.href);
+const apiKey = queryParams.query.apiKey as string;
 
 function Transactions() {
-  const { isSmall } = useScreen();
+  const { isLg, isXxl } = useScreen();
   const { getList, editTx, cancelTx } = useTransactions();
+  const { assetOptions, addAssets } = useAssetOptions();
+  const addAssetModal = useAddAssetModal();
+  const txEdit = useTxEdit();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
-  const [assetOptions, setAssetOptions] = useState<IAssetStorageItem[]>([]);
 
   const totalGasSavings = useMemo(() => {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
-  const updateAssetOptions = useCallback(
-    (newItems?: IScheduledForUser[]) => {
-      const localItems = newItems || items;
-      const uniqueAssets: IAssetStorageItem[] = uniqBy(
-        [
-          { address: '', name: 'ETH', decimals: 18 } as IAssetStorageItem,
-          ...[
-            ...assetStorage.getItems(),
-            ...localItems.map((item) => {
-              return {
-                address: item.conditionAsset,
-                decimals: item.conditionAssetDecimals,
-                name: item.conditionAssetName,
-              };
-            }),
-            ...localItems.map((item) => {
-              return {
-                address: item.assetContract,
-                decimals: item.assetDecimals,
-                name: item.assetName,
-              };
-            }),
-          ].filter((item) => item.address && item.decimals && item.name),
-        ],
-        'address'
-      );
-      setAssetOptions(uniqueAssets);
-    },
-    [items]
-  );
-
   const refresh = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getList();
+      const res = await getList(apiKey);
       setItems(res);
-      updateAssetOptions(res);
+      const resAssetOptions: IAssetStorageItem[] = [
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.conditionAsset,
+              decimals: item.conditionAssetDecimals,
+              name: item.conditionAssetName,
+            } as IAssetStorageItem)
+        ),
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.assetContract,
+              decimals: item.assetDecimals,
+              name: item.assetName,
+            } as IAssetStorageItem)
+        ),
+      ];
+      addAssets(resAssetOptions);
     } finally {
       setLoading(false);
     }
-  }, [getList, updateAssetOptions]);
+  }, [addAssets, getList]);
+
+  const handleSave = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      await editTx({
+        request: {
+          ...txEdit.tx!,
+          paymentEmail: '',
+          paymentRefundAddress: '',
+        },
+        queryParams: {
+          apiKey,
+        },
+      });
+      txEdit.stopEdit();
+
+      refresh();
+    } finally {
+      setLoading(false);
+    }
+  }, [editTx, refresh, txEdit]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {
@@ -72,10 +91,12 @@ function Transactions() {
         setLoading(true);
 
         await cancelTx({
-          id: record.id,
-          key: record.txKey,
-          createdAt: record.createdAt,
-          paymentAddress: '',
+          params: {
+            id: record.id,
+            key: record.txKey,
+            createdAt: record.createdAt,
+            paymentAddress: '',
+          },
         });
 
         refresh();
@@ -86,65 +107,108 @@ function Transactions() {
     [cancelTx, refresh]
   );
 
+  const handleOpenAddAssetModal = useCallback(() => {
+    addAssetModal.open({
+      assetType: txEdit.tx?.assetType!,
+      chainId: txEdit.tx?.chainId!,
+      onSubmit: (asset) => {
+        txEdit.updateTx({
+          conditionAsset: asset.address,
+          conditionAssetName: asset.name,
+          conditionAssetDecimals: asset.decimals,
+        });
+      },
+    });
+  }, [addAssetModal, txEdit]);
+
   useEffect(() => {
     refresh();
     // only execute once on load
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const transactionsComponent = (isXxl && (
+    <TransactionTableWide
+      assetOptions={assetOptions}
+      items={items}
+      loading={loading}
+      editingItem={txEdit.tx}
+      onStartEdit={txEdit.startEdit}
+      onStopEdit={txEdit.stopEdit}
+      onUpdateEditingItem={txEdit.updateTx}
+      onSave={handleSave}
+      onCancelTx={handleCancelTx}
+      onOpenAddAssetModal={handleOpenAddAssetModal}
+    />
+  )) ||
+    (isLg && (
+      <TransactionTable
+        assetOptions={assetOptions}
+        items={items}
+        loading={loading}
+        editingItem={txEdit.tx}
+        onStartEdit={txEdit.startEdit}
+        onStopEdit={txEdit.stopEdit}
+        onUpdateEditingItem={txEdit.updateTx}
+        onSave={handleSave}
+        onCancelTx={handleCancelTx}
+        onOpenAddAssetModal={handleOpenAddAssetModal}
+      />
+    )) || <TransactionList items={items} loading={loading} />;
+
   return (
     <Container>
       <PageTitle title="Transactions" />
-      <TableHeader>
-        <Typography.Title className="title header" level={5}>
-          Transaction list
-        </Typography.Title>
-
-        <div className="savingsContainer">
-          <Typography.Title className="title" level={5}>
-            Total gas savings:
+      {addAssetModal.modal}
+      <HeaderContainer>
+        <TableHeader>
+          <Typography.Title className="title header" level={5}>
+            Transaction list
           </Typography.Title>
-          <Typography.Title className="title savings" level={3}>
-            {formatCurrency(totalGasSavings)}
-          </Typography.Title>
-        </div>
-      </TableHeader>
-      <Alert
-        message={
-          <Typography.Text className="alert-txt">
-            These are the transactions that you scheduled using the{' '}
-            <a
-              href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Automate Network in MetaMask
-            </a>
-          </Typography.Text>
-        }
-        type="info"
-        showIcon
-        closable
-      />
-      {isSmall ? (
-        <TransactionList items={items} loading={loading} />
-      ) : (
-        <TransactionTable
-          assetOptions={assetOptions}
-          items={items}
-          loading={loading}
-          onCancelTx={handleCancelTx}
-          onEditTx={editTx}
-          onRefresh={refresh}
-          onSetLoading={setLoading}
-          onUpdateAssetOptions={updateAssetOptions}
-        />
-      )}
+          <Alert
+            message={
+              <Typography.Text className="alert-txt">
+                These are the transactions that you scheduled using the{' '}
+                <a
+                  href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Automate Network in MetaMask
+                </a>
+              </Typography.Text>
+            }
+            type="warning"
+            showIcon
+            closable
+          />
+          <div className="savingsContainer">
+            <Typography.Title className="title" level={5}>
+              Total gas savings:
+            </Typography.Title>
+            <Typography.Title className="title savings" level={3}>
+              {formatCurrency(totalGasSavings)}
+            </Typography.Title>
+          </div>
+        </TableHeader>
+      </HeaderContainer>
+      <TableContainer>{transactionsComponent}</TableContainer>
     </Container>
   );
 }
 
 const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  .alert-txt {
+    color: rgba(0, 0, 0, 0.85);
+  }
+`;
+
+const HeaderContainer = styled.div`
   width: 100%;
   max-width: 1220px;
   padding: 40px 20px;
@@ -152,17 +216,20 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+`;
 
+const TableContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
   .table {
     width: 100%;
   }
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
-    .alert-txt {
-      // display: none;
-    }
-  }
-  .alert-txt {
-    color: rgba(0, 0, 0, 0.85);
+  .ant-table.ant-table-small .ant-table-thead > tr > th,
+  .ant-table.ant-table-small .ant-table-tbody > tr > td {
+    padding: 4px 4px;
   }
 `;
 
@@ -172,8 +239,6 @@ const TableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
-
   .title.title {
     font-weight: 300;
     margin-top: 0;
@@ -187,12 +252,9 @@ const TableHeader = styled.div`
     margin-left: 8px;
     color: ${(props) => props.theme.colors.accent};
   }
-
-  @media (max-width: ${MOBILE_SCREEN_THRESHOLD}px) {
+  @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     justify-content: center;
     margin-bottom: 16px;
-    justify-content: space-around;
-
     .title.header {
       display: none;
     }

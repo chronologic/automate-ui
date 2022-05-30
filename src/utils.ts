@@ -1,5 +1,6 @@
-import { BigNumber, utils } from 'ethers';
+import { BigNumber, ethers, utils } from 'ethers';
 import { parseUrl } from 'query-string';
+import { ChainId } from './constants';
 
 const DEFAULT_USER_SOURCE = 'magic';
 const USER_SOURCE_STORAGE_KEY = 'source';
@@ -36,7 +37,7 @@ export function numberToBn(num: number, decimals = 18): BigNumber {
   return utils.parseUnits(`${numStr}`, decimals);
 }
 
-export function normalizeBigNumber(bn: BigNumber, decimalsIn: number, decimalsOut = 18): BigNumber {
+export function convertDecimals(bn: BigNumber, decimalsIn: number, decimalsOut = 18): BigNumber {
   const decimalsDiff = decimalsOut - decimalsIn;
 
   if (decimalsDiff > 0) {
@@ -56,8 +57,14 @@ export function isTruthy(value: string): boolean {
 }
 
 export function shortAddress(address?: string | null | undefined, chars = 4): string {
-  const addr = (address || '').toUpperCase();
-  return `0x${addr.substr(2, chars - 1)}...${addr.substr(-chars)}`;
+  const prefix = (address || '').slice(0, 2);
+  const id = (address || '').slice(prefix.length);
+  return `${prefix}${shortId(id)}`;
+}
+
+export function shortId(id?: string | null | undefined, chars = 4): string {
+  const _id = (id || '').toUpperCase();
+  return `${_id.slice(0, chars - 1)}...${_id.slice(-chars)}`;
 }
 
 export function formatNumber(value: number, decimals = 4, fallbackValue = '-'): string {
@@ -148,4 +155,14 @@ export async function retryRpcCallOnIntermittentError<T>(fn: () => Promise<any>)
 
 export async function sleep(ms: number): Promise<void> {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+export function getProvider(chainId: ChainId): ethers.providers.BaseProvider {
+  switch (chainId) {
+    case ChainId.arbitrum: {
+      return new ethers.providers.JsonRpcProvider('https://arb1.arbitrum.io/rpc');
+    }
+  }
+
+  return ethers.getDefaultProvider(ethers.providers.getNetwork(chainId));
 }

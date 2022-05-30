@@ -7,15 +7,18 @@ import { useAuth } from './useAuth';
 export function useTransactions() {
   const { user } = useAuth();
 
-  const handleGetTransactionList = useCallback(async () => {
-    const res = await TransactionAPI.list(user.apiKey);
+  const handleGetTransactionList = useCallback(
+    async (apiKey?: string) => {
+      const res = await TransactionAPI.list(apiKey || user?.apiKey);
 
-    return res;
-  }, [user?.apiKey]);
+      return res;
+    },
+    [user?.apiKey]
+  );
 
   const handleEditTx = useCallback(
-    async (request: IScheduleRequest, queryParams?: IScheduleParams) => {
-      const res = await TransactionAPI.edit(user.apiKey, request, queryParams);
+    async ({ request, queryParams }: { request: IScheduleRequest; queryParams?: IScheduleParams }) => {
+      const res = await TransactionAPI.edit(queryParams?.apiKey || user?.apiKey, request, queryParams);
 
       return res;
     },
@@ -23,8 +26,8 @@ export function useTransactions() {
   );
 
   const handleCancelTx = useCallback(
-    async (params: IScheduleAccessKey) => {
-      const res = await TransactionAPI.cancel(user.apiKey, params);
+    async ({ params, apiKey }: { params: IScheduleAccessKey; apiKey?: string }) => {
+      const res = await TransactionAPI.cancel(apiKey || user?.apiKey, params);
 
       return res;
     },

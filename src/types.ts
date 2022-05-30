@@ -65,6 +65,8 @@ export interface ITheme {
     shadow: string;
     border: string;
     weak: string;
+    disabled: string;
+    disabledText: string;
   };
   assets: {
     logoMain: string;
