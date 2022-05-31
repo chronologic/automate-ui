@@ -49,14 +49,18 @@ function Auth() {
   }, [signup]);
 
   const handleRequestPasswordReset = useCallback(async () => {
-    await resetPwForm.validateFields();
+    try {
+      setResetting(true);
 
-    setResetting(true);
+      await resetPwForm.validateFields();
 
-    await UserAPI.requestResetPassword({ login: pwResetLogin });
+      await UserAPI.requestResetPassword({ login: pwResetLogin });
 
-    showPwResetNotification();
-  }, [pwResetLogin]);
+      showPwResetNotification();
+    } finally {
+      setResetting(false);
+    }
+  }, [resetPwForm, pwResetLogin]);
 
   const handlePasswordReset = useCallback(() => {
     setShowPwResetModal(true);
