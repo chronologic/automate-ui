@@ -13,6 +13,7 @@ function ResetPassword() {
   const [form] = Form.useForm();
   const { authenticating } = useAuth();
   const [password, setPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
   const history = useHistory();
@@ -37,11 +38,19 @@ function ResetPassword() {
   };
 
   const handlePasswordReset = useCallback(async () => {
-    await form.validateFields();
-    history.push('/login/');
-    const resetPassword = await UserAPI.resetPassword({ login, password, token });
-    if (resetPassword) {
-      showResetSuccessNotification();
+    try {
+      setResetting(true);
+
+      await form.validateFields();
+
+      history.push('/login/');
+
+      const resetPassword = await UserAPI.resetPassword({ login, password, token });
+      if (resetPassword) {
+        showResetSuccessNotification();
+      }
+    } finally {
+      setResetting(false);
     }
   }, [login, token, password, form, history]);
 
@@ -95,7 +104,15 @@ function ResetPassword() {
             onChange={handleConfirmPasswordChange}
           />
         </Form.Item>
-        <Button type="primary" size="large" htmlType="submit" className="submit-btn" onClick={handlePasswordReset}>
+        <Button
+          type="primary"
+          size="large"
+          htmlType="submit"
+          className="submit-btn"
+          onClick={handlePasswordReset}
+          disabled={resetting}
+          loading={resetting}
+        >
           Reset Password
         </Button>
       </Form>
