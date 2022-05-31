@@ -26,6 +26,7 @@ function Auth() {
   const [pwResetLogin, setPwResetLogin] = useState('');
   const [resetting, setResetting] = useState(false);
   const [showPwResetModal, setShowPwResetModal] = useState(false);
+  const [resetPwForm] = Form.useForm();
 
   const handleAuth = useCallback(() => {
     onAuthenticate({ login, password, signup, source: getUserSource() });
@@ -48,8 +49,12 @@ function Auth() {
   }, [signup]);
 
   const handleRequestPasswordReset = useCallback(async () => {
+    await resetPwForm.validateFields();
+
     setResetting(true);
+
     await UserAPI.requestResetPassword({ login: pwResetLogin });
+
     showPwResetNotification();
   }, [pwResetLogin]);
 
@@ -141,40 +146,42 @@ function Auth() {
           </ModeSwitch>
         )}
       </Form>
-      <Modal
-        title="Reset Password"
-        centered
-        className="modal"
-        visible={showPwResetModal}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="submitResetPassword" type="primary" disabled={resetting} onClick={handleRequestPasswordReset}>
-            Submit
-          </Button>,
-          <Button key="cancelResetPassword" onClick={handleCancel}>
-            Cancel
-          </Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item
-            name="email"
-            rules={[
-              { required: true, message: 'Email is required' },
-              { pattern: emailRegex, message: 'Invalid email' },
-            ]}
-          >
-            <Input
-              type="email"
-              size="large"
-              placeholder="Please provide your email address that you use to log in"
-              disabled={resetting}
-              value={pwResetLogin}
-              onChange={handlePwResetLoginChange}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <Form form={resetPwForm}>
+        <Modal
+          title="Reset Password"
+          centered
+          className="modal"
+          visible={showPwResetModal}
+          onCancel={handleCancel}
+          footer={[
+            <Button key="submitResetPassword" type="primary" disabled={resetting} onClick={handleRequestPasswordReset}>
+              Submit
+            </Button>,
+            <Button key="cancelResetPassword" onClick={handleCancel}>
+              Cancel
+            </Button>,
+          ]}
+        >
+          <Form layout="vertical">
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: 'Email is required' },
+                { pattern: emailRegex, message: 'Invalid email' },
+              ]}
+            >
+              <Input
+                type="email"
+                size="large"
+                placeholder="Please provide your email address that you use to log in"
+                disabled={resetting}
+                value={pwResetLogin}
+                onChange={handlePwResetLoginChange}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+      </Form>
     </Container>
   );
 }
