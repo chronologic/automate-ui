@@ -41,12 +41,12 @@ function ResetPassword() {
 
       await form.validateFields();
 
-      history.push('/login/');
-
       const resetPassword = await UserAPI.resetPassword({ login, password, token });
       if (resetPassword) {
         showResetSuccessNotification();
       }
+
+      history.push('/login/');
     } finally {
       setResetting(false);
     }

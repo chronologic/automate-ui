@@ -148,12 +148,7 @@ function Auth() {
         visible={showPwResetModal}
         onCancel={handleCancel}
         footer={[
-          <Button
-            key="submitResetPassword"
-            type="primary"
-            disabled={!pwResetLogin}
-            onClick={handleRequestPasswordReset}
-          >
+          <Button key="submitResetPassword" type="primary" disabled={resetting} onClick={handleRequestPasswordReset}>
             Submit
           </Button>,
           <Button key="cancelResetPassword" onClick={handleCancel}>
