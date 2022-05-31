@@ -71,7 +71,7 @@ function ResetPassword() {
             placeholder="New Password"
             disabled={authenticating}
             value={password}
-            required={true}
+            required
             onChange={handlePasswordChange}
           />
         </Form.Item>
@@ -91,7 +91,7 @@ function ResetPassword() {
             placeholder="Confirm New Password"
             disabled={authenticating}
             value={passwordConfirmation}
-            required={true}
+            required
             onChange={handleConfirmPasswordChange}
           />
         </Form.Item>
