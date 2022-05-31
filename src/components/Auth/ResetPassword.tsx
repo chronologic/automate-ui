@@ -24,7 +24,7 @@ function ResetPassword() {
   const handlePasswordChange = useCallback((e: any) => {
     setPassword(e.target.value);
   }, []);
-  const handleconfirmPasswordChange = useCallback((e: any) => {
+  const handleConfirmPasswordChange = useCallback((e: any) => {
     setConfirmPassword(e.target.value);
   }, []);
 
@@ -92,7 +92,7 @@ function ResetPassword() {
             disabled={authenticating}
             value={confirmPassword}
             required={true}
-            onChange={handleconfirmPasswordChange}
+            onChange={handleConfirmPasswordChange}
           />
         </Form.Item>
         <Button type="primary" size="large" htmlType="submit" className="submit-btn" onClick={handlePasswordReset}>
