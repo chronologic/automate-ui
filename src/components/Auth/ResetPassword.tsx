@@ -67,7 +67,7 @@ function ResetPassword() {
           <Input
             type="password"
             size="large"
-            style={{ width: '240px' }}
+            className="password-input"
             placeholder="New Password"
             disabled={authenticating}
             value={password}
@@ -87,7 +87,7 @@ function ResetPassword() {
           <Input
             type="password"
             size="large"
-            style={{ width: '240px' }}
+            className="password-input"
             placeholder="Confirm New Password"
             disabled={authenticating}
             value={passwordConfirmation}
@@ -118,6 +118,10 @@ const Container = styled.div`
   .title {
     font-weight: 300;
     margin-bottom: 30px;
+  }
+
+  .password-input {
+    width: 240px;
   }
 
   .submit-btn {
