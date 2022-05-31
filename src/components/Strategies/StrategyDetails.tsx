@@ -90,7 +90,7 @@ function StrategyDetails() {
 
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
-
+      console.log('strategy:  ' + strategy + 'from: ' + account! + 'txs: ' + txs + 'repe: ' + repetitions);
       const prepTxs = buildPrepTxs({
         strategy,
         from: account!,
@@ -192,6 +192,7 @@ function buildPrepTxs({
   for (const repetition of repetitions) {
     for (const block of strategy.blocks) {
       const tx = txs[block];
+      console.log('tx: ' + JSON.stringify(tx));
       let priority = 1;
       prepTxs.push({
         assetType: strategy.assetType,
