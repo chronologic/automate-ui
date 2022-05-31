@@ -22,6 +22,8 @@ function Auth() {
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [pwResetLogin, setPwResetLogin] = useState('');
+  const [resetting, setResetting] = useState(false);
   const [showPwResetModal, setShowPwResetModal] = useState(false);
 
   const handleAuth = useCallback(() => {
@@ -30,6 +32,10 @@ function Auth() {
 
   const handleLoginChange = useCallback((e: any) => {
     setLogin(e.target.value);
+  }, []);
+
+  const handlePwResetLoginChange = useCallback((e: any) => {
+    setPwResetLogin(e.target.value);
   }, []);
 
   const handlePasswordChange = useCallback((e: any) => {
@@ -41,11 +47,10 @@ function Auth() {
   }, [signup]);
 
   const handleRequestPasswordReset = useCallback(async () => {
-    const resetRequest = await UserAPI.requestResetPassword({ login });
-    if (resetRequest) {
-      showPwResetNotification();
-    }
-  }, [login]);
+    setResetting(true);
+    await UserAPI.requestResetPassword({ login: pwResetLogin });
+    showPwResetNotification();
+  }, [pwResetLogin]);
 
   const handlePasswordReset = useCallback(() => {
     setShowPwResetModal(true);
@@ -142,7 +147,12 @@ function Auth() {
         visible={showPwResetModal}
         onCancel={handleCancel}
         footer={[
-          <Button key="submitResetPassword" type="primary" disabled={!login} onClick={handleRequestPasswordReset}>
+          <Button
+            key="submitResetPassword"
+            type="primary"
+            disabled={!pwResetLogin}
+            onClick={handleRequestPasswordReset}
+          >
             Submit
           </Button>,
           <Button key="cancelResetPassword" onClick={handleCancel}>
@@ -162,9 +172,9 @@ function Auth() {
               type="email"
               size="large"
               placeholder="Please provide your email address that you use to log in"
-              disabled={authenticating}
-              value={login}
-              onChange={handleLoginChange}
+              disabled={resetting}
+              value={pwResetLogin}
+              onChange={handlePwResetLoginChange}
             />
           </Form.Item>
         </Form>

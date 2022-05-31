@@ -5,13 +5,11 @@ import { Form, Typography, Input, Button, notification } from 'antd';
 import styled from 'styled-components';
 import qs from 'query-string';
 
-import { useAuth } from '../../hooks';
 import { UserAPI } from '../../api';
 import { validatePassword } from './Auth';
 
 function ResetPassword() {
   const [form] = Form.useForm();
-  const { authenticating } = useAuth();
   const [password, setPassword] = useState('');
   const [resetting, setResetting] = useState(false);
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -78,7 +76,7 @@ function ResetPassword() {
             size="large"
             className="password-input"
             placeholder="New Password"
-            disabled={authenticating}
+            disabled={resetting}
             value={password}
             required
             onChange={handlePasswordChange}
@@ -98,7 +96,7 @@ function ResetPassword() {
             size="large"
             className="password-input"
             placeholder="Confirm New Password"
-            disabled={authenticating}
+            disabled={resetting}
             value={passwordConfirmation}
             required
             onChange={handleConfirmPasswordChange}
