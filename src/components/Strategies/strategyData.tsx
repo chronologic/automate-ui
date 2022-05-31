@@ -40,7 +40,7 @@ export const strategies: IStrategy[] = [
   },
   {
     id: 3,
-    url: 'magic-dragon-claim',
+    url: 'magic-dragon-dao-claim',
     comingSoon: false,
     imageSrc: './img/magic-dragon.jpg',
     title: 'Claim Rewards',

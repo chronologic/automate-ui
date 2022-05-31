@@ -11,7 +11,7 @@ const blockConfig: {
 } = {
   'arbitrum:bridgeworld:claim': { component: Arbitrum_Bridgeworld_Claim, requiresFallback: false },
   'arbitrum:magic:send': { component: Arbitrum_Magic_Send, requiresFallback: true },
-  'arbitrum:magicdragon:claim': { component: Arbitrum_MagicDragon_Claim, requiresFallback: true },
+  'arbitrum:magicdragon:claim': { component: Arbitrum_MagicDragon_Claim, requiresFallback: false },
 };
 
 export { blockConfig };
