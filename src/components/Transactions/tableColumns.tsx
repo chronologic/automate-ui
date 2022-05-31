@@ -326,10 +326,10 @@ export function actionsInEditMode({
 export function gasPrice() {
   return {
     dataIndex: 'gasPrice',
-    render: (gasPrice: any) => formatNumber(bigNumberToNumber(gasPrice, 9), 0),
+    render: (gasPrice: any) => formatNumber(Number(ethers.utils.formatUnits(gasPrice, 9)), 4),
     sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
       BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
-    title: 'Price',
+    title: 'Gas Price',
     align: 'right' as any,
   };
 }

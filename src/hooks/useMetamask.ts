@@ -13,6 +13,7 @@ interface IMetamaskStoreState {
 interface IMetamaskStoreMethods {
   connect: () => Promise<IMetamaskStoreState>;
   reset: () => Promise<void>;
+  changeNetwork: (id: number) => Promise<void>;
 }
 
 interface IMetamaskHook extends IMetamaskStoreState, IMetamaskStoreMethods {}
@@ -59,6 +60,13 @@ async function reset() {
   useStore.setState(defaultState);
 }
 
+async function changeNetwork(id: number) {
+  await ethereum.request({
+    method: 'wallet_switchEthereumChain',
+    params: [{ chainId: `0x${id.toString(16)}` }],
+  });
+}
+
 useEthereumStore.subscribe((state) => {
   if (state.isReady) {
     ethereum.on('accountsChanged', handleAccountsChanged as any);
@@ -81,6 +89,7 @@ const useMetamask = (): IMetamaskHook => {
     ...state,
     connect,
     reset,
+    changeNetwork,
   };
 };
 
