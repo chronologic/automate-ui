@@ -13,7 +13,7 @@ function ResetPassword() {
   const [form] = Form.useForm();
   const { authenticating } = useAuth();
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordConfirmation, setPasswordConfirmation] = useState('');
 
   const history = useHistory();
 
@@ -25,7 +25,7 @@ function ResetPassword() {
     setPassword(e.target.value);
   }, []);
   const handleConfirmPasswordChange = useCallback((e: any) => {
-    setConfirmPassword(e.target.value);
+    setPasswordConfirmation(e.target.value);
   }, []);
 
   const showResetSuccessNotification = () => {
@@ -46,7 +46,7 @@ function ResetPassword() {
   }, [login, token, password, form, history]);
 
   async function checkPasswordMatch() {
-    if (!(password === confirmPassword)) {
+    if (!(password === passwordConfirmation)) {
       return Promise.reject(new Error('Passwords must match'));
     }
   }
@@ -90,7 +90,7 @@ function ResetPassword() {
             style={{ width: '240px' }}
             placeholder="Confirm New Password"
             disabled={authenticating}
-            value={confirmPassword}
+            value={passwordConfirmation}
             required={true}
             onChange={handleConfirmPasswordChange}
           />
