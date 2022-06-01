@@ -5,6 +5,7 @@ import ReactPlayer from 'react-player';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import Web3 from 'web3';
+import { ethers } from 'ethers';
 
 import {
   IStrategy,
@@ -91,6 +92,8 @@ function StrategyDetails() {
       await form.validateFields();
       await connect({ desiredNetwork: ChainId[strategy.chainId] as Network });
 
+      const gasPrice = await getGasPrice(strategy.chainId);
+
       const prepTxs = buildPrepTxs({
         strategy,
         from: account!,
@@ -107,7 +110,7 @@ function StrategyDetails() {
         const txIndex = prepTxs.indexOf(tx);
         setCurrentTxIndex(txIndex);
         try {
-          await tryExecuteTx(strategy.chainId as number, tx);
+          await tryExecuteTx(strategy.chainId as number, tx, gasPrice);
         } catch (e: any) {
           cancel(prepRes.instanceId);
           setDisplaySigningPopup(false);
@@ -175,6 +178,19 @@ function StrategyDetails() {
   );
 }
 
+async function getGasPrice(chainId: ChainId): Promise<string> {
+  let price = await web3.eth.getGasPrice();
+
+  if ([ChainId.arbitrum, ChainId.arbitrumRinkeby].includes(chainId)) {
+    const minPrice = ethers.utils.parseUnits('1', 'gwei');
+    if (minPrice.gt(price)) {
+      price = minPrice.toString();
+    }
+  }
+
+  return price;
+}
+
 function buildPrepTxs({
   strategy,
   from,
@@ -237,7 +253,7 @@ function buildPrepTxs({
   return prepTxs;
 }
 
-async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) {
+async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions, gasPrice: string) {
   try {
     await retryRpcCallOnIntermittentError(async () =>
       web3!.eth.sendTransaction({
@@ -245,6 +261,7 @@ async function tryExecuteTx(chainId: number, tx: IStrategyPrepTxWithConditions) 
         from: tx.from,
         to: tx.to,
         data: tx.data,
+        gasPrice,
       })
     );
   } catch (e: any) {
