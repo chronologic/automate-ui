@@ -104,7 +104,7 @@ function Auth() {
           <ModeSwitch className="signupLoginText">
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
-              {signup ? 'Log in' : 'Limited Time First 50 $MAGIC✨ Hour Pod Listeners get 200 FREE credits'}
+              {signup ? 'Log in' : 'Limited Time First 100 $MAGIC✨ signups get 100 FREE credits'}
             </Typography.Link>
           </ModeSwitch>
         )}
