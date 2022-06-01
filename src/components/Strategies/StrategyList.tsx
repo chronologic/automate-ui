@@ -30,7 +30,7 @@ function StrategyList() {
     (strategy: IStrategy) => {
       try {
         (window as any).heap.track('StrategyClicked', {
-          strategy: strategy.title,
+          strategy: strategy.title + ' ' + strategy.subtitle,
           url: strategy.url,
           id: strategy.id,
         });
