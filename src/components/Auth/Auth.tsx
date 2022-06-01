@@ -59,22 +59,24 @@ function Auth() {
       showPwResetNotification();
     } finally {
       setResetting(false);
+      setShowPwResetModal(false);
     }
   }, [resetPwForm, pwResetLogin]);
 
   const handlePasswordReset = useCallback(() => {
     setShowPwResetModal(true);
   }, []);
+
   const handleCancel = () => {
     setShowPwResetModal(false);
   };
+
   const showPwResetNotification = () => {
     notification.success({
       message: 'Password Reset Email Has Been Sent',
       description: 'We sent you an email with a reset link',
       duration: 3.5,
     });
-    setShowPwResetModal(false);
   };
 
   useEffect(() => {
@@ -143,7 +145,7 @@ function Auth() {
           <ModeSwitch className="signupLoginText">
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
-              {signup ? 'Log in' : 'Limited time First 87 $MAGIC✨ users Free sign up'}
+              {signup ? 'Log in' : 'Limited Time First 50 $MAGIC✨ Hour Pod Listeners get 200 FREE credits'}
             </Typography.Link>{' '}
             <br /> <br />
             {!signup && <Typography.Link onClick={handlePasswordReset}>Forgot Password?</Typography.Link>}
