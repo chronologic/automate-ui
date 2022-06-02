@@ -58,7 +58,6 @@ function Auth() {
 
       showPwResetNotification();
     } finally {
-      setResetting(false);
       setShowPwResetModal(false);
     }
   }, [resetPwForm, pwResetLogin]);
@@ -160,7 +159,13 @@ function Auth() {
           visible={showPwResetModal}
           onCancel={handleCancel}
           footer={[
-            <Button key="submitResetPassword" type="primary" disabled={resetting} onClick={handleRequestPasswordReset}>
+            <Button
+              key="submitResetPassword"
+              type="primary"
+              disabled={resetting}
+              loading={resetting}
+              onClick={handleRequestPasswordReset}
+            >
               Submit
             </Button>,
             <Button key="cancelResetPassword" onClick={handleCancel}>
