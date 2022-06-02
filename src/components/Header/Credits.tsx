@@ -138,12 +138,6 @@ const Container = styled.div`
       font-size: 1.6rem;
     }
 
-    /*
-    .value {
-      font-size: 1.2rem;
-    }
-    */
-
     .divider {
       display: none;
     }
