@@ -40,6 +40,7 @@ export enum ConfirmationTime {
 export enum StrategyBlock {
   Arbitrum_Bridgeworld_Claim = 'arbitrum:bridgeworld:claim',
   Arbitrum_Magic_Send = 'arbitrum:magic:send',
+  Arbitrum_MagicDragon_Claim = 'arbitrum:magicdragon:claim',
 }
 
 export enum RepeatFrequency {

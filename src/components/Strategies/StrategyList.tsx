@@ -17,20 +17,23 @@ function StrategyList() {
   const history = useHistory();
   const { user } = useAuth();
 
-  const redirectUser = (strategyUrl: string) => {
-    if (user.apiKey) {
-      history.push('/strategies/' + strategyUrl);
-    } else {
-      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
-      history.push('/login/');
-    }
-  };
+  const redirectUser = useCallback(
+    (strategyUrl: string) => {
+      if (user.apiKey) {
+        history.push('/strategies/' + strategyUrl);
+      } else {
+        sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
+        history.push('/login/');
+      }
+    },
+    [history, user?.apiKey]
+  );
 
   const strategyClick = useCallback(
     (strategy: IStrategy) => {
       try {
         (window as any).heap.track('StrategyClicked', {
-          strategy: strategy.title,
+          strategy: strategy.title + ' ' + strategy.subtitle,
           url: strategy.url,
           id: strategy.id,
         });
@@ -44,7 +47,7 @@ function StrategyList() {
         redirectUser(strategy.url);
       }
     },
-    [history]
+    [redirectUser]
   );
 
   return (

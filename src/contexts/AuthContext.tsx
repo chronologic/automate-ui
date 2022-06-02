@@ -61,7 +61,6 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
     async (params: IAuthParams) => {
       setAuthenticating(true);
       const fn = params.signup ? UserAPI.signup : UserAPI.login;
-
       try {
         const user = await fn(params);
         onAuthenticated(user);
@@ -109,7 +108,15 @@ export const AuthProvider: React.FC<IProps> = ({ children }: IProps) => {
   }, [onLogout, user]);
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, authenticating, onAuthenticate, onLogout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        authenticating,
+        onAuthenticate,
+        onLogout,
+      }}
+    >
       {initialized && children}
     </AuthContext.Provider>
   );

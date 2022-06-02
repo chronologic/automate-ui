@@ -25,6 +25,9 @@ function Footer() {
             <a href="https://chronologic.zendesk.com/hc/en-us" target="_blank" rel="noopener noreferrer">
               Support
             </a>
+            <a href="https://blog.chronologic.network/automate-faq-d80956f3ee9" target="_blank" rel="noopener noreferrer">
+              FAQ
+            </a>
           </Column>
           <Column>
             <a href="https://blog.chronologic.network" target="_blank" rel="noopener noreferrer">
