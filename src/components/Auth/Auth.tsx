@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Input, Typography, Form } from 'antd';
+import { Button, Input, Typography, Form, Modal, notification } from 'antd';
 import styled from 'styled-components';
 import { parseUrl } from 'query-string';
 
-import { useAuth } from '../../hooks';
-import { ALLOW_SIGNUP } from '../../env';
 import { getUserSource } from '../../utils';
+import { ALLOW_SIGNUP } from '../../env';
+import { useAuth } from '../../hooks';
+import { UserAPI } from '../../api';
+
 import PageTitle from '../PageTitle';
 
 const emailRegex =
@@ -21,6 +23,10 @@ function Auth() {
   const [signup, setSignup] = useState(ALLOW_SIGNUP && !!parsed.query?.utm_source);
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+  const [pwResetLogin, setPwResetLogin] = useState('');
+  const [resetting, setResetting] = useState(false);
+  const [showPwResetModal, setShowPwResetModal] = useState(false);
+  const [resetPwForm] = Form.useForm();
 
   const handleAuth = useCallback(() => {
     onAuthenticate({ login, password, signup, source: getUserSource() });
@@ -30,6 +36,10 @@ function Auth() {
     setLogin(e.target.value);
   }, []);
 
+  const handlePwResetLoginChange = useCallback((e: any) => {
+    setPwResetLogin(e.target.value);
+  }, []);
+
   const handlePasswordChange = useCallback((e: any) => {
     setPassword(e.target.value);
   }, []);
@@ -37,6 +47,38 @@ function Auth() {
   const handleModeSwitch = useCallback(() => {
     setSignup(!signup);
   }, [signup]);
+
+  const handleRequestPasswordReset = useCallback(async () => {
+    try {
+      setResetting(true);
+
+      await resetPwForm.validateFields();
+
+      await UserAPI.requestResetPassword({ login: pwResetLogin });
+
+      showPwResetNotification();
+
+      setShowPwResetModal(false);
+    } finally {
+      setResetting(false);
+    }
+  }, [resetPwForm, pwResetLogin]);
+
+  const handlePasswordReset = useCallback(() => {
+    setShowPwResetModal(true);
+  }, []);
+
+  const handleCancel = () => {
+    setShowPwResetModal(false);
+  };
+
+  const showPwResetNotification = () => {
+    notification.success({
+      message: 'Password Reset Email Has Been Sent',
+      description: 'We sent you an email with a reset link',
+      duration: 3.5,
+    });
+  };
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -105,9 +147,53 @@ function Auth() {
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
               {signup ? 'Log in' : 'Limited Time First 50 $MAGIC✨ Hour Pod Listeners get 200 FREE credits'}
-            </Typography.Link>
+            </Typography.Link>{' '}
+            <br /> <br />
+            {!signup && <Typography.Link onClick={handlePasswordReset}>Forgot Password?</Typography.Link>}
           </ModeSwitch>
         )}
+      </Form>
+      <Form form={resetPwForm}>
+        <Modal
+          title="Reset Password"
+          centered
+          className="modal"
+          visible={showPwResetModal}
+          onCancel={handleCancel}
+          footer={[
+            <Button
+              key="submitResetPassword"
+              type="primary"
+              disabled={resetting}
+              loading={resetting}
+              onClick={handleRequestPasswordReset}
+            >
+              Submit
+            </Button>,
+            <Button key="cancelResetPassword" onClick={handleCancel}>
+              Cancel
+            </Button>,
+          ]}
+        >
+          <Form layout="vertical">
+            <Form.Item
+              name="email"
+              rules={[
+                { required: true, message: 'Email is required' },
+                { pattern: emailRegex, message: 'Invalid email' },
+              ]}
+            >
+              <Input
+                type="email"
+                size="large"
+                placeholder="Please provide your email address that you use to log in"
+                disabled={resetting}
+                value={pwResetLogin}
+                onChange={handlePwResetLoginChange}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
       </Form>
     </Container>
   );
@@ -145,7 +231,7 @@ const ModeSwitch = styled.div`
   margin-bottom: 32px;
 `;
 
-async function validatePassword(password: string): Promise<void> {
+export async function validatePassword(password: string): Promise<void> {
   if (!/(?=.*[A-Z])(?=.*[a-z]).*/.test(password)) {
     return Promise.reject(new Error('Password must contain lower and uppercase characters'));
   }

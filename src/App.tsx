@@ -17,6 +17,7 @@ import {
   Config,
   Transactions,
   CallToAction,
+  ResetPassword,
 } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
@@ -70,6 +71,7 @@ function App() {
                 <Config />
               </PrivateRoute>
               <Route path="/login" component={Auth} />
+              <Route path="/resetPassword" component={ResetPassword} />
               <Route path="/scheduleds" component={Transactions} />
               <PrivateRoute path="/strategies/:id">
                 <StrategyDetails />
