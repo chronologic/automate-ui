@@ -147,7 +147,7 @@ function Auth() {
             <Typography.Text>{signup ? 'Already have an account?' : "Don't have an account?"}</Typography.Text> <br />
             <Typography.Link onClick={handleModeSwitch}>
               {signup ? 'Log in' : 'Limited Time First 100 $MAGIC✨ signups get 100 FREE credits'}
-            </Typography.Link>
+            </Typography.Link>{' '}
             <br /> <br />
             {!signup && <Typography.Link onClick={handlePasswordReset}>Forgot Password?</Typography.Link>}
           </ModeSwitch>
