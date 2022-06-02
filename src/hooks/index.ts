@@ -1,4 +1,5 @@
 export * from './useAuth';
+export * from './useMetamask';
 export * from './useAutomateConnection';
 export * from './useAssetOptions';
 export * from './useScreen';

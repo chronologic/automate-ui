@@ -14,7 +14,7 @@ import debounce from 'lodash/debounce';
 
 import { IScheduledForUser } from '../../types';
 import { BlockExplorerName, BlockExplorerUrl, ChainId } from '../../constants';
-import { bigNumberToNumber, formatCurrency, formatNumber, shortId } from '../../utils';
+import { formatCurrency, formatNumber, shortId } from '../../utils';
 import { IAssetStorageItem } from '../../hooks';
 import LabelTag from '../LabelTag';
 import AssetSymbolLink from './AssetSymbolLink';
@@ -326,10 +326,10 @@ export function actionsInEditMode({
 export function gasPrice() {
   return {
     dataIndex: 'gasPrice',
-    render: (gasPrice: any) => formatNumber(bigNumberToNumber(gasPrice, 9), 0),
+    render: (gasPrice: any) => formatNumber(Number(ethers.utils.formatUnits(gasPrice || '0', 9)), 4),
     sorter: (a: IScheduledForUser, b: IScheduledForUser) =>
       BigNumber.from(a.gasPrice || '0').gte(BigNumber.from(b.gasPrice || '0')) as any,
-    title: 'Price',
+    title: 'Gas Price',
     align: 'right' as any,
   };
 }
