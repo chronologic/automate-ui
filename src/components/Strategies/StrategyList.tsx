@@ -17,14 +17,17 @@ function StrategyList() {
   const history = useHistory();
   const { user } = useAuth();
 
-  const redirectUser = (strategyUrl: string) => {
-    if (user.apiKey) {
-      history.push('/strategies/' + strategyUrl);
-    } else {
-      sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
-      history.push('/login/');
-    }
-  };
+  const redirectUser = useCallback(
+    (strategyUrl: string) => {
+      if (user.apiKey) {
+        history.push('/strategies/' + strategyUrl);
+      } else {
+        sessionStorage.setItem(strategyPathKey, 'strategies/' + strategyUrl);
+        history.push('/login/');
+      }
+    },
+    [history, user?.apiKey]
+  );
 
   const strategyClick = useCallback(
     (strategy: IStrategy) => {
@@ -44,7 +47,7 @@ function StrategyList() {
         redirectUser(strategy.url);
       }
     },
-    [history]
+    [redirectUser]
   );
 
   return (
