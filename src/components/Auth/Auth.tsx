@@ -57,8 +57,10 @@ function Auth() {
       await UserAPI.requestResetPassword({ login: pwResetLogin });
 
       showPwResetNotification();
-    } finally {
+
       setShowPwResetModal(false);
+    } finally {
+      setResetting(false);
     }
   }, [resetPwForm, pwResetLogin]);
 
