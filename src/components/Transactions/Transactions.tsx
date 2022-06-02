@@ -165,23 +165,6 @@ function Transactions() {
           <Typography.Title className="title header" level={5}>
             Transaction list
           </Typography.Title>
-          <Alert
-            message={
-              <Typography.Text className="alert-txt">
-                These are the transactions that you scheduled using the{' '}
-                <a
-                  href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Automate Network in MetaMask
-                </a>
-              </Typography.Text>
-            }
-            type="warning"
-            showIcon
-            closable
-          />
           <div className="savingsContainer">
             <Typography.Title className="title" level={5}>
               Total gas savings:
@@ -191,6 +174,23 @@ function Transactions() {
             </Typography.Title>
           </div>
         </TableHeader>
+        <Alert
+          message={
+            <Typography.Text className="alert-txt">
+              These are the transactions that you scheduled using the{' '}
+              <a
+                href="https://blog.chronologic.network/how-to-sign-up-to-automate-and-claim-your-magic-rewards-cf67fca1ddb3"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Automate Network in MetaMask
+              </a>
+            </Typography.Text>
+          }
+          type="warning"
+          showIcon
+          closable
+        />
       </HeaderContainer>
       <TableContainer>{transactionsComponent}</TableContainer>
     </Container>
