@@ -8,28 +8,28 @@ import cn from 'classnames';
 import { useBatchConfig } from './useBatchConfig';
 
 function BatchColumns() {
-  const config = useBatchConfig();
+  const { columns, selectedColumns, selectColumns } = useBatchConfig();
 
   const dragProps = useMemo(() => {
     return {
       onDragEnd(fromIndex: number, toIndex: number) {
-        const newSelectedColumns = [...config.selectedColumns];
+        const newSelectedColumns = [...selectedColumns];
         const item = newSelectedColumns.splice(fromIndex, 1)[0];
         newSelectedColumns.splice(toIndex, 0, item);
-        config.selectColumns(newSelectedColumns);
+        selectColumns(newSelectedColumns);
       },
       nodeSelector: 'li',
       handleSelector: 'li.selected .dragger',
     };
-  }, [config]);
+  }, [selectColumns, selectedColumns]);
 
   const columnNodes = useMemo(() => {
-    return config.columns.map((item) => {
-      const isSelected = config.selectedColumns.includes(item.name);
+    return columns.map((item) => {
+      const isSelected = selectedColumns.includes(item.name);
       const classNames = cn({ selected: isSelected, disabled: !isSelected });
 
       const handleChange = (e: any) => {
-        let newSelectedColumns = [...config.selectedColumns];
+        let newSelectedColumns = [...selectedColumns];
         const { checked } = e.target;
 
         if (checked) {
@@ -38,7 +38,7 @@ function BatchColumns() {
           newSelectedColumns = newSelectedColumns.filter((name) => name !== item.name);
         }
 
-        config.selectColumns(newSelectedColumns);
+        selectColumns(newSelectedColumns);
       };
 
       return (
@@ -49,7 +49,7 @@ function BatchColumns() {
         </li>
       );
     });
-  }, [config]);
+  }, [columns, selectColumns, selectedColumns]);
 
   return (
     <Container>
