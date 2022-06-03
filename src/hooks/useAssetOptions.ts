@@ -5,6 +5,7 @@ import uniqBy from 'lodash/uniqBy';
 import { ChainId } from '../constants';
 import { AssetType } from '../types';
 import { useMemo } from 'react';
+import { isEmptyName, shortAddress } from '../utils';
 
 export interface IAssetStorageItem {
   assetType: AssetType;
@@ -51,8 +52,15 @@ function addAsset(asset: IAssetStorageItem) {
 function addAssets(assets: IAssetStorageItem[]) {
   const { assetOptions: storedAssets } = useAssetOptionsStore.getState();
   const mergedAssets = [...storedAssets, ...assets];
-  const filteredAssets = mergedAssets.filter((item) => item.address && item.decimals && item.name);
-  const uniqueAssets = uniqBy(filteredAssets, (item) => `${item.assetType}.${item.chainId}.${item.address}`);
+  const filteredAssets = mergedAssets.filter((item) => item.address && item.decimals);
+  const normalizedAssets = filteredAssets.map((item) => ({
+    ...item,
+    address: item.address.toLowerCase(),
+    name: isEmptyName(item.name) ? shortAddress(item.address) : item.name,
+  }));
+  const uniqueAssets = uniqBy(normalizedAssets, (item) =>
+    `${item.assetType}.${item.chainId}.${item.address}`.toLowerCase()
+  );
 
   useAssetOptionsStore.setState({ assetOptions: uniqueAssets });
 }

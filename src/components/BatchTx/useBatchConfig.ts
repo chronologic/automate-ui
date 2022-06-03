@@ -76,11 +76,13 @@ interface IBatchConfigState {
   selectedColumns: BatchColumn[];
   separators: IBatchSeparatorConfig[];
   selectedSeparator: BatchSeparator;
+  selectedAsset: string;
 }
 
 interface IBatchConfigMethods {
   selectSeparator: (name: BatchSeparator) => void;
   selectColumns: (names: BatchColumn[]) => void;
+  selectAsset: (name: string) => void;
 }
 
 interface IBatchConfigHook extends IBatchConfigState, IBatchConfigMethods {}
@@ -90,6 +92,7 @@ const defaultState: IBatchConfigState = {
   selectedColumns: [],
   separators: Object.keys(batchSeparators).map((name) => batchSeparators[name as BatchSeparator]),
   selectedSeparator: '' as any,
+  selectedAsset: '',
 };
 
 const useBatchConfigStore = create<IBatchConfigState>(() => defaultState);
@@ -109,6 +112,10 @@ const useBatchConfig = (): IBatchConfigHook => {
     useBatchConfigStorageStore.setState({ columns: names });
   }, []);
 
+  const selectAsset = useCallback((asset: string) => {
+    useBatchConfigStorageStore.setState({ asset });
+  }, []);
+
   useEffect(() => {
     const allColumnNames = Object.keys(batchColumns);
     const sortedColumnNames = [
@@ -125,8 +132,10 @@ const useBatchConfig = (): IBatchConfigHook => {
     ...state,
     selectedColumns,
     selectedSeparator,
+    selectedAsset: storageState.asset,
     selectColumns,
     selectSeparator,
+    selectAsset,
   };
 };
 

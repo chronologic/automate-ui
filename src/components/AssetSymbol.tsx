@@ -17,6 +17,7 @@ interface IProps {
   chainId: ChainId;
   name: string;
   address: string;
+  alwaysShowName?: boolean;
 }
 
 const cacheStorageKey = 'assetImages';
@@ -39,7 +40,7 @@ const mapping: { [key: string]: string } = {
   [xfai]: xfitToken,
 };
 
-export default function AssetSymbol({ chainId, name, address }: IProps) {
+export default function AssetSymbol({ chainId, name, address, alwaysShowName }: IProps) {
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState(false);
 
@@ -56,11 +57,15 @@ export default function AssetSymbol({ chainId, name, address }: IProps) {
   const title = _name || address;
   const displayName = _name ? _name : address ? shortAddress(address, 4) : '-';
 
+  const imageNode = imageUrl && !error && (
+    <img src={imageUrl} alt={title} title={title} onError={() => setError(true)} />
+  );
+  const nameNode = <span>{displayName}</span>;
+  const showName = !imageNode || alwaysShowName;
+
   return (
     <Content>
-      {(imageUrl && !error && <img src={imageUrl} alt={title} title={title} onError={() => setError(true)} />) || (
-        <span>{displayName}</span>
-      )}
+      {imageNode} {showName && nameNode}
     </Content>
   );
 }
