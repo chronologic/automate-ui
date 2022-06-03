@@ -103,6 +103,7 @@ const Container = styled.div`
   .value {
     color: ${(props) => props.theme.colors.accent};
     /* font-weight: bold; */
+    margin-left: 5px;
     font-size: 1.6rem;
   }
 
@@ -123,7 +124,6 @@ const Container = styled.div`
 
   @media (max-width: ${SCREEN_BREAKPOINT.LG}px) {
     .title {
-      font-size: 1.2rem;
       margin: 0;
     }
 
@@ -134,12 +134,8 @@ const Container = styled.div`
     }
 
     .stat {
-      padding: 0;
-      font-size: 1.2rem;
-    }
-
-    .value {
-      font-size: 1.2rem;
+      padding: 0px;
+      font-size: 1.6rem;
     }
 
     .divider {

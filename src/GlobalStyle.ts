@@ -326,6 +326,7 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-card-head {
     border-color: ${(props) => props.theme.colors.border};
+    color: ${(props) => props.theme.colors.text};
   }
   .ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected .ant-picker-time-panel-cell-inner {
     background: ${(props) => props.theme.colors.text};
