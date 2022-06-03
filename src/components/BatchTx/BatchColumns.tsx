@@ -7,7 +7,7 @@ import cn from 'classnames';
 
 import { useBatchConfig } from './useBatchConfig';
 
-function BatchTx() {
+function BatchColumns() {
   const config = useBatchConfig();
 
   const dragProps = useMemo(() => {
@@ -98,4 +98,4 @@ const Container = styled.div`
   }
 `;
 
-export default BatchTx;
+export default BatchColumns;

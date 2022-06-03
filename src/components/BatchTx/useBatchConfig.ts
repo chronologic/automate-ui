@@ -59,14 +59,14 @@ const batchColumns: {
 const batchSeparators: {
   [name in BatchSeparator]: IBatchSeparatorConfig;
 } = {
-  comma: {
-    name: 'comma',
-    label: 'Comma',
-    parser: (value: string) => value,
-  },
   tab: {
     name: 'tab',
     label: 'Tab',
+    parser: (value: string) => value,
+  },
+  comma: {
+    name: 'comma',
+    label: 'Comma',
     parser: (value: string) => value,
   },
 };
