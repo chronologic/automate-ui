@@ -507,6 +507,8 @@ export function actionButtons({
       }
       const editHandler = () => onStartEdit(record);
       const cancelHandler = () => onCancelTx(record);
+
+      const isStatusCancelled = record.statusName === 'Cancelled';
       return (
         <>
           <Button type="primary" size="small" color="blue" onClick={editHandler} style={{ marginRight: '8px' }}>
@@ -519,7 +521,7 @@ export function actionButtons({
             cancelText="No"
             placement="topRight"
           >
-            <Button size="small" icon={<DeleteOutlined />} title="Cancel" />
+            {!isStatusCancelled && <Button size="small" icon={<DeleteOutlined />} title="Cancel" />}
           </Popconfirm>
         </>
       );
