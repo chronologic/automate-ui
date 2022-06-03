@@ -1,5 +1,6 @@
 export { default as Auth } from './Auth';
 export { ResetPassword } from './Auth';
+export { BatchTx } from './BatchTx';
 export { default as CallToAction } from './CallToAction';
 export { default as Config } from './Config';
 export { default as Header } from './Header';
