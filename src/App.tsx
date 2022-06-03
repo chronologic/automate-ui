@@ -1,9 +1,9 @@
 import 'antd/dist/antd.css';
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Switch, useHistory, useLocation } from 'react-router-dom';
-import FullStory from 'react-fullstory';
 import { Spin, Layout, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import * as FullStory from '@fullstory/browser';
 import styled from 'styled-components';
 
 import { MAINTENANCE_MODE, FULLSTORY_ORG_ID } from './env';
@@ -27,12 +27,13 @@ import { useAutomateConnection, useTheme } from './hooks';
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
 
+FullStory.init({ orgId: FULLSTORY_ORG_ID });
+
 class Wrapper extends React.Component {
   public render() {
     return (
       <Providers>
         <Router>
-          <FullStory org={FULLSTORY_ORG_ID} />
           <App />
         </Router>
       </Providers>
