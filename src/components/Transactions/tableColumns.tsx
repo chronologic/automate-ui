@@ -1,6 +1,5 @@
 import { Button, Checkbox, Dropdown, Input, InputNumber, Menu, Popconfirm, Tooltip } from 'antd';
 import { BigNumber, ethers } from 'ethers';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { DeleteOutlined, MoreOutlined, EditOutlined, ExportOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
