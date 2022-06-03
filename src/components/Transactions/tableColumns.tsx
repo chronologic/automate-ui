@@ -27,7 +27,7 @@ export function id() {
     align: 'center' as any,
   };
 }
-// HİDE legacy button on fotter
+
 export function status() {
   return {
     dataIndex: 'statusName',

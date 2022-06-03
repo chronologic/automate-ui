@@ -1,6 +1,5 @@
 import { Card } from 'antd';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
 import { formatCurrency, formatNumber } from '../../utils';
 import { IScheduledForUser } from '../../types';
