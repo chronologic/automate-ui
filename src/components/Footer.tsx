@@ -16,16 +16,17 @@ function Footer() {
             <a href="https://app.chronologic.network" target="_blank" rel="noopener noreferrer">
               <p>Chronos &amp; other dApps</p>
             </a>
-            <Link to="/legacy" target="_blank" rel="noopener noreferrer">
-              Use legacy app
-            </Link>
           </Column>
           <Column>
             <Link to="/transactions">Transaction list</Link>
             <a href="https://chronologic.zendesk.com/hc/en-us" target="_blank" rel="noopener noreferrer">
               Support
             </a>
-            <a href="https://blog.chronologic.network/automate-faq-d80956f3ee9" target="_blank" rel="noopener noreferrer">
+            <a
+              href="https://blog.chronologic.network/automate-faq-d80956f3ee9"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               FAQ
             </a>
           </Column>
