@@ -6,7 +6,7 @@ import { Spin, Layout, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { MAINTENANCE_MODE } from './env';
+import { MAINTENANCE_MODE, FULLSTORY_ORG_ID } from './env';
 import {
   Auth,
   StrategyList,
@@ -26,14 +26,13 @@ import { useAutomateConnection, useTheme } from './hooks';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
-const ORG_ID = 'AF88T'; // Fill this in here
 
 class Wrapper extends React.Component {
   public render() {
     return (
       <Providers>
         <Router>
-          <FullStory org={ORG_ID} />
+          <FullStory org={FULLSTORY_ORG_ID} />
           <App />
         </Router>
       </Providers>
