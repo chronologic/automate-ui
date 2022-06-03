@@ -2,10 +2,10 @@ import { useCallback, useMemo, useState } from 'react';
 import { Input, Modal } from 'antd';
 import styled from 'styled-components';
 
-import { TokenAPI } from '../../api/TokenAPI';
-import { IAssetStorageItem, useAssetOptions } from '../../hooks';
-import { ChainId } from '../../constants';
-import { AssetType } from '../../types';
+import { TokenAPI } from '../api/TokenAPI';
+import { ChainId } from '../constants';
+import { AssetType } from '../types';
+import { IAssetStorageItem, useAssetOptions } from './useAssetOptions';
 
 type OnSubmitCallback = (asset: IAssetStorageItem) => void;
 
@@ -16,7 +16,7 @@ export type OpenAddAssetModal = ({
 }: {
   chainId: ChainId;
   assetType: AssetType;
-  onSubmit: OnSubmitCallback;
+  onSubmit?: OnSubmitCallback;
 }) => void;
 
 function useAddAssetModal() {
@@ -35,7 +35,7 @@ function useAddAssetModal() {
     setAssetType(assetType);
     setChainId(chainId);
     // workaround to store function in useState https://stackoverflow.com/a/55621325
-    setOnSubmitCallback((asset: IAssetStorageItem) => (asset: IAssetStorageItem) => onSubmit(asset));
+    setOnSubmitCallback((asset: IAssetStorageItem) => (asset: IAssetStorageItem) => onSubmit && onSubmit(asset));
     setVisible(true);
   }, []);
 
@@ -84,7 +84,7 @@ function useAddAssetModal() {
         name,
       };
       addAsset(newAsset);
-      onSubmitCallback!(newAsset);
+      onSubmitCallback && onSubmitCallback(newAsset);
     }
     handleReset();
     handleDismiss();
@@ -112,10 +112,10 @@ function useAddAssetModal() {
           />
           <br />
           <br />
-          <Input type="text" placeholder="Symbol" disabled={true} value={name} />
+          <Input type="text" placeholder="Symbol" disabled value={name} />
           <br />
           <br />
-          <Input type="text" placeholder="Decimals" disabled={true} value={address ? decimals : ''} />
+          <Input type="text" placeholder="Decimals" disabled value={address ? decimals : ''} />
           {error && <div style={{ color: 'red' }}>{error}</div>}
           <br />
         </Modal>

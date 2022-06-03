@@ -4,6 +4,7 @@ import uniqBy from 'lodash/uniqBy';
 
 import { ChainId } from '../constants';
 import { AssetType } from '../types';
+import { useMemo } from 'react';
 
 export interface IAssetStorageItem {
   assetType: AssetType;
@@ -56,11 +57,22 @@ function addAssets(assets: IAssetStorageItem[]) {
   useAssetOptionsStore.setState({ assetOptions: uniqueAssets });
 }
 
-const useAssetOptions = (): IAssetOptionsHook => {
+const useAssetOptions = ({
+  assetType,
+  chainId,
+}: { assetType?: AssetType; chainId?: ChainId } = {}): IAssetOptionsHook => {
   const state = useAssetOptionsStore();
+  const assetOptions = useMemo(
+    () =>
+      state.assetOptions.filter(
+        (item) => (item.assetType === assetType || !assetType) && (item.chainId === chainId || !chainId)
+      ),
+    [assetType, chainId, state.assetOptions]
+  );
 
   return {
     ...state,
+    assetOptions,
     addAsset,
     addAssets,
   };

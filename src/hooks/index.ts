@@ -2,6 +2,7 @@ export * from './useAuth';
 export * from './useMetamask';
 export * from './useAutomateConnection';
 export * from './useAssetOptions';
+export * from './useAddAssetModal';
 export * from './useScreen';
 export * from './useTheme';
 export * from './useTransactions';
