@@ -29,17 +29,13 @@ const { TextArea } = Input;
 export function id() {
   return {
     dataIndex: 'id',
-    render: (id: string, record: IScheduledForUser) => (
-      <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
-        {shortId(id)}
-      </a>
-    ),
+    render: (id: string, record: IScheduledForUser) => shortId(id),
     sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
     title: 'ID',
     align: 'center' as any,
   };
 }
-
+// HİDE legacy button on fotter
 export function status() {
   return {
     dataIndex: 'statusName',
