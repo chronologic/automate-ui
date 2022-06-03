@@ -63,13 +63,6 @@ function TransactionListItem({ item }: IListItemProps) {
           <div className="label">Gas Saved</div>
           <div className="value">{formatCurrency(item.gasSaved)}</div>
         </div>
-        <div className="row details">
-          <div className="value">
-            <Link to={`/legacy/view/${item.id}/${item.txKey}`} target="_blank">
-              Details →
-            </Link>
-          </div>
-        </div>
       </Card>
     </ItemContainer>
   );
@@ -113,9 +106,6 @@ const ItemContainer = styled.div`
   }
   .label {
     margin-right: 8px;
-  }
-  .details {
-    margin-top: 8px;
   }
 `;
 
