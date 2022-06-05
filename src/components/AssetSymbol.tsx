@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import { isEmptyName, shortAddress } from '../utils';
 import { ChainId } from '../constants';
+import { useAssetOptions } from '../hooks';
+import { AssetType } from '../types';
 
 interface IRawCache {
   [key: string]: string;
@@ -18,6 +20,7 @@ interface IProps {
   name: string;
   address: string;
   alwaysShowName?: boolean;
+  imageSize?: string;
 }
 
 const cacheStorageKey = 'assetImages';
@@ -40,7 +43,8 @@ const mapping: { [key: string]: string } = {
   [xfai]: xfitToken,
 };
 
-export default function AssetSymbol({ chainId, name, address, alwaysShowName }: IProps) {
+export default function AssetSymbol({ chainId, name, address, alwaysShowName, imageSize = '3rem' }: IProps) {
+  const { asset } = useAssetOptions({ assetType: AssetType.Ethereum, chainId, address });
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState(false);
 
@@ -53,12 +57,12 @@ export default function AssetSymbol({ chainId, name, address, alwaysShowName }: 
     }
   }, [address, chainId, name]);
 
-  const _name = isEmptyName(name) ? '' : name;
+  const _name = isEmptyName(name) ? asset?.name : name;
   const title = _name || address;
   const displayName = _name ? _name : address ? shortAddress(address, 4) : '-';
 
   const imageNode = imageUrl && !error && (
-    <img src={imageUrl} alt={title} title={title} onError={() => setError(true)} />
+    <img style={{ width: imageSize }} src={imageUrl} alt={title} title={title} onError={() => setError(true)} />
   );
   const nameNode = <span>{displayName}</span>;
   const showName = !imageNode || alwaysShowName;
@@ -72,9 +76,6 @@ export default function AssetSymbol({ chainId, name, address, alwaysShowName }: 
 
 const Content = styled.span`
   display: inline-block;
-  img {
-    width: 3rem;
-  }
 `;
 
 function initCache(): void {

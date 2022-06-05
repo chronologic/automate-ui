@@ -55,7 +55,7 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
       >
         {filteredOptions.map((asset) => (
           <Select.Option key={asset.address} value={asset.address}>
-            <AssetSymbol chainId={chainId} address={asset.address} name={name} alwaysShowName />
+            <AssetSymbol chainId={chainId} address={asset.address} name={name} alwaysShowName imageSize="2rem" />
           </Select.Option>
         ))}
       </Select>

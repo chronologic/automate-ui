@@ -16,6 +16,7 @@ export interface IAssetStorageItem {
 }
 
 interface IAssetStoreState {
+  asset?: IAssetStorageItem;
   assetOptions: IAssetStorageItem[];
 }
 
@@ -68,7 +69,8 @@ function addAssets(assets: IAssetStorageItem[]) {
 const useAssetOptions = ({
   assetType,
   chainId,
-}: { assetType?: AssetType; chainId?: ChainId } = {}): IAssetOptionsHook => {
+  address,
+}: { assetType?: AssetType; chainId?: ChainId; address?: string } = {}): IAssetOptionsHook => {
   const state = useAssetOptionsStore();
   const assetOptions = useMemo(
     () =>
@@ -77,9 +79,14 @@ const useAssetOptions = ({
       ),
     [assetType, chainId, state.assetOptions]
   );
+  const asset = useMemo(
+    () => assetOptions.find((item) => item.address.toLowerCase() === address?.toLowerCase()),
+    [address, assetOptions]
+  );
 
   return {
     ...state,
+    asset,
     assetOptions,
     addAsset,
     addAssets,

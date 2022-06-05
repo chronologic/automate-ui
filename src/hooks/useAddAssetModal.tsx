@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Input, Modal } from 'antd';
 import create from 'zustand';
 import styled from 'styled-components';
@@ -59,21 +59,13 @@ const useAddAssetModalStore = create<IAddAssetModalInternalState>(() => defaultS
 
 function useAddAssetModal(): IAddAssetModalHook {
   const { addAsset, addAssets } = useAssetOptions();
-  // const [visible, setVisible] = useState(false);
-  // const [address, setAddress] = useState('');
-  // const [name, setName] = useState('');
-  // const [decimals, setDecimals] = useState(18);
-  // const [error, setError] = useState('');
-  // const [fetchingAsset, setFetchingAsset] = useState(false);
-  // const [assetType, setAssetType] = useState<AssetType>();
-  // const [chainId, setChainId] = useState<ChainId>();
   const { address, assetType, chainId, decimals, error, fetchingAsset, modal, name, visible, onSubmitCallback } =
     useAddAssetModalStore();
 
-  // const [onSubmitCallback, setOnSubmitCallback] = useState<OnSubmitCallback>();
-
   useEffect(() => {
     addAssets([]);
+    // run this once to refresh the list
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleOpen: OpenAddAssetModal = useCallback(({ chainId, assetType, onSubmit }) => {
@@ -83,11 +75,6 @@ function useAddAssetModal(): IAddAssetModalHook {
       onSubmitCallback: onSubmit,
       visible: true,
     });
-    // setAssetType(assetType);
-    // setChainId(chainId);
-    // // workaround to store function in useState https://stackoverflow.com/a/55621325
-    // setOnSubmitCallback((asset: IAssetStorageItem) => (asset: IAssetStorageItem) => onSubmit && onSubmit(asset));
-    // setVisible(true);
   }, []);
 
   const handleFetchAsset = useCallback(
@@ -96,12 +83,10 @@ function useAddAssetModal(): IAddAssetModalHook {
         useAddAssetModalStore.setState({
           fetchingAsset: true,
         });
-        // setFetchingAsset(true);
         const inputAddress = e.target.value || '';
         useAddAssetModalStore.setState({
           address: inputAddress,
         });
-        // setAddress(inputAddress);
 
         const { address, decimals, symbol, name, validationError } = await TokenAPI.resolveToken(
           inputAddress,
@@ -114,10 +99,6 @@ function useAddAssetModal(): IAddAssetModalHook {
           name: symbol || name,
           error: validationError,
         });
-        // setAddress(address);
-        // setDecimals(decimals);
-        // setName(symbol || name);
-        // setError(validationError);
       } finally {
         useAddAssetModalStore.setState({
           fetchingAsset: false,
