@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Select } from 'antd';
+import { Button, Divider, Select, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { AssetType } from '../types';
@@ -41,15 +41,15 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
     <Container>
       <Select
         value={address}
-        style={{ width: '100px' }}
+        className="select"
         onChange={handleChange}
         dropdownRender={(menu) => (
           <>
             {menu}
-            <Divider className="selectDivider" />
-            <Button type="ghost" className="addItemButton" onClick={handleOpenAddAssetModal}>
+            <Divider style={{ margin: '4px 0' }} className="selectDivider" />
+            <Typography.Link style={{ margin: '4px 12px' }} className="addItemButton" onClick={handleOpenAddAssetModal}>
               <PlusOutlined /> Add
-            </Button>
+            </Typography.Link>
           </>
         )}
       >
@@ -64,12 +64,8 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
 }
 
 const Container = styled.div`
-  .selectDivider {
-    margin: 4px 0 !important;
-  }
-
-  .addItemButton {
-    color: blue;
+  .select {
+    width: 100px;
   }
 `;
 
