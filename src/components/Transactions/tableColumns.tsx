@@ -1,15 +1,7 @@
 import { Button, Checkbox, Dropdown, Input, InputNumber, Menu, Popconfirm, Tooltip } from 'antd';
 import { BigNumber, ethers } from 'ethers';
-import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  DeleteOutlined,
-  MoreOutlined,
-  EditOutlined,
-  ExportOutlined,
-  FileTextOutlined,
-  InfoCircleOutlined,
-} from '@ant-design/icons';
+import { DeleteOutlined, MoreOutlined, EditOutlined, ExportOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
 
 import { IScheduledForUser } from '../../types';
@@ -29,11 +21,7 @@ const { TextArea } = Input;
 export function id() {
   return {
     dataIndex: 'id',
-    render: (id: string, record: IScheduledForUser) => (
-      <a href={`${window.location.origin}/view/${id}/${record.txKey}`} target="_blank" rel="noopener noreferrer">
-        {shortId(id)}
-      </a>
-    ),
+    render: (id: string, record: IScheduledForUser) => shortId(id),
     sorter: (a: IScheduledForUser, b: IScheduledForUser) => a.id.localeCompare(b.id),
     title: 'ID',
     align: 'center' as any,
@@ -428,13 +416,8 @@ export function actionsDropdown({
           <Menu.Item key="0" onClick={handleEdit}>
             <EditOutlined /> Edit
           </Menu.Item>
-          <Menu.Item key="1">
-            <Link to={`/legacy/view/${record.id}/${record.txKey}`} target="_blank">
-              <FileTextOutlined /> Details
-            </Link>
-          </Menu.Item>
           {showEtherscan && (
-            <Menu.Item key="2">
+            <Menu.Item key="1">
               <BlockExplorerLink hash={record.transactionHash} chainId={record.chainId} type={'tx'}>
                 <ExportOutlined />
                 {networkExplorerName}
