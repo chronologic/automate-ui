@@ -14,7 +14,7 @@ function BatchPreview() {
       title: col.label,
       key: col.name,
       dataIndex: col.name,
-      render: (field: IParsedColumn) => <span>{field.formattedValue}</span>,
+      render: (field: IParsedColumn) => <span>{field?.formattedValue}</span>,
     }));
   }, [selectedColumns]);
 

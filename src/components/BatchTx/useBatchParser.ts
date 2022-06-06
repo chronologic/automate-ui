@@ -1,10 +1,12 @@
 import { useCallback, useEffect } from 'react';
 import create from 'zustand';
 import { parse as parseCsv } from 'csv-parse/dist/esm/sync';
+import debounce from 'lodash/debounce';
+import { notification } from 'antd';
 
+import { IAssetStorageItem } from '../../hooks';
 import { IBatchColumnConfig, useBatchConfig } from './useBatchConfig';
 import { BatchColumn } from './useBatchConfigStorage';
-import { IAssetStorageItem } from '../../hooks';
 
 export type ParsedTx = {
   [name in BatchColumn]?: IParsedColumn;
@@ -20,7 +22,6 @@ interface IBatchParserState {
   rawInput: string;
   parsedTxs: ParsedTx[];
   isValid: boolean;
-  error: string;
 }
 
 interface IBatchParserMethods {
@@ -29,11 +30,12 @@ interface IBatchParserMethods {
 
 interface IBatchParserHook extends IBatchParserState, IBatchParserMethods {}
 
+const debouncedErrorNotification = debounce(notification.error, 200);
+
 const defaultState: IBatchParserState = {
   rawInput: '',
   parsedTxs: [],
   isValid: false,
-  error: '',
 };
 
 const useBatchParserStore = create<IBatchParserState>(() => defaultState);
@@ -46,7 +48,7 @@ const useBatchParser = (): IBatchParserHook => {
 
   useEffect(() => {
     if (!isValidConfig || !state.rawInput) {
-      return useBatchParserStore.setState({ isValid: false, parsedTxs: [], error: '' });
+      return useBatchParserStore.setState({ isValid: false, parsedTxs: [] });
     }
 
     try {
@@ -56,9 +58,12 @@ const useBatchParser = (): IBatchParserHook => {
 
       const parsedTxs = parseTxs({ rows: parsedCsv, selectedColumns, selectedAsset: selectedAsset! });
 
-      useBatchParserStore.setState({ isValid: true, parsedTxs, error: '' });
+      useBatchParserStore.setState({ isValid: true, parsedTxs });
     } catch (e) {
-      useBatchParserStore.setState({ isValid: false, parsedTxs: [], error: (e as any).message || 'Error' });
+      console.error(e);
+      useBatchParserStore.setState({ isValid: false, parsedTxs: [] });
+      const error = (e as any)?.message || 'Error';
+      debouncedErrorNotification({ message: error });
     }
   }, [columns, isValidConfig, selectedAsset, selectedColumns, selectedDelimiter, state.rawInput]);
 
@@ -81,7 +86,7 @@ function parseTxs({
 
   rows.forEach((row, rowIndex) => {
     if (row.length !== selectedColumns.length) {
-      throw new Error(`Expected ${selectedColumns.length} columns in row ${rowIndex + 1}`);
+      throw new Error(`Expected ${selectedColumns.length} columns in row ${rowIndex + 1}, got ${row.length}`);
     }
 
     const tx: ParsedTx = {};

@@ -43,7 +43,7 @@ function BatchColumns() {
 
       return (
         <li key={item.name} className={classNames}>
-          <MenuOutlined className="dragger" />
+          <MenuOutlined className="dragger" title="Drag to rearrange" />
           <span className="label">{item.label}</span>
           <Checkbox checked={isSelected} disabled={!item.canDeselect} onChange={handleChange} />
         </li>

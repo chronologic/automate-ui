@@ -75,7 +75,7 @@ const batchDelimiters: {
   },
 };
 
-interface IBatchConfigState {
+export interface IBatchConfigState {
   columns: IBatchColumnConfig[];
   selectedColumns: IBatchColumnConfig[];
   delimiters: IBatchDelimiterConfig[];
@@ -106,8 +106,6 @@ const useBatchConfigStore = create<IBatchConfigState>(() => defaultState);
 const useBatchConfig = (): IBatchConfigHook => {
   const storageState = useBatchConfigStorage();
   const state = useBatchConfigStore();
-
-  const selectedAsset = storageState.asset;
 
   const selectDelimiter = useCallback((delimiter: BatchDelimiter) => {
     useBatchConfigStorageStore.setState({ delimiter });
@@ -141,13 +139,16 @@ const useBatchConfig = (): IBatchConfigHook => {
   }, [storageState.delimiter]);
 
   useEffect(() => {
-    const isValidConfig = !!(state.selectedColumns.length > 0 && state.selectedDelimiter && selectedAsset);
+    useBatchConfigStore.setState({ selectedAsset: storageState.asset });
+  }, [storageState.asset]);
+
+  useEffect(() => {
+    const isValidConfig = !!(state.selectedColumns.length > 0 && state.selectedDelimiter && state.selectedAsset);
     useBatchConfigStore.setState({ isValidConfig });
-  }, [selectedAsset, state.selectedColumns.length, state.selectedDelimiter]);
+  }, [state.selectedAsset, state.selectedColumns.length, state.selectedDelimiter]);
 
   return {
     ...state,
-    selectedAsset,
     selectColumns,
     selectDelimiter,
     selectAsset,
