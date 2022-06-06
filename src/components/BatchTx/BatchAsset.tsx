@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Typography } from 'antd';
 import styled from 'styled-components';
 
 import { AssetType } from '../../types';
@@ -19,6 +20,7 @@ function BatchAsset() {
 
   return (
     <Container>
+      <Typography.Title level={4}>Pick transaction asset</Typography.Title>
       <AssetSelector
         assetType={AssetType.Ethereum}
         chainId={ChainId.ethereum}

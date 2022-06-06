@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Radio } from 'antd';
+import { Radio, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { useBatchConfig } from './useBatchConfig';
@@ -16,6 +16,7 @@ function BatchDelimiter() {
 
   return (
     <Container>
+      <Typography.Title level={4}>Choose delimiter</Typography.Title>
       <Radio.Group value={selectedDelimiter?.name} onChange={handleChange}>
         {delimiters.map((item) => (
           <Radio key={item.name} value={item.name}>

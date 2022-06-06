@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Input } from 'antd';
+import { Input, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { useBatchParser } from './useBatchParser';
@@ -18,6 +18,7 @@ function BatchCsv() {
 
   return (
     <Container>
+      <Typography.Title level={4}>Paste CSV data</Typography.Title>
       <TextArea rows={5} placeholder="Paste transactions here" value={rawInput} onChange={handleChange} />
     </Container>
   );

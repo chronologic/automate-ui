@@ -17,6 +17,10 @@ function BatchExecute() {
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+`;
 
 export default BatchExecute;

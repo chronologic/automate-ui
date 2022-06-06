@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import ReactDragListView from 'react-drag-listview';
-import { Checkbox } from 'antd';
+import { Checkbox, Typography } from 'antd';
 import { MenuOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import cn from 'classnames';
@@ -53,6 +53,7 @@ function BatchColumns() {
 
   return (
     <Container>
+      <Typography.Title level={4}>Select and arrange columns</Typography.Title>
       <ReactDragListView {...dragProps}>
         <ul>{columnNodes}</ul>
       </ReactDragListView>
@@ -64,6 +65,7 @@ const Container = styled.div`
   ul {
     list-style-type: none;
     display: flex;
+    padding: 0;
 
     li {
       padding: 8px;

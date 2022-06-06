@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { IParsedColumn, useBatchParser } from './useBatchParser';
@@ -27,6 +27,7 @@ function BatchPreview() {
 
   return (
     <Container>
+      <Typography.Title level={4}>Preview</Typography.Title>
       <Table size="small" columns={tableColumns} dataSource={rowsWithKey} />
     </Container>
   );
