@@ -1,6 +1,8 @@
 import { useCallback, useMemo } from 'react';
+
 import { TransactionAPI } from '../api';
 import { IScheduleAccessKey, IScheduleParams, IScheduleRequest } from '../api/SentinelAPI';
+import { IBatchUpdateNotes } from '../types';
 
 import { useAuth } from './useAuth';
 
@@ -34,13 +36,21 @@ export function useTransactions() {
     [user?.apiKey]
   );
 
+  const handleBatchUpdateNotes = useCallback(
+    async ({ updates, apiKey }: { updates: IBatchUpdateNotes[]; apiKey?: string }) => {
+      await TransactionAPI.batchUpdateNotes(apiKey || user?.apiKey, updates);
+    },
+    [user?.apiKey]
+  );
+
   const api = useMemo(() => {
     return {
       getList: handleGetTransactionList,
       editTx: handleEditTx,
       cancelTx: handleCancelTx,
+      batchUpdateNotes: handleBatchUpdateNotes,
     };
-  }, [handleCancelTx, handleEditTx, handleGetTransactionList]);
+  }, [handleBatchUpdateNotes, handleCancelTx, handleEditTx, handleGetTransactionList]);
 
   return api;
 }

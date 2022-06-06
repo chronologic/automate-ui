@@ -4,6 +4,8 @@ import uniqBy from 'lodash/uniqBy';
 
 import { ChainId } from '../constants';
 import { AssetType } from '../types';
+import { useMemo } from 'react';
+import { isEmptyName, shortAddress } from '../utils';
 
 export interface IAssetStorageItem {
   assetType: AssetType;
@@ -14,6 +16,7 @@ export interface IAssetStorageItem {
 }
 
 interface IAssetStoreState {
+  asset?: IAssetStorageItem;
   assetOptions: IAssetStorageItem[];
 }
 
@@ -50,17 +53,41 @@ function addAsset(asset: IAssetStorageItem) {
 function addAssets(assets: IAssetStorageItem[]) {
   const { assetOptions: storedAssets } = useAssetOptionsStore.getState();
   const mergedAssets = [...storedAssets, ...assets];
-  const filteredAssets = mergedAssets.filter((item) => item.address && item.decimals && item.name);
-  const uniqueAssets = uniqBy(filteredAssets, (item) => `${item.assetType}.${item.chainId}.${item.address}`);
+  const filteredAssets = mergedAssets.filter((item) => item.address && item.decimals);
+  const normalizedAssets = filteredAssets.map((item) => ({
+    ...item,
+    address: item.address.toLowerCase(),
+    name: isEmptyName(item.name) ? shortAddress(item.address) : item.name,
+  }));
+  const uniqueAssets = uniqBy(normalizedAssets, (item) =>
+    `${item.assetType}.${item.chainId}.${item.address}`.toLowerCase()
+  );
 
   useAssetOptionsStore.setState({ assetOptions: uniqueAssets });
 }
 
-const useAssetOptions = (): IAssetOptionsHook => {
+const useAssetOptions = ({
+  assetType,
+  chainId,
+  address,
+}: { assetType?: AssetType; chainId?: ChainId; address?: string } = {}): IAssetOptionsHook => {
   const state = useAssetOptionsStore();
+  const assetOptions = useMemo(
+    () =>
+      state.assetOptions.filter(
+        (item) => (item.assetType === assetType || !assetType) && (item.chainId === chainId || !chainId)
+      ),
+    [assetType, chainId, state.assetOptions]
+  );
+  const asset = useMemo(
+    () => assetOptions.find((item) => item.address.toLowerCase() === address?.toLowerCase()),
+    [address, assetOptions]
+  );
 
   return {
     ...state,
+    asset,
+    assetOptions,
     addAsset,
     addAssets,
   };

@@ -5,12 +5,11 @@ import queryString from 'query-string';
 
 import { formatCurrency } from '../../utils';
 import { IScheduledForUser } from '../../types';
-import { useTransactions, useScreen, useAssetOptions, IAssetStorageItem } from '../../hooks';
+import { useTransactions, useScreen, useAssetOptions, IAssetStorageItem, useAddAssetModal } from '../../hooks';
 import { SCREEN_BREAKPOINT } from '../../constants';
 import PageTitle from '../PageTitle';
 import TransactionTable from './TransactionTable';
 import TransactionList from './TransactionList';
-import { useAddAssetModal } from './useAddAssetModal';
 import { useTxEdit } from './useTxEdit';
 import TransactionTableWide from './TransactionTableWide';
 

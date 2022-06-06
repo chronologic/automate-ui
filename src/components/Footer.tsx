@@ -16,6 +16,7 @@ function Footer() {
             <a href="https://app.chronologic.network" target="_blank" rel="noopener noreferrer">
               <p>Chronos &amp; other dApps</p>
             </a>
+            <Link to="/batch">Batch</Link>
           </Column>
           <Column>
             <Link to="/transactions">Transaction list</Link>

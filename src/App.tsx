@@ -19,10 +19,11 @@ import {
   Transactions,
   CallToAction,
   ResetPassword,
+  BatchTx,
 } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
-import { useAutomateConnection, useTheme } from './hooks';
+import { useAddAssetModal, useAutomateConnection, useTheme } from './hooks';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 72 }} spin />;
 const LegacyComponent = lazy(() => import('./legacy/Legacy'));
@@ -45,6 +46,7 @@ function App() {
   const { theme } = useTheme();
   const location = useLocation();
   const { eagerConnect } = useAutomateConnection();
+  const { modal: addAssetmodal } = useAddAssetModal();
 
   if (MAINTENANCE_MODE) {
     return <Maintenance />;
@@ -60,6 +62,7 @@ function App() {
         </LoaderWrapper>
       }
     >
+      {addAssetmodal}
       <Switch>
         <Route path="/legacy" render={() => <LegacyComponent />} />
         <Route path="*">
@@ -72,6 +75,9 @@ function App() {
               </PrivateRoute>
               <PrivateRoute path="/connect">
                 <Config />
+              </PrivateRoute>
+              <PrivateRoute path="/batch">
+                <BatchTx />
               </PrivateRoute>
               <Route path="/login" component={Auth} />
               <Route path="/resetPassword" component={ResetPassword} />

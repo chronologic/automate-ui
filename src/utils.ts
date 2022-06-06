@@ -95,7 +95,7 @@ export function calculatePercent(value: number, maxValue: number): number {
   return Math.round((value / maxValue) * 100);
 }
 
-export function isEmptyName(value: string): boolean {
+export function isEmptyName(value?: string): boolean {
   return !value || value === '_' || value === '-';
 }
 
