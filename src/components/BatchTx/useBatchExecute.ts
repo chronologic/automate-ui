@@ -4,8 +4,9 @@ import { notification } from 'antd';
 import Web3 from 'web3';
 
 import ERC20ABI from '../../abi/ERC20.json';
+import { IBatchUpdateNotes } from '../../types';
 import { ethereum, Network } from '../../constants';
-import { IAssetStorageItem, useAutomateConnection } from '../../hooks';
+import { IAssetStorageItem, useAutomateConnection, useTransactions } from '../../hooks';
 import { useBatchConfig } from './useBatchConfig';
 import { ParsedTx, useBatchParser } from './useBatchParser';
 
@@ -31,6 +32,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
   const { selectedAsset } = useBatchConfig();
   const { isValid, parsedTxs } = useBatchParser();
   const { connect } = useAutomateConnection();
+  const { batchUpdateNotes } = useTransactions();
   const state = useBatchExecuteStore();
 
   const handleSubmit = useCallback(async () => {
@@ -43,8 +45,16 @@ const useBatchExecute = (): IBatchExecuteHook => {
 
       const { account } = await connect({ desiredNetwork: Network.ethereum });
 
-      await executeTxs(parsedTxs, account!, selectedAsset!);
-      notification.success({ message: 'Executed' });
+      const txHashes = await executeTxs(parsedTxs, account!, selectedAsset!);
+
+      const noteUpdates: IBatchUpdateNotes[] = txHashes.map((transactionHash, index) => ({
+        transactionHash,
+        notes: parsedTxs[index].notes?.parsedValue || '',
+      }));
+
+      await batchUpdateNotes({ updates: noteUpdates });
+
+      notification.success({ message: 'Scheduled' });
     } catch (e) {
       console.error(e);
       const error = (e as any)?.message || 'Error';
@@ -52,7 +62,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
     } finally {
       useBatchExecuteStore.setState({ loading: false });
     }
-  }, [connect, isValid, parsedTxs, selectedAsset]);
+  }, [batchUpdateNotes, connect, isValid, parsedTxs, selectedAsset]);
 
   return {
     ...state,
@@ -60,7 +70,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
   };
 };
 
-async function executeTxs(txs: ParsedTx[], from: string, asset: IAssetStorageItem) {
+async function executeTxs(txs: ParsedTx[], from: string, asset: IAssetStorageItem): Promise<string[]> {
   const erc20Contract = new web3.eth.Contract(ERC20ABI as any, asset.address);
   const promises = txs.map((tx) =>
     erc20Contract.methods
@@ -68,7 +78,9 @@ async function executeTxs(txs: ParsedTx[], from: string, asset: IAssetStorageIte
       .send({ from, gasPrice: tx.gasPrice?.parsedValue, gasLimit: tx.gasLimit?.parsedValue })
   );
 
-  await Promise.all(promises);
+  const res = await Promise.all(promises);
+
+  return res.map((item) => item.transactionHash);
 }
 
 export { useBatchExecute, useBatchExecuteStore };

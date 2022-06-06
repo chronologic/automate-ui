@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { notification } from 'antd';
 
 import { API_URL } from '../env';
-import { IScheduledForUser, Status } from '../types';
+import { IBatchUpdateNotes, IScheduledForUser, Status } from '../types';
 import { IScheduleAccessKey, IScheduleParams, IScheduleRequest } from './SentinelAPI';
 import { withErrorHandler } from './withErrorHandler';
 
@@ -51,5 +51,12 @@ export const TransactionAPI = {
     notification.success({ message: 'Transaction cancelled' });
 
     return response.data;
+  }),
+  batchUpdateNotes: withErrorHandler(async (apiKey: string, updates: IBatchUpdateNotes[]): Promise<void> => {
+    await api.post('/transactions/batchUpdateNotes', updates, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
   }),
 };

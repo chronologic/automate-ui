@@ -222,3 +222,8 @@ export interface IAutomateConnectionParams {
   confirmationTime?: string;
   network: Network;
 }
+
+export interface IBatchUpdateNotes {
+  transactionHash: string;
+  notes: string;
+}
