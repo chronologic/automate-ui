@@ -81,7 +81,7 @@ function BuyCreditsModal({ children }: IModalProps) {
           <div className="description">
             You can buy credits with the{' '}
             <Typography.Link
-              href="https://coinmarketcap.com/currencies/chronologic/"
+              href="https://blog.chronologic.network/how-to-buy-automate-credits-e0a824572ccd"
               target="_blank"
               rel="noopener noreferrer"
             >
