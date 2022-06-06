@@ -25,7 +25,6 @@ function BatchAsset() {
         assetType={AssetType.Ethereum}
         chainId={ChainId.ethereum}
         address={selectedAsset?.address}
-        name=""
         onChange={handleChange}
       />
     </Container>

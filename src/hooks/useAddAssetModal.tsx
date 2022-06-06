@@ -94,7 +94,7 @@ function useAddAssetModal(): IAddAssetModalHook {
         );
 
         useAddAssetModalStore.setState({
-          address,
+          address: address.toLowerCase(),
           decimals,
           name: symbol || name,
           error: validationError,
@@ -115,7 +115,6 @@ function useAddAssetModal(): IAddAssetModalHook {
   const handleDismiss = useCallback(() => {
     handleReset();
     useAddAssetModalStore.setState({ visible: false });
-    // setVisible(false);
   }, [handleReset]);
 
   const handleSubmit = useCallback(() => {
@@ -168,40 +167,6 @@ function useAddAssetModal(): IAddAssetModalHook {
 
     useAddAssetModalStore.setState({ modal });
   }, [address, chainId, decimals, error, fetchingAsset, handleDismiss, handleFetchAsset, handleSubmit, name, visible]);
-
-  // const modal = useMemo(
-  //   () => (
-  //     <Container>
-  //       <Modal
-  //         title={`Add Asset for chain ${chainId}`}
-  //         visible={visible}
-  //         onCancel={handleDismiss}
-  //         onOk={handleSubmit}
-  //         confirmLoading={fetchingAsset}
-  //         okButtonProps={{
-  //           disabled: !name || !!error,
-  //         }}
-  //       >
-  //         <Input
-  //           type="text"
-  //           placeholder="Contract address"
-  //           value={address}
-  //           disabled={fetchingAsset}
-  //           onChange={handleFetchAsset}
-  //         />
-  //         <br />
-  //         <br />
-  //         <Input type="text" placeholder="Symbol" disabled value={name} />
-  //         <br />
-  //         <br />
-  //         <Input type="text" placeholder="Decimals" disabled value={address ? decimals : ''} />
-  //         {error && <div style={{ color: 'red' }}>{error}</div>}
-  //         <br />
-  //       </Modal>
-  //     </Container>
-  //   ),
-  //   [address, chainId, decimals, error, fetchingAsset, handleDismiss, handleFetchAsset, handleSubmit, name, visible]
-  // );
 
   return {
     modal,

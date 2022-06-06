@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { Divider, Select, Typography } from 'antd';
 import styled from 'styled-components';
@@ -17,25 +17,20 @@ interface IProps {
 }
 
 function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) {
-  const { assetOptions } = useAssetOptions();
+  const { assetOptions } = useAssetOptions({ assetType, chainId });
   const { open: onOpenAddAssetModal } = useAddAssetModal();
-
-  const filteredOptions = useMemo(
-    () => assetOptions.filter((item) => item.assetType === assetType && item.chainId === chainId),
-    [assetOptions, assetType, chainId]
-  );
 
   const handleChange = useCallback(
     (contractAddress: string) => {
-      const asset = filteredOptions.find((a) => a.address === contractAddress)!;
+      const asset = assetOptions.find((a) => a.address === contractAddress)!;
       onChange(asset);
     },
-    [filteredOptions, onChange]
+    [assetOptions, onChange]
   );
 
   const handleOpenAddAssetModal = useCallback(() => {
-    onOpenAddAssetModal({ chainId, assetType });
-  }, [assetType, chainId, onOpenAddAssetModal]);
+    onOpenAddAssetModal({ chainId, assetType, onSubmit: onChange });
+  }, [assetType, chainId, onChange, onOpenAddAssetModal]);
 
   return (
     <Container>
@@ -53,7 +48,7 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
           </>
         )}
       >
-        {filteredOptions.map((asset) => (
+        {assetOptions.map((asset) => (
           <Select.Option key={asset.address} value={asset.address}>
             <AssetSymbol chainId={chainId} address={asset.address} name={name} alwaysShowName imageSize="2rem" />
           </Select.Option>

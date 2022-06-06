@@ -116,6 +116,7 @@ const useBatchConfig = (): IBatchConfigHook => {
   }, []);
 
   const selectAsset = useCallback((asset: IAssetStorageItem) => {
+    console.log('selectasset', asset);
     useBatchConfigStorageStore.setState({ asset });
     useBatchConfigStore.setState({ selectedAsset: asset });
   }, []);
