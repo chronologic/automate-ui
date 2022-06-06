@@ -17,7 +17,7 @@ interface IPromiseCache {
 
 interface IProps {
   chainId: ChainId;
-  name: string;
+  name?: string;
   address: string;
   alwaysShowName?: boolean;
   imageSize?: string;
@@ -52,7 +52,7 @@ export default function AssetSymbol({ chainId, name, address, alwaysShowName, im
     _getImageUrl();
 
     async function _getImageUrl() {
-      const url = await getImageUrl(chainId, name, address);
+      const url = await getImageUrl({ chainId, name, address });
       setImageUrl(url);
     }
   }, [address, chainId, name]);
@@ -86,7 +86,15 @@ function initCache(): void {
   });
 }
 
-async function getImageUrl(chainId: ChainId, name: string, address: string): Promise<string> {
+async function getImageUrl({
+  chainId,
+  name,
+  address,
+}: {
+  chainId: ChainId;
+  name?: string;
+  address: string;
+}): Promise<string> {
   const safeName = (name || '').toLowerCase();
   const safeAddress = (address || '').toLowerCase();
   const mappedAddress = mapping[safeAddress] || safeAddress;

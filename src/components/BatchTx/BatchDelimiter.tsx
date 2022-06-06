@@ -4,20 +4,20 @@ import styled from 'styled-components';
 
 import { useBatchConfig } from './useBatchConfig';
 
-function BatchSeparator() {
-  const { selectSeparator, selectedSeparator, separators } = useBatchConfig();
+function BatchDelimiter() {
+  const { selectDelimiter, selectedDelimiter, delimiters } = useBatchConfig();
 
   const handleChange = useCallback(
     (e) => {
-      selectSeparator(e.target.value);
+      selectDelimiter(e.target.value);
     },
-    [selectSeparator]
+    [selectDelimiter]
   );
 
   return (
     <Container>
-      <Radio.Group value={selectedSeparator} onChange={handleChange}>
-        {separators.map((item) => (
+      <Radio.Group value={selectedDelimiter?.name} onChange={handleChange}>
+        {delimiters.map((item) => (
           <Radio key={item.name} value={item.name}>
             {item.label}
           </Radio>
@@ -29,4 +29,4 @@ function BatchSeparator() {
 
 const Container = styled.div``;
 
-export default BatchSeparator;
+export default BatchDelimiter;

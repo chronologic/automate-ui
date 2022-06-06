@@ -1,13 +1,15 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { IAssetStorageItem } from '../../hooks';
+
 export type BatchColumn = 'address' | 'amount' | 'notes' | 'gasPrice' | 'gasLimit';
-export type BatchSeparator = 'tab' | 'comma';
+export type BatchDelimiter = 'tab' | 'comma';
 
 interface IBatchConfigStorageState {
   columns: BatchColumn[];
-  separator: BatchSeparator;
-  asset: string;
+  delimiter: BatchDelimiter;
+  asset?: IAssetStorageItem;
 }
 
 interface IBatchConfigStorageMethods {
@@ -18,8 +20,8 @@ interface IBatchConfigStorageHook extends IBatchConfigStorageState, IBatchConfig
 
 const defaultState: IBatchConfigStorageState = {
   columns: ['address', 'amount', 'notes'],
-  separator: 'tab',
-  asset: '',
+  delimiter: 'tab',
+  asset: undefined,
 };
 
 const useBatchConfigStorageStore = create<IBatchConfigStorageState>(

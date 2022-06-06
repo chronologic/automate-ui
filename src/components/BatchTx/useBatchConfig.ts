@@ -1,24 +1,27 @@
+import { ethers } from 'ethers';
 import { useEffect, useCallback } from 'react';
 import create from 'zustand';
 
+import { IAssetStorageItem } from '../../hooks';
+
 import {
   BatchColumn,
-  BatchSeparator,
+  BatchDelimiter,
   useBatchConfigStorage,
   useBatchConfigStorageStore,
 } from './useBatchConfigStorage';
 
-interface IBatchColumnConfig {
+export interface IBatchColumnConfig {
   name: BatchColumn;
   label: string;
   canDeselect: boolean;
-  parser(value: string): string;
+  parser(value: string, options?: any): string;
 }
 
-interface IBatchSeparatorConfig {
-  name: BatchSeparator;
+interface IBatchDelimiterConfig {
+  name: BatchDelimiter;
   label: string;
-  parser(value: string): string;
+  symbol: string;
 }
 
 const batchColumns: {
@@ -28,25 +31,26 @@ const batchColumns: {
     name: 'address',
     label: 'Address',
     canDeselect: false,
-    parser: (value: string) => value,
+    parser: (address: string) => ethers.utils.getAddress(address),
   },
   amount: {
     name: 'amount',
     label: 'Amount',
     canDeselect: false,
-    parser: (value: string) => value,
+    parser: (amount: string, { asset }: { asset: IAssetStorageItem }) =>
+      ethers.utils.parseUnits(amount, asset.decimals).toString(),
   },
   notes: {
     name: 'notes',
     label: 'Notes',
     canDeselect: true,
-    parser: (value: string) => value,
+    parser: (notes: string) => notes,
   },
   gasPrice: {
     name: 'gasPrice',
     label: 'Gas Price (gwei)',
     canDeselect: true,
-    parser: (value: string) => value,
+    parser: (gwei: string) => ethers.utils.parseUnits(gwei, 'gwei').toString(),
   },
   gasLimit: {
     name: 'gasLimit',
@@ -56,33 +60,34 @@ const batchColumns: {
   },
 };
 
-const batchSeparators: {
-  [name in BatchSeparator]: IBatchSeparatorConfig;
+const batchDelimiters: {
+  [name in BatchDelimiter]: IBatchDelimiterConfig;
 } = {
   tab: {
     name: 'tab',
     label: 'Tab',
-    parser: (value: string) => value,
+    symbol: '\t',
   },
   comma: {
     name: 'comma',
     label: 'Comma',
-    parser: (value: string) => value,
+    symbol: ',',
   },
 };
 
 interface IBatchConfigState {
   columns: IBatchColumnConfig[];
-  selectedColumns: BatchColumn[];
-  separators: IBatchSeparatorConfig[];
-  selectedSeparator: BatchSeparator;
-  selectedAsset: string;
+  selectedColumns: IBatchColumnConfig[];
+  delimiters: IBatchDelimiterConfig[];
+  selectedDelimiter?: IBatchDelimiterConfig;
+  selectedAsset?: IAssetStorageItem;
+  isValidConfig: boolean;
 }
 
 interface IBatchConfigMethods {
-  selectSeparator: (name: BatchSeparator) => void;
+  selectDelimiter: (delimiter: BatchDelimiter) => void;
   selectColumns: (names: BatchColumn[]) => void;
-  selectAsset: (name: string) => void;
+  selectAsset: (asset: IAssetStorageItem) => void;
 }
 
 interface IBatchConfigHook extends IBatchConfigState, IBatchConfigMethods {}
@@ -90,9 +95,10 @@ interface IBatchConfigHook extends IBatchConfigState, IBatchConfigMethods {}
 const defaultState: IBatchConfigState = {
   columns: [],
   selectedColumns: [],
-  separators: Object.keys(batchSeparators).map((name) => batchSeparators[name as BatchSeparator]),
-  selectedSeparator: '' as any,
-  selectedAsset: '',
+  delimiters: Object.keys(batchDelimiters).map((name) => batchDelimiters[name as BatchDelimiter]),
+  selectedDelimiter: undefined,
+  selectedAsset: undefined,
+  isValidConfig: false,
 };
 
 const useBatchConfigStore = create<IBatchConfigState>(() => defaultState);
@@ -101,40 +107,49 @@ const useBatchConfig = (): IBatchConfigHook => {
   const storageState = useBatchConfigStorage();
   const state = useBatchConfigStore();
 
-  const selectedColumns = storageState.columns;
-  const selectedSeparator = storageState.separator;
+  const selectedAsset = storageState.asset;
 
-  const selectSeparator = useCallback((name: BatchSeparator) => {
-    useBatchConfigStorageStore.setState({ separator: name });
+  const selectDelimiter = useCallback((delimiter: BatchDelimiter) => {
+    useBatchConfigStorageStore.setState({ delimiter });
   }, []);
 
   const selectColumns = useCallback((names: BatchColumn[]) => {
     useBatchConfigStorageStore.setState({ columns: names });
   }, []);
 
-  const selectAsset = useCallback((asset: string) => {
+  const selectAsset = useCallback((asset: IAssetStorageItem) => {
     useBatchConfigStorageStore.setState({ asset });
+    useBatchConfigStore.setState({ selectedAsset: asset });
   }, []);
 
   useEffect(() => {
-    const allColumnNames = Object.keys(batchColumns);
-    const sortedColumnNames = [
-      ...selectedColumns,
-      ...allColumnNames.filter((name) => !selectedColumns.includes(name as BatchColumn)),
+    const allColumnNames = Object.keys(batchColumns) as BatchColumn[];
+    const selectedColumnNames = storageState.columns;
+    const allSortedColumnNames = [
+      ...selectedColumnNames,
+      ...allColumnNames.filter((name) => !selectedColumnNames.includes(name)),
     ];
 
-    const columns = sortedColumnNames.map((name) => batchColumns[name as BatchColumn]);
+    const columns = allSortedColumnNames.map((name) => batchColumns[name as BatchColumn]);
+    const selectedColumns = selectedColumnNames.map((name) => batchColumns[name as BatchColumn]);
 
-    useBatchConfigStore.setState({ columns });
-  }, [selectedColumns, storageState.columns]);
+    useBatchConfigStore.setState({ columns, selectedColumns });
+  }, [storageState.columns]);
+
+  useEffect(() => {
+    useBatchConfigStore.setState({ selectedDelimiter: batchDelimiters[storageState.delimiter] });
+  }, [storageState.delimiter]);
+
+  useEffect(() => {
+    const isValidConfig = !!(state.selectedColumns.length > 0 && state.selectedDelimiter && selectedAsset);
+    useBatchConfigStore.setState({ isValidConfig });
+  }, [selectedAsset, state.selectedColumns.length, state.selectedDelimiter]);
 
   return {
     ...state,
-    selectedColumns,
-    selectedSeparator,
-    selectedAsset: storageState.asset,
+    selectedAsset,
     selectColumns,
-    selectSeparator,
+    selectDelimiter,
     selectAsset,
   };
 };

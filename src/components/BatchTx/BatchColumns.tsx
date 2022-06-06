@@ -16,7 +16,7 @@ function BatchColumns() {
         const newSelectedColumns = [...selectedColumns];
         const item = newSelectedColumns.splice(fromIndex, 1)[0];
         newSelectedColumns.splice(toIndex, 0, item);
-        selectColumns(newSelectedColumns);
+        selectColumns(newSelectedColumns.map((col) => col.name));
       },
       nodeSelector: 'li',
       handleSelector: 'li.selected .dragger',
@@ -25,7 +25,7 @@ function BatchColumns() {
 
   const columnNodes = useMemo(() => {
     return columns.map((item) => {
-      const isSelected = selectedColumns.includes(item.name);
+      const isSelected = !!selectedColumns.find((col) => col.name === item.name);
       const classNames = cn({ selected: isSelected, disabled: !isSelected });
 
       const handleChange = (e: any) => {
@@ -33,12 +33,12 @@ function BatchColumns() {
         const { checked } = e.target;
 
         if (checked) {
-          newSelectedColumns = newSelectedColumns.concat(item.name);
+          newSelectedColumns = newSelectedColumns.concat(item);
         } else {
-          newSelectedColumns = newSelectedColumns.filter((name) => name !== item.name);
+          newSelectedColumns = newSelectedColumns.filter((col) => col.name !== item.name);
         }
 
-        selectColumns(newSelectedColumns);
+        selectColumns(newSelectedColumns.map((col) => col.name));
       };
 
       return (

@@ -12,7 +12,7 @@ function BatchAsset() {
 
   const handleChange = useCallback(
     (asset: IAssetStorageItem) => {
-      selectAsset(asset.address);
+      selectAsset(asset);
     },
     [selectAsset]
   );
@@ -22,7 +22,7 @@ function BatchAsset() {
       <AssetSelector
         assetType={AssetType.Ethereum}
         chainId={ChainId.ethereum}
-        address={selectedAsset}
+        address={selectedAsset?.address}
         name=""
         onChange={handleChange}
       />

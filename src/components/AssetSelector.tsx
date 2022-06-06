@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Select, Typography } from 'antd';
+import { Divider, Select, Typography } from 'antd';
 import styled from 'styled-components';
 
 import { AssetType } from '../types';
@@ -11,8 +11,8 @@ import AssetSymbol from './AssetSymbol';
 interface IProps {
   assetType: AssetType;
   chainId: ChainId;
-  address: string;
-  name: string;
+  address?: string;
+  name?: string;
   onChange: (item: IAssetStorageItem) => void;
 }
 
