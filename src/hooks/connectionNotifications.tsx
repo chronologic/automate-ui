@@ -15,6 +15,11 @@ export const notifications = Object.freeze({
       ),
     });
   },
+  noConnectedAccounts() {
+    notification.error({
+      message: <span>No accounts are connected to Automate. Please allow MetaMask to connect an account.</span>,
+    });
+  },
   connectedToAutomate(connectedNetwork: string) {
     notification.success({
       message: `You're connected to Automate ${capitalizeFirstLetter(connectedNetwork)} Network!`,

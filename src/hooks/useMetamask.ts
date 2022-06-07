@@ -34,6 +34,12 @@ async function connect(): Promise<IMetamaskStoreState> {
   }
 
   const account = await requestAccount();
+
+  if (!account) {
+    reset();
+    throw notifications.noConnectedAccounts();
+  }
+
   const chainId = await requestChainId();
   const connected = true;
 
@@ -45,7 +51,23 @@ async function connect(): Promise<IMetamaskStoreState> {
 }
 
 async function requestAccount() {
-  const [account] = (await ethereum.request<[string]>({ method: 'eth_requestAccounts' }))!;
+  let account: string;
+  const connectedAccounts = (await ethereum.request<[string]>({ method: 'eth_requestAccounts' }))!;
+
+  if (connectedAccounts.length === 0) {
+    await ethereum.request({
+      method: 'wallet_requestPermissions',
+      params: [
+        {
+          eth_accounts: {},
+        },
+      ],
+    });
+    const newAccounts = (await ethereum.request<[string]>({ method: 'eth_requestAccounts' }))!;
+    account = newAccounts[0]!;
+  } else {
+    account = connectedAccounts[0]!;
+  }
 
   return account!;
 }
