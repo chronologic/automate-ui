@@ -13,9 +13,6 @@ import TransactionList from './TransactionList';
 import { useTxEdit } from './useTxEdit';
 import TransactionTableWide from './TransactionTableWide';
 
-const queryParams = queryString.parseUrl(window.location.href);
-const apiKey = queryParams.query.apiKey as string;
-
 function Transactions() {
   const { isLg, isXxl } = useScreen();
   const { getList, editTx, cancelTx } = useTransactions();
@@ -24,6 +21,11 @@ function Transactions() {
   const txEdit = useTxEdit();
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
+
+  const apiKey = useMemo(() => {
+    const queryParams = queryString.parseUrl(window.location.href);
+    return queryParams.query?.apiKey as string;
+  }, []);
 
   const totalGasSavings = useMemo(() => {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
@@ -60,7 +62,7 @@ function Transactions() {
     } finally {
       setLoading(false);
     }
-  }, [addAssets, getList]);
+  }, [addAssets, apiKey, getList]);
 
   const handleSave = useCallback(async () => {
     try {
@@ -82,7 +84,7 @@ function Transactions() {
     } finally {
       setLoading(false);
     }
-  }, [editTx, refresh, txEdit]);
+  }, [apiKey, editTx, refresh, txEdit]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {
