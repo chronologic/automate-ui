@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import queryString from 'query-string';
 
 import { formatCurrency } from '../../utils';
-import { IScheduledForUser } from '../../types';
+import { IScheduledForUser, Status } from '../../types';
 import { useTransactions, useScreen, useAssetOptions, IAssetStorageItem, useAddAssetModal } from '../../hooks';
 import { SCREEN_BREAKPOINT } from '../../constants';
 import PageTitle from '../PageTitle';
@@ -62,7 +62,22 @@ function Transactions() {
     }
   }, [addAssets, getList]);
 
+  const makeErrorStatusTxPending = useCallback(async () => {
+    const errorStatus = Status[3];
+    if (txEdit.tx?.statusName === errorStatus) {
+      txEdit.tx.statusName = Status[0];
+      txEdit.tx.status = 0;
+      console.log('only errror status tx');
+    }
+    console.log(txEdit.tx?.statusName + ', ' + errorStatus);
+    console.log(txEdit.tx?.statusName === errorStatus);
+    console.log('clicked save' + JSON.stringify(txEdit.tx?.statusName));
+    console.log(` ...txEdit.tx!:  ${JSON.stringify(txEdit.tx!)}`);
+  }, [txEdit]);
+
   const handleSave = useCallback(async () => {
+    makeErrorStatusTxPending();
+
     try {
       setLoading(true);
 
@@ -82,7 +97,7 @@ function Transactions() {
     } finally {
       setLoading(false);
     }
-  }, [editTx, refresh, txEdit]);
+  }, [editTx, refresh, txEdit, makeErrorStatusTxPending]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {

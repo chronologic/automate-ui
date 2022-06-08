@@ -20,6 +20,7 @@ export function useTransactions() {
 
   const handleEditTx = useCallback(
     async ({ request, queryParams }: { request: IScheduleRequest; queryParams?: IScheduleParams }) => {
+      console.log(`request ${JSON.stringify(request)} queryParams ${JSON.stringify(queryParams)} `);
       const res = await TransactionAPI.edit(queryParams?.apiKey || user?.apiKey, request, queryParams);
 
       return res;
