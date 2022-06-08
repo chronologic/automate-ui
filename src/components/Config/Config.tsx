@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Form, Modal, Button, Typography, Radio, Alert } from 'antd';
+import { Form, Modal, Button, Typography, Radio, Alert, Space } from 'antd';
 import styled from 'styled-components';
 
 import { Network, ChainId, ConfirmationTime, ethereum, strategyPathKey } from '../../constants';
@@ -9,6 +9,7 @@ import CopyInput from '../CopyInput';
 import PageTitle from '../PageTitle';
 import ConnectionSettings from './ConnectionSettings';
 import FirefoxAlert from './FirefoxAlert';
+import { DEV_MODE } from '../../env';
 
 const { Link, Text } = Typography;
 
@@ -49,7 +50,7 @@ function Config() {
     if (confirmationTime) {
       url += `&confirmationTime=${confirmationTime}`;
     }
-    url += `&network=${network.toLowerCase()}`;
+    url += `&network=${network}`;
 
     return url;
   }, [confirmationTime, draft, gasPriceAware, network, user.apiKey, user.login]);
@@ -114,12 +115,20 @@ function Config() {
             size="large"
             className="title"
           >
-            <img alt="eth-network-icon" src="/assets/eth.svg" width="36" height="36" className="network-icon" />
-            <Radio value={Network.ethereum} className="radiobuttons">
-              Ethereum
-            </Radio>
-            <img alt="arb-network-icon" src="/assets/arbitrum.svg" width="36" height="36" className="network-icon" />
-            <Radio value={Network.arbitrum}>Arbitrum (MAGIC)</Radio>
+            <Space>
+              <img alt="eth-network-icon" src="/assets/eth.svg" className="network-icon" />
+              <Radio value={Network.ethereum}>Ethereum</Radio>
+              <img alt="arb-network-icon" src="/assets/arbitrum.svg" className="network-icon" />
+              <Radio value={Network.arbitrum}>Arbitrum (MAGIC) </Radio>
+            </Space>
+            {DEV_MODE && (
+              <Space>
+                <img alt="ropsten-network-icon" src="/assets/eth.svg" className="network-icon" />
+                <Radio value={Network.ropsten}>Ropsten (TESTNET)</Radio>
+                <img alt="arb-network-icon" src="/assets/arbitrum.svg" className="network-icon" />
+                <Radio value={Network.arbitrumRinkeby}>Rinkeby (TESTNET)</Radio>
+              </Space>
+            )}
           </Radio.Group>
 
           {network === Network.ethereum && (
@@ -243,18 +252,21 @@ const Container = styled.div`
   .title {
     font-weight: 300;
     margin-bottom: 20px;
+    text-align: center;
   }
+
   .subtitle {
     font-weight: 300;
     font-size: 1.8rem;
     margin-bottom: 20px;
   }
-  .radiobuttons {
-    margin-right: 90px;
-  }
+
   .network-icon {
-    margin: 0 15px 8px;
+    margin: 3px 15px;
+    width: 36px;
+    height: 36px;
   }
+
   p {
     font-weight: 300;
   }
