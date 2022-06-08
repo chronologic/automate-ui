@@ -63,16 +63,12 @@ function Transactions() {
   }, [addAssets, getList]);
 
   const makeErrorStatusTxPending = useCallback(async () => {
-    const errorStatus = Status[3];
-    if (txEdit.tx?.statusName === errorStatus) {
-      txEdit.tx.statusName = Status[0];
-      txEdit.tx.status = 0;
-      console.log('only errror status tx');
+    const errorStatus = 3;
+    const pendingStatus = 0;
+    if (txEdit.tx?.statusName === Status[errorStatus]) {
+      txEdit.tx.statusName = Status[pendingStatus];
+      txEdit.tx.status = pendingStatus;
     }
-    console.log(txEdit.tx?.statusName + ', ' + errorStatus);
-    console.log(txEdit.tx?.statusName === errorStatus);
-    console.log('clicked save' + JSON.stringify(txEdit.tx?.statusName));
-    console.log(` ...txEdit.tx!:  ${JSON.stringify(txEdit.tx!)}`);
   }, [txEdit]);
 
   const handleSave = useCallback(async () => {
