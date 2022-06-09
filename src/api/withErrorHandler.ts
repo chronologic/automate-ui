@@ -8,6 +8,7 @@ export function withErrorHandler<T extends Function>(fn: T): T {
           e.response?.data?.error?.message ||
           e.response?.data?.message ||
           e.response?.data?.error ||
+          e.response?.data ||
           e.message ||
           'Error',
       });
