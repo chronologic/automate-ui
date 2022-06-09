@@ -508,7 +508,8 @@ export function actionButtons({
       const editHandler = () => onStartEdit(record);
       const cancelHandler = () => onCancelTx(record);
 
-      const isStatusCancelled = record.status === Status['Cancelled'];
+      const isStatusCancelled = record.status === Status.Cancelled;
+
       return (
         <>
           <Button type="primary" size="small" color="blue" onClick={editHandler} style={{ marginRight: '8px' }}>
