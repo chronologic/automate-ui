@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
 
-import { IScheduledForUser } from '../../types';
+import { IScheduledForUser, Status } from '../../types';
 import { BlockExplorerName, BlockExplorerUrl, ChainId } from '../../constants';
 import { formatCurrency, formatNumber, shortId } from '../../utils';
 import { IAssetStorageItem } from '../../hooks';
@@ -508,7 +508,7 @@ export function actionButtons({
       const editHandler = () => onStartEdit(record);
       const cancelHandler = () => onCancelTx(record);
 
-      const isStatusCancelled = record.statusName === 'Cancelled';
+      const isStatusCancelled = record.status === Status['Cancelled'];
       return (
         <>
           <Button type="primary" size="small" color="blue" onClick={editHandler} style={{ marginRight: '8px' }}>
