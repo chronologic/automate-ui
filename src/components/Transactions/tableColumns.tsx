@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { DeleteOutlined, MoreOutlined, EditOutlined, ExportOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import debounce from 'lodash/debounce';
 
-import { IScheduledForUser } from '../../types';
+import { IScheduledForUser, Status } from '../../types';
 import { BlockExplorerName, BlockExplorerUrl, ChainId } from '../../constants';
 import { formatCurrency, formatNumber, shortId } from '../../utils';
 import { IAssetStorageItem } from '../../hooks';
@@ -490,6 +490,9 @@ export function actionButtons({
       }
       const editHandler = () => onStartEdit(record);
       const cancelHandler = () => onCancelTx(record);
+
+      const isStatusCancelled = record.status === Status.Cancelled;
+
       return (
         <>
           <Button type="primary" size="small" color="blue" onClick={editHandler} style={{ marginRight: '8px' }}>
@@ -502,7 +505,7 @@ export function actionButtons({
             cancelText="No"
             placement="topRight"
           >
-            <Button size="small" icon={<DeleteOutlined />} title="Cancel" />
+            {!isStatusCancelled && <Button size="small" icon={<DeleteOutlined />} title="Cancel" />}
           </Popconfirm>
         </>
       );
