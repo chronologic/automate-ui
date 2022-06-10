@@ -55,7 +55,6 @@ const useBatchParser = (): IBatchParserHook => {
       const parsedCsv: string[][] = parseCsv(state.rawInput, {
         delimiter: selectedDelimiter!.symbol,
       });
-
       const parsedTxs = parseTxs({ rows: parsedCsv, selectedColumns, selectedAsset: selectedAsset! });
 
       useBatchParserStore.setState({ isValid: true, parsedTxs });
@@ -92,7 +91,7 @@ function parseTxs({
     const tx: ParsedTx = {};
 
     selectedColumns.forEach((col, colIndex) => {
-      const formattedValue = row[colIndex];
+      const formattedValue = row[colIndex].split(',').join('');
       const parsedValue = col.parser(formattedValue, { asset: selectedAsset });
 
       tx[col.name] = {
