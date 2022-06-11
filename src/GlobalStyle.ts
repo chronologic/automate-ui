@@ -188,6 +188,11 @@ const GlobalStyle = styled.div<IProps>`
       width: 100%;
     }
   }
+
+  .ant-empty-description {
+    color: ${(props) => props.theme.colors.text};
+  }
+
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
     background-color: ${(props) => props.theme.colors.accent};
@@ -223,6 +228,9 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-table-tbody > tr > td {
     border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-table-tbody > tr.ant-table-placeholder:hover > td {
+    background-color: ${(props) => props.theme.colors.weak};
   }
   .ant-table-footer {
     background-color: ${(props) => props.theme.colors.body};
