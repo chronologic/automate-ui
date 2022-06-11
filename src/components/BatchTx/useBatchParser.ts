@@ -55,6 +55,7 @@ const useBatchParser = (): IBatchParserHook => {
       const parsedCsv: string[][] = parseCsv(state.rawInput, {
         delimiter: selectedDelimiter!.symbol,
       });
+
       const parsedTxs = parseTxs({ rows: parsedCsv, selectedColumns, selectedAsset: selectedAsset! });
 
       useBatchParserStore.setState({ isValid: true, parsedTxs });
