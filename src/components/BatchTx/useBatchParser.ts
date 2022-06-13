@@ -93,12 +93,8 @@ function parseTxs({
 
     selectedColumns.forEach((col, colIndex) => {
       const formattedValue = row[colIndex];
-      let parsedValue = '';
-      if (col.name === 'amount') {
-        parsedValue = col.parser(formattedValue.split(',').join(''), { asset: selectedAsset });
-      } else {
-        parsedValue = col.parser(formattedValue, { asset: selectedAsset });
-      }
+      const parsedValue = col.parser(formattedValue, { asset: selectedAsset });
+
       tx[col.name] = {
         type: col.name,
         formattedValue,
