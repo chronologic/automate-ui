@@ -205,7 +205,9 @@ function buildPrepTxs({
   const prepTxs: IStrategyPrepTxWithConditions[] = [];
 
   let order = 1;
+  let iteration = 1;
   for (const repetition of repetitions) {
+    let position = 1;
     for (const block of strategy.blocks) {
       const tx = txs[block];
       let priority = 1;
@@ -216,6 +218,8 @@ function buildPrepTxs({
         to: tx.to,
         data: tx.data,
         order: order++,
+        iteration,
+        position: position++,
         priority,
         conditionAsset: tx.asset,
         conditionAmount: tx.amount,
@@ -238,6 +242,8 @@ function buildPrepTxs({
             to: otherTx.to,
             data: otherTx.data,
             order: order++,
+            iteration,
+            position: position++,
             priority,
             conditionAsset: otherTx.asset,
             conditionAmount: otherTx.amount,
@@ -248,6 +254,7 @@ function buildPrepTxs({
       }
       prepTxs[prepTxs.length - 1].isLastForNonce = true;
     }
+    iteration++;
   }
 
   return prepTxs;
