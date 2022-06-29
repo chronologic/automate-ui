@@ -50,7 +50,7 @@ async function connect(): Promise<IMetamaskStoreState> {
   return newState;
 }
 
-async function requestAccount() {
+export async function requestAccount() {
   let account: string;
   const connectedAccounts = (await ethereum.request<[string]>({ method: 'eth_requestAccounts' }))!;
 
