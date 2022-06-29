@@ -203,6 +203,6 @@ export async function contractAllowance(from: string, to: string): Promise<numbe
 }
 
 export async function contractTransferFrom(from: string, to: string, amount: number): Promise<string[]> {
-  const tx = await magicContract.methods.transferFrom(from, to, numberToBn(amount)).send({ to });
+  const tx = await magicContract.methods.transferFrom(from, to, numberToBn(amount)).send({ from: to });
   return tx;
 }

@@ -83,10 +83,8 @@ function SweepExecute() {
       try {
         setLoading(true);
         await changeNetwork(42161);
-        console.log(ethers.utils.isAddress(fromAddress));
-        console.log(ethers.utils.isAddress(to));
 
-        contractTransferFrom(fromAddress, to, amount);
+        await contractTransferFrom(fromAddress, to, amount);
 
         notification.success({
           message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred succesffuly. `,
