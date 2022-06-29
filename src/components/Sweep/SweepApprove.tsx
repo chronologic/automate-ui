@@ -84,7 +84,7 @@ function SweepApprove() {
   return (
     <Container>
       <Typography.Title level={5} className="subtitle">
-        Approve Wallet to transfer Magic ✨ Tokens.
+        Approve Wallet to transfer Magic ✨ Tokens
       </Typography.Title>
       <Form.Item
         name="spenderAddr"
