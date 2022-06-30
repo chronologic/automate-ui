@@ -36,7 +36,7 @@ function SweepApprove() {
       }
 
       notification.success({
-        message: `Wallet ${spenderAddr} has been whitelisted for ${approveAmount} amount succesffuly. `,
+        message: `Wallet ${spenderAddr} has been whitelisted for ${approveAmount} amount successfully. `,
       });
     } catch (e) {
       console.error(e);

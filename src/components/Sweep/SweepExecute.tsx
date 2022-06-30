@@ -87,7 +87,7 @@ function SweepExecute() {
       await contractTransferFrom(fromAddress, to, amount);
 
       notification.success({
-        message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred succesffuly. `,
+        message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred successfully. `,
       });
     } catch (e) {
       console.error(e);
