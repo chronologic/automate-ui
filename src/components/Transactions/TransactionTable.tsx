@@ -120,7 +120,8 @@ function TransactionTable({
           onExpandedRowsChange: handleExpandedRowKeysChange as any,
         }}
         loading={loading}
-        pagination={{ defaultPageSize: 100, showSizeChanger: false }}
+        // onChange={}
+        pagination={{ pageSize: 50, showSizeChanger: false }}
       />
     </Container>
   );
