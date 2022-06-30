@@ -3,14 +3,12 @@ import { Form, Input, Button, notification, Typography } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
 
-import {
-  ethereumAddressValidator,
-  validateAmount,
-  contractBalanceOf,
-  contractTransferFrom,
-  contractAllowance,
-} from '../../utils';
+import { ethereumAddressValidator } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
+import { ChainId } from '../../constants';
+import { contractBalanceOf, contractTransferFrom, contractAllowance } from './useSweep';
+
+const { Text } = Typography;
 
 function SweepExecute() {
   const [loading, setLoading] = useState(false);
@@ -19,8 +17,10 @@ function SweepExecute() {
   const [fromAddress, setFromAddress] = useState('');
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
+
+  const [form] = Form.useForm();
 
   const { changeNetwork } = useMetamask();
 
@@ -35,7 +35,7 @@ function SweepExecute() {
     const validAFromAddress = ethers.utils.isAddress(fromAddress);
     const getBalance = async () => {
       const balanceEth = await contractBalanceOf(fromAddress);
-      setMaxAmount(balanceEth[1]);
+      setBalance(balanceEth[1]);
     };
 
     const validToAddress = ethers.utils.isAddress(to);
@@ -78,28 +78,27 @@ function SweepExecute() {
   );
 
   const handleTransfer = useCallback(async () => {
-    const validAddress = ethers.utils.isAddress(fromAddress);
-    if (validAddress) {
-      try {
-        setLoading(true);
-        await changeNetwork(42161);
+    try {
+      await form.validateFields();
 
-        await contractTransferFrom(fromAddress, to, amount);
+      setLoading(true);
+      await changeNetwork(ChainId.arbitrum);
 
-        notification.success({
-          message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred succesffuly. `,
-        });
-      } catch (e) {
-        console.error(e);
-        const error = (e as any)?.message || 'Error';
-        notification.error({ message: error });
-      } finally {
-        setLoading(false);
-      }
+      await contractTransferFrom(fromAddress, to, amount);
+
+      notification.success({
+        message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred succesffuly. `,
+      });
+    } catch (e) {
+      console.error(e);
+      const error = (e as any)?.message || 'Error';
+      notification.error({ message: error });
+    } finally {
+      setLoading(false);
     }
-  }, [fromAddress, to, amount, changeNetwork]);
+  }, [fromAddress, to, amount, changeNetwork, form]);
 
-  const setAmountToMax = () => setAmount(maxAmount);
+  const setAmountToMax = () => setAmount(balance);
 
   return (
     <Container>
@@ -110,71 +109,69 @@ function SweepExecute() {
         name="fromAddress"
         label="From Address:"
         rules={[
-          { required: true, message: 'From Ethereum Address is required' },
+          { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
         className="title"
       >
         <Input
           type="text"
-          placeholder="The Ethereum Address Magic Token's will be transfered from"
+          placeholder="The Address Magic Token's will be transfered from"
           value={fromAddress}
           onChange={handleFromChange}
           required={true}
         />
       </Form.Item>
-      <Form.Item name="Balance" label="Balance">
-        <Input type="number" placeholder="The Maximum Amount avalible tokens" value={maxAmount} disabled={true} />{' '}
+      <Form.Item label="Balance">
+        <Text>{balance}</Text>
       </Form.Item>
       <Form.Item
         name="toAddress"
         label="To Address:"
         rules={[
-          { required: true, message: 'To Ethereum Address is required' },
+          { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
         className="title"
       >
         <Input
           type="text"
-          placeholder="The Ethereum Address Magic Token's will be transfered to"
+          placeholder="The Address Magic Token's will be transfered to"
           value={to}
           required={true}
           onChange={handleToChange}
         />
       </Form.Item>
-      <Form.Item name="Allowance" label="Allowance">
-        <Input type="number" placeholder="The Maximum Amount of allowed tokens" value={allowance} disabled={true} />{' '}
+      <Form.Item label="Allowance">
+        <Text>{allowance} </Text>
       </Form.Item>
-      <Form.Item label="Amount:" required={true}>
-        <Form.Item
-          name="amount"
-          label="amount:"
-          noStyle
-          rules={[
-            { required: true, message: 'Amount is required' },
-            { validator: (_, value) => validateAmount(value, maxAmount) },
-          ]}
-          required={true}
-        >
-          <Input.Group compact>
-            <Input
-              type="number"
-              placeholder="Amount of tokens"
-              value={amount}
-              onChange={handleAmountChange}
-              required={true}
-              style={{ width: 'calc(100% - 65px)' }}
-            />
-            <Button type="primary" onClick={setAmountToMax}>
-              Max
-            </Button>
-          </Input.Group>
-        </Form.Item>
+      <Form.Item
+        name="approveAmount"
+        label="Amount:"
+        rules={[
+          { required: true, message: 'Amount is required' },
+          { validator: (_, value) => validateAmount(value, balance) },
+        ]}
+        required={true}
+      >
+        <Input.Group compact>
+          <Input
+            type="number"
+            placeholder="Amount of tokens"
+            value={amount}
+            onChange={handleAmountChange}
+            required={true}
+            style={{ width: 'calc(100% - 65px)' }}
+          />
+          <Button type="primary" onClick={setAmountToMax}>
+            Max
+          </Button>
+        </Input.Group>
       </Form.Item>
+
       <div className="transferButton">
         <Button type="primary" loading={loading} disabled={!valid} onClick={handleTransfer}>
-          Tranfer Magic Tokens
+          Transfer Magic Tokens
         </Button>
       </div>
     </Container>
@@ -182,7 +179,7 @@ function SweepExecute() {
 }
 
 const Container = styled.div`
-  border: 1px solid #d9d9d9;
+  border: 1px solid ${(props) => props.theme.colors.border};
   border-radius: 2px;
   padding: 24px;
   margin-bottom: 10px;
@@ -192,5 +189,14 @@ const Container = styled.div`
     justify-content: flex-end;
   }
 `;
+
+async function validateAmount(amount: number, maxAvailable: number): Promise<void> {
+  if (amount <= 0) {
+    return Promise.reject(new Error('Amount should be greater than 0'));
+  }
+  if (amount > maxAvailable) {
+    return Promise.reject(new Error('Amount cannot be greater than total available Magic Tokens'));
+  }
+}
 
 export default SweepExecute;

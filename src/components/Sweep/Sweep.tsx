@@ -8,7 +8,7 @@ import SweepApprove from './SweepApprove';
 function Sweep() {
   return (
     <Container>
-      <Form name="basic" labelCol={{ span: 6 }} initialValues={{ remember: true }} autoComplete="on" size="large">
+      <Form name="SweepForm" labelCol={{ span: 6 }} autoComplete="on" size="large">
         <Typography.Title level={3} className="title">
           Sweep Magic
         </Typography.Title>
