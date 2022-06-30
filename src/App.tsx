@@ -80,9 +80,9 @@ function App() {
               <PrivateRoute path="/batch">
                 <BatchTx />
               </PrivateRoute>
-              <PrivateRoute path="/sweep">
+              <Route path="/sweep">
                 <Sweep />
-              </PrivateRoute>
+              </Route>
               <Route path="/login" component={Auth} />
               <Route path="/resetPassword" component={ResetPassword} />
               <Route path="/scheduleds" component={Transactions} />
