@@ -7,6 +7,7 @@ import BatchSeparator from './BatchDelimiter';
 import BatchAsset from './BatchAsset';
 import BatchCsv from './BatchCsv';
 import BatchPreview from './BatchPreview';
+import BatchTotalAmount from './BatchTotalAmount';
 import BatchExecute from './BatchExecute';
 
 function BatchTx() {
@@ -20,6 +21,7 @@ function BatchTx() {
       <BatchAsset />
       <BatchCsv />
       <BatchPreview />
+      <BatchTotalAmount />
       <BatchExecute />
     </Container>
   );
