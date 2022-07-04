@@ -5,7 +5,7 @@ import Web3 from 'web3';
 
 import ERC20ABI from '../../abi/ERC20.json';
 import { IBatchUpdateNotes } from '../../types';
-import { ethereum, Network } from '../../constants';
+import { ethereum } from '../../constants';
 import { IAssetStorageItem, useAutomateConnection, useTransactions } from '../../hooks';
 import { useBatchConfig } from './useBatchConfig';
 import { ParsedTx, useBatchParser } from './useBatchParser';
@@ -29,7 +29,7 @@ const defaultState: IBatchExecuteState = {
 const useBatchExecuteStore = create<IBatchExecuteState>(() => defaultState);
 
 const useBatchExecute = (): IBatchExecuteHook => {
-  const { selectedAsset } = useBatchConfig();
+  const { selectedNetwork, selectedAsset } = useBatchConfig();
   const { isValid, parsedTxs } = useBatchParser();
   const { connect } = useAutomateConnection();
   const { batchUpdateNotes } = useTransactions();
@@ -43,7 +43,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
         throw new Error('Inputs are not valid');
       }
 
-      const { account } = await connect({ desiredNetwork: Network.ethereum });
+      const { account } = await connect({ desiredNetwork: selectedNetwork?.name! });
 
       const txHashes = await executeTxs(parsedTxs, account!, selectedAsset!);
 
@@ -62,7 +62,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
     } finally {
       useBatchExecuteStore.setState({ loading: false });
     }
-  }, [batchUpdateNotes, connect, isValid, parsedTxs, selectedAsset]);
+  }, [batchUpdateNotes, connect, isValid, parsedTxs, selectedAsset, selectedNetwork?.name]);
 
   return {
     ...state,

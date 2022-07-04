@@ -8,6 +8,7 @@ import BatchAsset from './BatchAsset';
 import BatchCsv from './BatchCsv';
 import BatchPreview from './BatchPreview';
 import BatchExecute from './BatchExecute';
+import BatchNetwork from './BatchNetwork';
 
 function BatchTx() {
   return (
@@ -17,6 +18,7 @@ function BatchTx() {
       </Typography.Title>
       <BatchColumns />
       <BatchSeparator />
+      <BatchNetwork />
       <BatchAsset />
       <BatchCsv />
       <BatchPreview />
