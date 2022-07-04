@@ -38,7 +38,7 @@ const batchColumns: {
     label: 'Amount',
     canDeselect: false,
     parser: (amount: string, { asset }: { asset: IAssetStorageItem }) =>
-      ethers.utils.parseUnits(amount.split(',').join(''), asset.decimals).toString(),
+      ethers.utils.parseUnits(amount.split(',').join('').split('$').join(''), asset.decimals).toString(),
   },
   notes: {
     name: 'notes',
