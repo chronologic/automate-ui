@@ -13,10 +13,7 @@ export async function contractApprove(
   from: string,
   amount: number | BigNumber
 ): Promise<string[]> {
-  console.log('2');
   const tx = magicContract.methods.approve(spenderAddress, amount).send({ from: from });
-  console.log('3');
-
   return tx;
 }
 

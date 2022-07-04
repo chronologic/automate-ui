@@ -15,7 +15,7 @@ function SweepExecute() {
   const [valid, setValid] = useState(false);
 
   const [fromAddress, setFromAddress] = useState('');
-  const [to, setTo] = useState('');
+  const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
@@ -38,9 +38,9 @@ function SweepExecute() {
       setBalance(balanceEth[1]);
     };
 
-    const validToAddress = ethers.utils.isAddress(to);
+    const validToAddress = ethers.utils.isAddress(toAddress);
     const getAllowance = async () => {
-      const balanceWei = await contractAllowance(fromAddress, to);
+      const balanceWei = await contractAllowance(fromAddress, toAddress);
       setAllowance(balanceWei);
     };
 
@@ -61,13 +61,13 @@ function SweepExecute() {
     } else {
       setValid(false);
     }
-  }, [fromAddress, to]);
+  }, [fromAddress, toAddress]);
 
   const handleToChange = useCallback(
     (e) => {
-      setTo(e.target.value);
+      setToAddress(e.target.value);
     },
-    [setTo]
+    [setToAddress]
   );
 
   const handleAmountChange = useCallback(
@@ -84,13 +84,13 @@ function SweepExecute() {
       setLoading(true);
       await changeNetwork(ChainId.arbitrum);
 
-      await contractTransferFrom(fromAddress, to, Number(amount));
+      await contractTransferFrom(fromAddress, toAddress, Number(amount));
 
       notification.success({
         message: (
           <span>
-            From <b> {shortAddress(fromAddress)} </b> To <b>{shortAddress(to)} (amount) Magic tokens</b>has been
-            transferred successfully.
+            <b> (amount) Magic </b>has been successfully transferred from <b> {shortAddress(fromAddress)} </b>
+            to <b>{shortAddress(toAddress)} </b>
           </span>
         ),
       });
@@ -101,9 +101,7 @@ function SweepExecute() {
     } finally {
       setLoading(false);
     }
-  }, [fromAddress, to, amount, changeNetwork, form]);
-
-  const { Option } = Select;
+  }, [fromAddress, toAddress, amount, changeNetwork, form]);
 
   const setAmountToMax = () => {
     setAmount(balance.toString());
@@ -152,7 +150,7 @@ function SweepExecute() {
         <Input
           type="text"
           placeholder="The address Magic tokens will be transfered to"
-          value={to}
+          value={toAddress}
           required={true}
           onChange={handleToChange}
         />
