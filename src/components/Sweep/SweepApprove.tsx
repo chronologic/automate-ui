@@ -67,7 +67,7 @@ function SweepApprove() {
     [setApproveAmount]
   );
 
-  const setAmountToMax = debounce((e: any) => setApproveAmount(maxAmount.toString()), 500);
+  const setAmountToMax = () => setApproveAmount(maxAmount.toString());
 
   useEffect(() => {
     const getBalance = async () => {
@@ -95,7 +95,8 @@ function SweepApprove() {
       </Typography.Title>
       <Form.Item
         name="spenderAddr"
-        label="Spender Address:"
+        colon={true}
+        label="Spender Address"
         rules={[
           { required: true, message: 'The address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
@@ -109,7 +110,7 @@ function SweepApprove() {
           required={true}
         />
       </Form.Item>
-      <Form.Item label="Approve Amount:">
+      <Form.Item label="Approve Amount" colon={true}>
         <Input.Group compact>
           <Input
             name="approveAmount"

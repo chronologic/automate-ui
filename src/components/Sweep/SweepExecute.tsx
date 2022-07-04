@@ -119,7 +119,8 @@ function SweepExecute() {
       </Typography.Title>
       <Form.Item
         name="fromAddress"
-        label="From Address:"
+        colon={true}
+        label="From Address"
         rules={[
           { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
@@ -141,7 +142,8 @@ function SweepExecute() {
       </Form.Item>
       <Form.Item
         name="toAddress"
-        label="To Address:"
+        label="To Address"
+        colon={true}
         rules={[
           { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
@@ -157,7 +159,8 @@ function SweepExecute() {
       </Form.Item>
       <Form.Item
         // name="amount"
-        label="Amount:"
+        colon={true}
+        label="Amount"
         rules={[
           { required: true, message: 'Amount is required' },
           { validator: (_, value) => validateAmount(value, balance) },
