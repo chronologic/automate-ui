@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { Form, Input, Button, notification, Typography } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
+import debounce from 'lodash/debounce';
 
 import { numberToBn, ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
@@ -66,7 +67,7 @@ function SweepApprove() {
     [setApproveAmount]
   );
 
-  const setAmountToMax = () => setApproveAmount(maxAmount.toString());
+  const setAmountToMax = debounce((e: any) => setApproveAmount(maxAmount.toString()), 500);
 
   useEffect(() => {
     const getBalance = async () => {
@@ -90,7 +91,7 @@ function SweepApprove() {
   return (
     <Container>
       <Typography.Title level={5} className="subtitle">
-        Approve Wallet to transfer Magic ✨ tokens
+        Approve wallet to transfer Magic ✨ tokens
       </Typography.Title>
       <Form.Item
         name="spenderAddr"
@@ -99,7 +100,6 @@ function SweepApprove() {
           { required: true, message: 'The address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
-        className="title"
       >
         <Input
           type="text"

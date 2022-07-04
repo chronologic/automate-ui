@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Form, Input, Button, notification, Typography, Space, Select } from 'antd';
+import { Form, Input, Button, notification, Typography, Space } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
 
@@ -34,30 +34,30 @@ function SweepExecute() {
   useEffect(() => {
     const validFromAddress = ethers.utils.isAddress(fromAddress);
     const getBalance = async () => {
-      const balanceEth = await contractBalanceOf(fromAddress);
-      setBalance(balanceEth[1]);
+      try {
+        const balanceEth = await contractBalanceOf(fromAddress);
+        setBalance(balanceEth[1]);
+      } catch (e) {
+        console.log(e);
+      }
     };
 
     const validToAddress = ethers.utils.isAddress(toAddress);
     const getAllowance = async () => {
-      const balanceWei = await contractAllowance(fromAddress, toAddress);
-      setAllowance(balanceWei);
-    };
-
-    if (validFromAddress) {
       try {
-        getBalance();
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    if (validFromAddress && validToAddress) {
-      try {
-        getAllowance();
+        const balanceWei = await contractAllowance(fromAddress, toAddress);
+        setAllowance(balanceWei);
         setValid(true);
       } catch (e) {
         console.log(e);
       }
+    };
+
+    if (validFromAddress) {
+      getBalance();
+    }
+    if (validFromAddress && validToAddress) {
+      getAllowance();
     } else {
       setValid(false);
     }
