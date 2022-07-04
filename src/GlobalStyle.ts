@@ -145,6 +145,8 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-input-group-addon {
     color: ${(props) => props.theme.colors.text};
+    background-color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
   }
   .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
   .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover {

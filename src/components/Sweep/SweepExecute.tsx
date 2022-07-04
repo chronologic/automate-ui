@@ -1,9 +1,9 @@
 import { useCallback, useState, useEffect } from 'react';
-import { Form, Input, Button, notification, Typography } from 'antd';
+import { Form, Input, Button, notification, Typography, Space, Select } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
 
-import { ethereumAddressValidator } from '../../utils';
+import { ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
 import { contractBalanceOf, contractTransferFrom, contractAllowance } from './useSweep';
@@ -16,7 +16,7 @@ function SweepExecute() {
 
   const [fromAddress, setFromAddress] = useState('');
   const [to, setTo] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState('');
   const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
 
@@ -84,10 +84,15 @@ function SweepExecute() {
       setLoading(true);
       await changeNetwork(ChainId.arbitrum);
 
-      await contractTransferFrom(fromAddress, to, amount);
+      await contractTransferFrom(fromAddress, to, Number(amount));
 
       notification.success({
-        message: `From ${fromAddress} to ${to} ${amount} Magic has been transferred successfully. `,
+        message: (
+          <span>
+            From <b> {shortAddress(fromAddress)} </b> To <b>{shortAddress(to)} (amount) Magic tokens</b>has been
+            transferred successfully.
+          </span>
+        ),
       });
     } catch (e) {
       console.error(e);
@@ -98,12 +103,21 @@ function SweepExecute() {
     }
   }, [fromAddress, to, amount, changeNetwork, form]);
 
-  const setAmountToMax = () => setAmount(balance);
+  const { Option } = Select;
 
+  const setAmountToMax = () => {
+    setAmount(balance.toString());
+  };
+
+  const selectAfter = (
+    <Button type="primary" onClick={setAmountToMax}>
+      Max
+    </Button>
+  );
   return (
     <Container>
       <Typography.Title level={5} className="subtitle">
-        Transfer Magic ✨ Tokens
+        Transfer Magic ✨ tokens
       </Typography.Title>
       <Form.Item
         name="fromAddress"
@@ -112,18 +126,20 @@ function SweepExecute() {
           { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
-        className="title"
       >
         <Input
           type="text"
-          placeholder="The Address Magic Token's will be transfered from"
+          placeholder="The address Magic tokens will be transfered from"
           value={fromAddress}
           onChange={handleFromChange}
           required={true}
         />
       </Form.Item>
-      <Form.Item label="Balance">
-        <Text>{balance}</Text>
+      <Form.Item className="title">
+        <Space size={'large'}>
+          <Text>Balance: {balance}</Text>
+          <Text>Allowance: {allowance} </Text>
+        </Space>
       </Form.Item>
       <Form.Item
         name="toAddress"
@@ -132,46 +148,37 @@ function SweepExecute() {
           { required: true, message: 'Address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
-        className="title"
       >
         <Input
           type="text"
-          placeholder="The Address Magic Token's will be transfered to"
+          placeholder="The address Magic tokens will be transfered to"
           value={to}
           required={true}
           onChange={handleToChange}
         />
       </Form.Item>
-      <Form.Item label="Allowance">
-        <Text>{allowance} </Text>
-      </Form.Item>
       <Form.Item
-        name="approveAmount"
+        // name="amount"
         label="Amount:"
         rules={[
-          { required: true, message: 'Amount is required' },
+           { required: true, message: 'Amount is required' },
           { validator: (_, value) => validateAmount(value, balance) },
         ]}
         required={true}
       >
-        <Input.Group compact>
-          <Input
-            type="number"
-            placeholder="Amount of tokens"
-            value={amount}
-            onChange={handleAmountChange}
-            required={true}
-            style={{ width: 'calc(100% - 65px)' }}
-          />
-          <Button type="primary" onClick={setAmountToMax}>
-            Max
-          </Button>
-        </Input.Group>
+        <Input
+          name="amount"
+          type="number"
+          placeholder="Amount of tokens"
+          value={amount}
+          onChange={handleAmountChange}
+          addonAfter={selectAfter}
+        />
       </Form.Item>
 
       <div className="transferButton">
         <Button type="primary" loading={loading} disabled={!valid} onClick={handleTransfer}>
-          Transfer Magic Tokens
+          Transfer Magic tokens
         </Button>
       </div>
     </Container>
@@ -187,6 +194,10 @@ const Container = styled.div`
     flex-direction: row;
     display: flex;
     justify-content: flex-end;
+  }
+  .title {
+    font-size: 15px;
+    margin-bottom: 10px;
   }
 `;
 

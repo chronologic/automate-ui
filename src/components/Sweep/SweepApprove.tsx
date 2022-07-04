@@ -3,7 +3,7 @@ import { Form, Input, Button, notification, Typography } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
 
-import { numberToBn, ethereumAddressValidator } from '../../utils';
+import { numberToBn, ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
 import { contractApprove, contractBalanceOf } from './useSweep';
@@ -13,7 +13,7 @@ function SweepApprove() {
   const [valid, setValid] = useState(false);
 
   const [spenderAddr, setSpenderAddr] = useState('');
-  const [approveAmount, setApproveAmount] = useState(0);
+  const [approveAmount, setApproveAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState(0);
 
   const [form] = Form.useForm();
@@ -29,14 +29,19 @@ function SweepApprove() {
       await changeNetwork(ChainId.arbitrum);
       const { account } = await connect();
 
-      if (approveAmount.toString() === '') {
+      if (approveAmount === '') {
         await contractApprove(spenderAddr, account!, ethers.constants.MaxUint256);
       } else {
-        await contractApprove(spenderAddr, account!, numberToBn(approveAmount));
+        await contractApprove(spenderAddr, account!, numberToBn(Number(approveAmount)));
       }
 
       notification.success({
-        message: `Wallet ${spenderAddr} has been whitelisted for ${approveAmount} amount successfully. `,
+        message: (
+          <span>
+            Wallet <b> {shortAddress(spenderAddr)} </b> has been whitelisted for amount{' '}
+            <b>{approveAmount} Magic tokens</b> successfully.
+          </span>
+        ),
       });
     } catch (e) {
       console.error(e);
@@ -61,7 +66,7 @@ function SweepApprove() {
     [setApproveAmount]
   );
 
-  const setAmountToMax = () => setApproveAmount(maxAmount);
+  const setAmountToMax = () => setApproveAmount(maxAmount.toString());
 
   useEffect(() => {
     const getBalance = async () => {
@@ -85,13 +90,13 @@ function SweepApprove() {
   return (
     <Container>
       <Typography.Title level={5} className="subtitle">
-        Approve Wallet to transfer Magic ✨ Tokens
+        Approve Wallet to transfer Magic ✨ tokens
       </Typography.Title>
       <Form.Item
         name="spenderAddr"
         label="Spender Address:"
         rules={[
-          { required: true, message: 'The Address is required' },
+          { required: true, message: 'The address is required' },
           { validator: (_, value) => ethereumAddressValidator(value) },
         ]}
         className="title"
@@ -121,7 +126,7 @@ function SweepApprove() {
       </Form.Item>
       <div className="approveButton">
         <Button type="primary" disabled={!valid} loading={loading} onClick={handleSubmit}>
-          Approve (Whitelist) Wallet
+          Approve (whitelist) wallet
         </Button>
       </div>
     </Container>
