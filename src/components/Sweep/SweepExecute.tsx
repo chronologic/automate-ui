@@ -32,7 +32,7 @@ function SweepExecute() {
   );
 
   useEffect(() => {
-    const validAFromAddress = ethers.utils.isAddress(fromAddress);
+    const validFromAddress = ethers.utils.isAddress(fromAddress);
     const getBalance = async () => {
       const balanceEth = await contractBalanceOf(fromAddress);
       setBalance(balanceEth[1]);
@@ -44,14 +44,14 @@ function SweepExecute() {
       setAllowance(balanceWei);
     };
 
-    if (validAFromAddress) {
+    if (validFromAddress) {
       try {
         getBalance();
       } catch (e) {
         console.log(e);
       }
     }
-    if (validAFromAddress && validToAddress) {
+    if (validFromAddress && validToAddress) {
       try {
         getAllowance();
         setValid(true);
@@ -161,7 +161,7 @@ function SweepExecute() {
         // name="amount"
         label="Amount:"
         rules={[
-           { required: true, message: 'Amount is required' },
+          { required: true, message: 'Amount is required' },
           { validator: (_, value) => validateAmount(value, balance) },
         ]}
         required={true}
