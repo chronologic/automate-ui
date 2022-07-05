@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { Form, Input, Button, notification, Typography, Space } from 'antd';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
+import debounce from 'lodash/debounce';
 
 import { ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
@@ -12,7 +13,6 @@ const { Text } = Typography;
 
 function SweepExecute() {
   const [loading, setLoading] = useState(false);
-  const [valid, setValid] = useState(false);
 
   const [fromAddress, setFromAddress] = useState('');
   const [toAddress, setToAddress] = useState('');
@@ -25,10 +25,17 @@ function SweepExecute() {
   const { changeNetwork } = useMetamask();
 
   const handleFromChange = useCallback(
-    (e) => {
+    debounce((e) => {
       setFromAddress(e.target.value);
-    },
+    }, 500),
     [setFromAddress]
+  );
+
+  const handleToChange = useCallback(
+    debounce((e) => {
+      setToAddress(e.target.value);
+    }, 500),
+    [setToAddress]
   );
 
   useEffect(() => {
@@ -47,7 +54,6 @@ function SweepExecute() {
       try {
         const balanceWei = await contractAllowance(fromAddress, toAddress);
         setAllowance(balanceWei);
-        setValid(true);
       } catch (e) {
         console.log(e);
       }
@@ -58,17 +64,8 @@ function SweepExecute() {
     }
     if (validFromAddress && validToAddress) {
       getAllowance();
-    } else {
-      setValid(false);
     }
   }, [fromAddress, toAddress]);
-
-  const handleToChange = useCallback(
-    (e) => {
-      setToAddress(e.target.value);
-    },
-    [setToAddress]
-  );
 
   const handleAmountChange = useCallback(
     (e) => {
@@ -178,7 +175,7 @@ function SweepExecute() {
       </Form.Item>
 
       <div className="transferButton">
-        <Button type="primary" loading={loading} disabled={!valid} onClick={handleTransfer}>
+        <Button type="primary" loading={loading} onClick={handleTransfer}>
           Transfer Magic tokens
         </Button>
       </div>

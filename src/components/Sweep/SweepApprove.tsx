@@ -11,7 +11,6 @@ import { contractApprove, contractBalanceOf } from './magicContractHelper';
 
 function SweepApprove() {
   const [loading, setLoading] = useState(false);
-  const [valid, setValid] = useState(false);
 
   const [spenderAddr, setSpenderAddr] = useState('');
   const [approveAmount, setApproveAmount] = useState('');
@@ -54,9 +53,9 @@ function SweepApprove() {
   }, [spenderAddr, approveAmount, changeNetwork, form, connect]);
 
   const handleSpenderAddrChange = useCallback(
-    (e) => {
+    debounce((e) => {
       setSpenderAddr(e.target.value);
-    },
+    }, 500),
     [setSpenderAddr]
   );
 
@@ -83,9 +82,6 @@ function SweepApprove() {
       }
     };
     getBalance();
-
-    const isValidSpenderAddr = ethers.utils.isAddress(spenderAddr);
-    setValid(isValidSpenderAddr);
   }, [spenderAddr, connect]);
 
   return (
@@ -126,7 +122,7 @@ function SweepApprove() {
         </Input.Group>
       </Form.Item>
       <div className="approveButton">
-        <Button type="primary" disabled={!valid} loading={loading} onClick={handleSubmit}>
+        <Button type="primary" loading={loading} onClick={handleSubmit}>
           Approve (whitelist) wallet
         </Button>
       </div>
