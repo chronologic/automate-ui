@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
-import { contractBalanceOf, contractTransferFrom, contractAllowance } from './useSweep';
+import { contractBalanceOf, contractTransferFrom, contractAllowance } from './magicContractHelper';
 
 const { Text } = Typography;
 

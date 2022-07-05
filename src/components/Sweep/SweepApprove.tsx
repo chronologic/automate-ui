@@ -7,7 +7,7 @@ import debounce from 'lodash/debounce';
 import { numberToBn, ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
-import { contractApprove, contractBalanceOf } from './useSweep';
+import { contractApprove, contractBalanceOf } from './magicContractHelper';
 
 function SweepApprove() {
   const [loading, setLoading] = useState(false);
