@@ -2,7 +2,7 @@ import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import uniqBy from 'lodash/uniqBy';
 
-import { ChainId } from '../constants';
+import { ChainId, ETH_ADDRESS } from '../constants';
 import { AssetType } from '../types';
 import { useMemo } from 'react';
 import { isEmptyName, shortAddress } from '../utils';
@@ -27,13 +27,15 @@ interface IAssetStoreMethods {
 
 interface IAssetOptionsHook extends IAssetStoreState, IAssetStoreMethods {}
 
-const defaultAssets: IAssetStorageItem[] = Object.values(ChainId).map((chainId) => ({
-  assetType: AssetType.Ethereum,
-  chainId: chainId as ChainId,
-  address: '',
-  name: 'ETH',
-  decimals: 18,
-}));
+const defaultAssets: IAssetStorageItem[] = Object.values(ChainId)
+  .filter(Number)
+  .map((chainId) => ({
+    assetType: AssetType.Ethereum,
+    chainId: chainId as ChainId,
+    address: ETH_ADDRESS,
+    name: 'ETH',
+    decimals: 18,
+  }));
 
 const defaultState: IAssetStoreState = {
   assetOptions: defaultAssets,
@@ -52,7 +54,7 @@ function addAsset(asset: IAssetStorageItem) {
 
 function addAssets(assets: IAssetStorageItem[]) {
   const { assetOptions: storedAssets } = useAssetOptionsStore.getState();
-  const mergedAssets = [...storedAssets, ...assets];
+  const mergedAssets = [...defaultAssets, ...storedAssets, ...assets];
   const filteredAssets = mergedAssets.filter((item) => item.address && item.decimals);
   const normalizedAssets = filteredAssets.map((item) => ({
     ...item,
@@ -62,22 +64,38 @@ function addAssets(assets: IAssetStorageItem[]) {
   const uniqueAssets = uniqBy(normalizedAssets, (item) =>
     `${item.assetType}.${item.chainId}.${item.address}`.toLowerCase()
   );
+  const addressNameRegex = /0x[0-9a-f]+\.\.\.[0-9a-f]+/i;
+  const nameForLastSort = 'zzzzzz';
+  const sortedAssets = uniqueAssets.sort((a, b) => {
+    const filterNameA = addressNameRegex.test(a.name || '')
+      ? `${nameForLastSort}_${a.name}`
+      : a.name || nameForLastSort;
+    const filterNameB = addressNameRegex.test(b.name || '')
+      ? `${nameForLastSort}_${b.name}`
+      : b.name || nameForLastSort;
 
-  useAssetOptionsStore.setState({ assetOptions: uniqueAssets });
+    return filterNameA.localeCompare(filterNameB);
+  });
+
+  useAssetOptionsStore.setState({ assetOptions: sortedAssets });
 }
 
 const useAssetOptions = ({
   assetType,
   chainId,
   address,
-}: { assetType?: AssetType; chainId?: ChainId; address?: string } = {}): IAssetOptionsHook => {
+  allowEth,
+}: { assetType?: AssetType; chainId?: ChainId; address?: string; allowEth?: boolean } = {}): IAssetOptionsHook => {
   const state = useAssetOptionsStore();
   const assetOptions = useMemo(
     () =>
       state.assetOptions.filter(
-        (item) => (item.assetType === assetType || !assetType) && (item.chainId === chainId || !chainId)
+        (item) =>
+          (item.assetType === assetType || !assetType) &&
+          (item.chainId === chainId || !chainId) &&
+          (allowEth ? true : item.address !== ETH_ADDRESS)
       ),
-    [assetType, chainId, state.assetOptions]
+    [allowEth, assetType, chainId, state.assetOptions]
   );
   const asset = useMemo(
     () => assetOptions.find((item) => item.address.toLowerCase() === address?.toLowerCase()),

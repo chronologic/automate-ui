@@ -13,11 +13,12 @@ interface IProps {
   chainId: ChainId;
   address?: string;
   name?: string;
+  allowEth?: boolean;
   onChange: (item: IAssetStorageItem) => void;
 }
 
-function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) {
-  const { assetOptions } = useAssetOptions({ assetType, chainId });
+function AssetSelector({ assetType, chainId, address, name, allowEth, onChange }: IProps) {
+  const { assetOptions } = useAssetOptions({ assetType, chainId, allowEth });
   const { open: onOpenAddAssetModal } = useAddAssetModal();
 
   const handleChange = useCallback(
@@ -50,7 +51,13 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
       >
         {assetOptions.map((asset) => (
           <Select.Option key={asset.address} value={asset.address}>
-            <AssetSymbol chainId={chainId} address={asset.address} name={name} alwaysShowName imageSize="2rem" />
+            <AssetSymbol
+              chainId={chainId}
+              address={asset.address}
+              name={name || asset.name}
+              alwaysShowName
+              imageSize="2rem"
+            />
           </Select.Option>
         ))}
       </Select>
@@ -60,7 +67,7 @@ function AssetSelector({ assetType, chainId, address, name, onChange }: IProps) 
 
 const Container = styled.div`
   .select {
-    width: 100px;
+    width: 110px;
   }
 `;
 
