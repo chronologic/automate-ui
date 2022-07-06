@@ -12,13 +12,13 @@ import { contractApprove, contractBalanceOf } from './magicContractHelper';
 function SweepApprove() {
   const [loading, setLoading] = useState(false);
 
-  const [spenderAddr, setSpenderAddr] = useState('');
   const [approveAmount, setApproveAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState(0);
 
   const [form] = Form.useForm();
 
   const { changeNetwork, connect } = useMetamask();
+  const storedSpenderAddr = localStorage.getItem('spenderAddr')?.toString();
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -29,6 +29,8 @@ function SweepApprove() {
       await changeNetwork(ChainId.arbitrum);
       const { account } = await connect();
 
+      const spenderAddr = storedSpenderAddr!;
+
       if (approveAmount === '') {
         await contractApprove(spenderAddr, account!, ethers.constants.MaxUint256);
       } else {
@@ -38,7 +40,7 @@ function SweepApprove() {
       notification.success({
         message: (
           <span>
-            Wallet <b> {shortAddress(spenderAddr)} </b> has been whitelisted for amount{' '}
+            Wallet <b> {shortAddress(storedSpenderAddr)} </b> has been whitelisted for amount{' '}
             <b>{approveAmount} Magic tokens</b> successfully.
           </span>
         ),
@@ -50,13 +52,13 @@ function SweepApprove() {
     } finally {
       setLoading(false);
     }
-  }, [spenderAddr, approveAmount, changeNetwork, form, connect]);
+  }, [storedSpenderAddr, approveAmount, changeNetwork, form, connect]);
 
   const handleSpenderAddrChange = useCallback(
     debounce((e) => {
-      setSpenderAddr(e.target.value);
-    }, 500),
-    [setSpenderAddr]
+      localStorage.setItem('spenderAddr', e.target.value);
+    }, 10),
+    []
   );
 
   const handleAmountChange = useCallback(
@@ -82,7 +84,7 @@ function SweepApprove() {
       }
     };
     getBalance();
-  }, [spenderAddr, connect]);
+  }, [connect]);
 
   return (
     <Container>
@@ -101,7 +103,7 @@ function SweepApprove() {
         <Input
           type="text"
           placeholder="The address to whitelist"
-          value={spenderAddr}
+          defaultValue={storedSpenderAddr}
           onChange={handleSpenderAddrChange}
           required={true}
         />
