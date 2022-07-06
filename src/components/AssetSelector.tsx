@@ -39,6 +39,12 @@ function AssetSelector({ assetType, chainId, address, name, allowEth, onChange }
         value={address}
         className="select"
         onChange={handleChange}
+        showSearch
+        filterOption={(inputValue: string, option: any) => {
+          const { name, address } = option.children.props;
+
+          return `${(name || '').toLowerCase()} ${address.toLowerCase()}`.includes((inputValue || '').toLowerCase());
+        }}
         dropdownRender={(menu) => (
           <>
             {menu}
