@@ -104,11 +104,12 @@ function SweepExecute() {
     setAmount(balance.toString());
   };
 
-  const selectAfter = (
+  const maxButton = (
     <Button type="primary" onClick={setAmountToMax}>
       Max
     </Button>
   );
+
   return (
     <Container>
       <Typography.Title level={5} className="subtitle">
@@ -148,14 +149,14 @@ function SweepExecute() {
       >
         <Input
           type="text"
-          placeholder="The address Magic tokens will be transfered to"
+          placeholder="The address Magic tokens will be transferred to"
           value={toAddress}
           required={true}
           onChange={handleToChange}
         />
       </Form.Item>
       <Form.Item
-        // name="amount"
+        name="amount"
         colon={true}
         label="Amount"
         rules={[
@@ -170,7 +171,7 @@ function SweepExecute() {
           placeholder="Amount of tokens"
           value={amount}
           onChange={handleAmountChange}
-          addonAfter={selectAfter}
+          addonAfter={maxButton}
         />
       </Form.Item>
 
