@@ -8,9 +8,11 @@ import { numberToBn, ethereumAddressValidator, shortAddress } from '../../utils'
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
 import { contractApprove, contractBalanceOf } from './magicContractHelper';
+import { useSweepStore } from './useSweep';
 
 function SweepApprove() {
   const [loading, setLoading] = useState(false);
+  const { spenderAddr, setSpenderAddr } = useSweepStore();
 
   const [approveAmount, setApproveAmount] = useState('');
   const [maxAmount, setMaxAmount] = useState(0);
@@ -18,7 +20,6 @@ function SweepApprove() {
   const [form] = Form.useForm();
 
   const { changeNetwork, connect } = useMetamask();
-  const storedSpenderAddr = localStorage.getItem('spenderAddr')?.toString();
 
   const handleSubmit = useCallback(async () => {
     try {
@@ -29,8 +30,6 @@ function SweepApprove() {
       await changeNetwork(ChainId.arbitrum);
       const { account } = await connect();
 
-      const spenderAddr = storedSpenderAddr!;
-
       if (approveAmount === '') {
         await contractApprove(spenderAddr, account!, ethers.constants.MaxUint256);
       } else {
@@ -40,7 +39,7 @@ function SweepApprove() {
       notification.success({
         message: (
           <span>
-            Wallet <b> {shortAddress(storedSpenderAddr)} </b> has been whitelisted for amount{' '}
+            Wallet <b> {shortAddress(spenderAddr)} </b> has been whitelisted for amount{' '}
             <b>{approveAmount} Magic tokens</b> successfully.
           </span>
         ),
@@ -52,13 +51,13 @@ function SweepApprove() {
     } finally {
       setLoading(false);
     }
-  }, [storedSpenderAddr, approveAmount, changeNetwork, form, connect]);
+  }, [spenderAddr, approveAmount, changeNetwork, form, connect]);
 
-  const handleSpenderAddrChange = useCallback(
+  const handleSpenderChange = useCallback(
     debounce((e) => {
-      localStorage.setItem('spenderAddr', e.target.value);
-    }, 100),
-    []
+      setSpenderAddr(e.target.value);
+    }, 500),
+    [setSpenderAddr]
   );
 
   const handleAmountChange = useCallback(
@@ -101,10 +100,11 @@ function SweepApprove() {
         ]}
       >
         <Input
+          name="spenderAddr"
           type="text"
           placeholder="The address to whitelist"
-          defaultValue={storedSpenderAddr}
-          onChange={handleSpenderAddrChange}
+          defaultValue={spenderAddr}
+          onChange={handleSpenderChange}
           required={true}
         />
       </Form.Item>

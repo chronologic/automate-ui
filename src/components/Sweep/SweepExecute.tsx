@@ -8,6 +8,7 @@ import { ethereumAddressValidator, shortAddress } from '../../utils';
 import { useMetamask } from '../../hooks/useMetamask';
 import { ChainId } from '../../constants';
 import { contractBalanceOf, contractTransferFrom, contractAllowance } from './magicContractHelper';
+import { useSweepStore } from './useSweep';
 
 const { Text } = Typography;
 
@@ -19,6 +20,9 @@ function SweepExecute() {
   const storedFromAddr = localStorage.getItem('fromAddr')?.toString();
   const storedToAddr = localStorage.getItem('toAddr')?.toString();
 
+  const { fromAddr, setFromAddr } = useSweepStore();
+  const { toAddr, setToAddr } = useSweepStore();
+
   const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
 
@@ -28,15 +32,15 @@ function SweepExecute() {
 
   const handleFromChange = useCallback(
     debounce((e) => {
-      localStorage.setItem('fromAddr', e.target.value);
-    }, 100),
+      setFromAddr(e.target.value);
+    }, 500),
     []
   );
 
   const handleToChange = useCallback(
     debounce((e) => {
-      localStorage.setItem('toAddr', e.target.value);
-    }, 100),
+      setToAddr(e.target.value);
+    }, 500),
     []
   );
 
@@ -133,7 +137,7 @@ function SweepExecute() {
         <Input
           type="text"
           placeholder="The address Magic tokens will be transfered from"
-          defaultValue={storedFromAddr}
+          defaultValue={fromAddr}
           onChange={handleFromChange}
           required={true}
         />
@@ -156,7 +160,7 @@ function SweepExecute() {
         <Input
           type="text"
           placeholder="The address Magic tokens will be transferred to"
-          defaultValue={storedToAddr}
+          defaultValue={toAddr}
           required={true}
           onChange={handleToChange}
         />
