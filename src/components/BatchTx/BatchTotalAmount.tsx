@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from 'antd';
 import styled from 'styled-components';
-import { BigNumber, ethers, utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 
 import { useBatchParser } from './useBatchParser';
 import { useBatchConfig } from './useBatchConfig';
