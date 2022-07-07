@@ -23,9 +23,10 @@ export async function contractBalanceOf(account: string): Promise<number[]> {
   return [balanceWei, balanceEth];
 }
 
-export async function contractAllowance(from: string, to: string): Promise<number> {
+export async function contractAllowance(from: string, to: string): Promise<number[]> {
   const balanceWei = await magicContract.methods.allowance(from, to).call();
-  return balanceWei;
+  const balanceEth = Number(web3.utils.fromWei(balanceWei, MAGIC_DECIMAL_UNIT));
+  return [balanceWei, balanceEth];
 }
 
 export async function contractTransferFrom(from: string, to: string, amount: number): Promise<string[]> {

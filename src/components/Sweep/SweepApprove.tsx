@@ -57,7 +57,7 @@ function SweepApprove() {
   const handleSpenderAddrChange = useCallback(
     debounce((e) => {
       localStorage.setItem('spenderAddr', e.target.value);
-    }, 10),
+    }, 100),
     []
   );
 

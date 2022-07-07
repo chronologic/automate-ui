@@ -14,9 +14,11 @@ const { Text } = Typography;
 function SweepExecute() {
   const [loading, setLoading] = useState(false);
 
-  const [fromAddress, setFromAddress] = useState('');
-  const [toAddress, setToAddress] = useState('');
   const [amount, setAmount] = useState('');
+
+  const storedFromAddr = localStorage.getItem('fromAddr')?.toString();
+  const storedToAddr = localStorage.getItem('toAddr')?.toString();
+
   const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
 
@@ -26,34 +28,36 @@ function SweepExecute() {
 
   const handleFromChange = useCallback(
     debounce((e) => {
-      setFromAddress(e.target.value);
-    }, 500),
-    [setFromAddress]
+      localStorage.setItem('fromAddr', e.target.value);
+    }, 100),
+    []
   );
 
   const handleToChange = useCallback(
     debounce((e) => {
-      setToAddress(e.target.value);
-    }, 500),
-    [setToAddress]
+      localStorage.setItem('toAddr', e.target.value);
+    }, 100),
+    []
   );
 
   useEffect(() => {
-    const validFromAddress = ethers.utils.isAddress(fromAddress);
+    const validFromAddress = ethers.utils.isAddress(storedFromAddr!);
+
     const getBalance = async () => {
       try {
-        const balanceEth = await contractBalanceOf(fromAddress);
+        const balanceEth = await contractBalanceOf(storedFromAddr!);
         setBalance(balanceEth[1]);
       } catch (e) {
         console.log(e);
       }
     };
 
-    const validToAddress = ethers.utils.isAddress(toAddress);
+    const validToAddress = ethers.utils.isAddress(storedToAddr!);
+
     const getAllowance = async () => {
       try {
-        const balanceWei = await contractAllowance(fromAddress, toAddress);
-        setAllowance(balanceWei);
+        const balanceWei = await contractAllowance(storedFromAddr!, storedToAddr!);
+        setAllowance(balanceWei[1]);
       } catch (e) {
         console.log(e);
       }
@@ -65,7 +69,7 @@ function SweepExecute() {
     if (validFromAddress && validToAddress) {
       getAllowance();
     }
-  }, [fromAddress, toAddress]);
+  }, [storedFromAddr, storedToAddr]);
 
   const handleAmountChange = useCallback(
     (e) => {
@@ -81,13 +85,15 @@ function SweepExecute() {
       setLoading(true);
       await changeNetwork(ChainId.arbitrum);
 
-      await contractTransferFrom(fromAddress, toAddress, Number(amount));
+      const fromAddr = storedFromAddr!;
+      const toAddr = storedToAddr!;
+      await contractTransferFrom(fromAddr, toAddr, Number(amount));
 
       notification.success({
         message: (
           <span>
-            <b> (amount) Magic </b>has been successfully transferred from <b> {shortAddress(fromAddress)} </b>
-            to <b>{shortAddress(toAddress)} </b>
+            <b> (amount) Magic </b>has been successfully transferred from <b> {shortAddress(storedFromAddr!)} </b>
+            to <b>{shortAddress(storedToAddr!)} </b>
           </span>
         ),
       });
@@ -98,7 +104,7 @@ function SweepExecute() {
     } finally {
       setLoading(false);
     }
-  }, [fromAddress, toAddress, amount, changeNetwork, form]);
+  }, [storedFromAddr, storedToAddr, amount, changeNetwork, form]);
 
   const setAmountToMax = () => {
     setAmount(balance.toString());
@@ -127,7 +133,7 @@ function SweepExecute() {
         <Input
           type="text"
           placeholder="The address Magic tokens will be transfered from"
-          value={fromAddress}
+          defaultValue={storedFromAddr}
           onChange={handleFromChange}
           required={true}
         />
@@ -150,7 +156,7 @@ function SweepExecute() {
         <Input
           type="text"
           placeholder="The address Magic tokens will be transferred to"
-          value={toAddress}
+          defaultValue={storedToAddr}
           required={true}
           onChange={handleToChange}
         />
