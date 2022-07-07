@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Typography } from 'antd';
 import styled from 'styled-components';
+import { BigNumber, ethers, utils } from 'ethers';
 
 import { useBatchParser } from './useBatchParser';
 import { useBatchConfig } from './useBatchConfig';
@@ -9,20 +10,27 @@ function BatchTotalAmount() {
   const { parsedTxs } = useBatchParser();
   const { selectedAsset } = useBatchConfig();
 
-  const calcTotalAmount = useMemo(() => {
-    let totalAmount = 0;
-    for (let row of parsedTxs) {
-      let amount = Number(row.amount?.parsedValue!);
-      totalAmount = totalAmount + Number(amount);
+  const totalAmount = useMemo(() => {
+    let tAmount = BigNumber.from(0);
+    for (const row of parsedTxs) {
+      tAmount = tAmount.add(row.amount?.parsedValue!);
     }
-    totalAmount = totalAmount / Math.pow(10, selectedAsset?.decimals!);
+    return tAmount;
+  }, [parsedTxs]);
 
-    return totalAmount;
-  }, [parsedTxs, selectedAsset]);
+  const decimals = useMemo(() => {
+    return selectedAsset?.decimals!;
+  }, [selectedAsset]);
+
+  const assetType = useMemo(() => {
+    return selectedAsset?.name!;
+  }, [selectedAsset]);
 
   return (
     <Container>
-      <Typography.Title level={4}>Total Amount: {calcTotalAmount}</Typography.Title>
+      <Typography.Title level={4}>
+        Total Amount: {ethers.utils.formatUnits(totalAmount, decimals)} {assetType}
+      </Typography.Title>
     </Container>
   );
 }
