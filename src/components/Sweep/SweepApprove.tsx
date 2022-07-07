@@ -69,6 +69,12 @@ function SweepApprove() {
 
   const setAmountToMax = () => setApproveAmount(maxAmount.toString());
 
+  const maxButton = (
+    <Button type="primary" onClick={setAmountToMax}>
+      Max
+    </Button>
+  );
+
   useEffect(() => {
     const getBalance = async () => {
       const { account } = await connect();
@@ -116,11 +122,8 @@ function SweepApprove() {
             placeholder="Max amount to spend (empty for infinite approval)"
             value={approveAmount}
             onChange={handleAmountChange}
-            style={{ width: 'calc(100% - 65px)' }}
+            addonAfter={maxButton}
           />
-          <Button type="primary" onClick={setAmountToMax}>
-            Max
-          </Button>
         </Input.Group>
       </Form.Item>
       <div className="approveButton">
