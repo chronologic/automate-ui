@@ -29,7 +29,7 @@ function BatchTotalAmount() {
   return (
     <Container>
       <Typography.Title level={4}>
-        Total Amount: {ethers.utils.formatUnits(totalAmount, decimals)} {assetType}
+        Total Amount: {utils.formatUnits(totalAmount, decimals)} {assetType}
       </Typography.Title>
     </Container>
   );
