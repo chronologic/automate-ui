@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 
