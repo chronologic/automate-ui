@@ -7,10 +7,10 @@ import { useBatchParser } from './useBatchParser';
 function BatchTotalAmount() {
   const { parsedTxs } = useBatchParser();
 
-  const rowsWithKey = useMemo(() => {
+  const calcTotalAmount = useMemo(() => {
     let totalAmount = 0;
     for (let row of parsedTxs) {
-      let amount = Number(row['amount']?.formattedValue.split(',').join('').split('$').join(''));
+      let amount = Number(row.amount?.formattedValue.split(',').join('').split('$').join(''));
       totalAmount = totalAmount + amount;
     }
 
@@ -19,7 +19,7 @@ function BatchTotalAmount() {
 
   return (
     <Container>
-      <Typography.Title level={4}>Total Amount: {rowsWithKey}</Typography.Title>
+      <Typography.Title level={4}>Total Amount: {calcTotalAmount}</Typography.Title>
     </Container>
   );
 }
