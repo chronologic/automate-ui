@@ -3,19 +3,22 @@ import { Typography } from 'antd';
 import styled from 'styled-components';
 
 import { useBatchParser } from './useBatchParser';
+import { useBatchConfig } from './useBatchConfig';
 
 function BatchTotalAmount() {
   const { parsedTxs } = useBatchParser();
+  const { selectedAsset } = useBatchConfig();
 
   const calcTotalAmount = useMemo(() => {
     let totalAmount = 0;
     for (let row of parsedTxs) {
-      let amount = Number(row.amount?.formattedValue.split(',').join('').split('$').join(''));
-      totalAmount = totalAmount + amount;
+      let amount = Number(row.amount?.parsedValue!);
+      totalAmount = totalAmount + Number(amount);
     }
+    totalAmount = totalAmount / Math.pow(10, selectedAsset?.decimals!);
 
     return totalAmount;
-  }, [parsedTxs]);
+  }, [parsedTxs, selectedAsset]);
 
   return (
     <Container>
