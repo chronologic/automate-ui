@@ -24,6 +24,7 @@ function BatchAsset() {
         assetType={AssetType.Ethereum}
         chainId={selectedNetwork?.chainId!}
         address={selectedAsset?.address}
+        allowEth
         onChange={handleChange}
       />
     </Container>
