@@ -8,13 +8,12 @@ import ERC20ABI from '../../../abi/ERC20.json';
 import { useAutomateConnection, useStrategyStore } from '../../../hooks';
 import { ethereum, StrategyBlock } from '../../../constants';
 import { ethereumAddressValidator, retryRpcCallOnIntermittentError } from '../../../utils';
+import { MAGIC_ADDRESS, MAGIC_DECIMAL_UNIT } from '../../../constants';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
 const web3 = new Web3(ethereum as any);
 
-const MAGIC_ADDRESS = '0x539bdE0d7Dbd336b79148AA742883198BBF60342';
-const MAGIC_DECIMAL_UNIT = 'ether';
 const magicContract = new web3.eth.Contract(ERC20ABI as any, MAGIC_ADDRESS);
 
 function Arbitrum_Magic_Send() {
