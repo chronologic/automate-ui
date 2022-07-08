@@ -20,8 +20,7 @@ function SweepExecute() {
   const storedFromAddr = localStorage.getItem('fromAddr')?.toString();
   const storedToAddr = localStorage.getItem('toAddr')?.toString();
 
-  const { fromAddr, setFromAddr } = useSweepStore();
-  const { toAddr, setToAddr } = useSweepStore();
+  const { fromAddr, setFromAddr, toAddr, setToAddr } = useSweepStore();
 
   const [balance, setBalance] = useState(0);
   const [allowance, setAllowance] = useState(0);
