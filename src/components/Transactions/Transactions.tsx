@@ -100,6 +100,9 @@ function Transactions() {
           paymentEmail: '',
           paymentRefundAddress: '',
         },
+        queryParams: {
+          apiKey,
+        },
       });
       txEdit.stopEdit();
 
@@ -107,7 +110,7 @@ function Transactions() {
     } finally {
       setLoading(false);
     }
-  }, [editTx, refresh, txEdit]);
+  }, [apiKey, editTx, refresh, txEdit]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {

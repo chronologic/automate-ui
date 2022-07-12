@@ -61,7 +61,6 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
 
 export interface IScheduleParams {
   apiKey: string;
-  total: number;
 }
 
 export interface IGetListParams {

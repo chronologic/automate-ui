@@ -33,7 +33,7 @@ export const TransactionAPI = {
     ];
   }),
   edit: withErrorHandler(
-    async (apiKey: string, request: IScheduleRequest, queryParams?: any): Promise<IScheduledForUser> => {
+    async (apiKey: string, request: IScheduleRequest, queryParams?: IScheduleParams): Promise<IScheduledForUser> => {
       const params = queryParams ? `?${queryString.stringify(queryParams)}` : '';
       const response = await api.post(`/transactions${params}`, request, {
         headers: {
