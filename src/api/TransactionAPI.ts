@@ -19,7 +19,6 @@ export const TransactionAPI = {
         Authorization: `Bearer ${apiKey}`,
       },
     });
-    console.log(JSON.stringify(response.data.result));
 
     const items = response.data.items[0] as IScheduledForUser[];
 

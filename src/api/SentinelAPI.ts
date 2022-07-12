@@ -61,6 +61,7 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
 
 export interface IScheduleParams {
   apiKey: string;
+  draft?: boolean;
 }
 
 export interface IGetListParams {
