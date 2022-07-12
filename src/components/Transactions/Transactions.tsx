@@ -24,7 +24,7 @@ function Transactions() {
   const [items, setItems] = useState<IScheduledForUser[]>([]);
   const [total, setTotal] = useState(0);
 
-  const pagginationParams: {
+  const paginationParams: {
     pageSize: number;
     showSizeChanger: boolean;
     total: number;
@@ -167,7 +167,7 @@ function Transactions() {
       onCancelTx={handleCancelTx}
       onOpenAddAssetModal={handleOpenAddAssetModal}
       onChange={refresh}
-      paggination={pagginationParams}
+      pagination={paginationParams}
     />
   )) ||
     (isLg && (
@@ -183,7 +183,7 @@ function Transactions() {
         onCancelTx={handleCancelTx}
         onOpenAddAssetModal={handleOpenAddAssetModal}
         onChange={refresh}
-        paggination={pagginationParams}
+        pagination={paginationParams}
       />
     )) || <TransactionList items={items} loading={loading} />;
 
