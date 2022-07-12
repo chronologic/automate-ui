@@ -61,7 +61,13 @@ export interface IScheduledTransaction extends IScheduledTransactionRaw {
 
 export interface IScheduleParams {
   apiKey: string;
-  draft?: boolean;
+  total: number;
+}
+
+export interface IGetListParams {
+  index?: number;
+  size?: number;
+  query?: string;
 }
 
 export class SentinelAPI {
@@ -241,8 +247,8 @@ export class SentinelAPI {
     }
   }
 
-  public static async getList(apiKey: string): Promise<IScheduledForUser[]> {
-    const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`);
+  public static async getList(apiKey: string, request: IGetListParams): Promise<IScheduledForUser[]> {
+    const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`, { params: request });
 
     const items = response.data.items as IScheduledForUser[];
 

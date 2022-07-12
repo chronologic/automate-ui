@@ -19,8 +19,20 @@ function Transactions() {
   const { assetOptions, addAssets } = useAssetOptions();
   const addAssetModal = useAddAssetModal();
   const txEdit = useTxEdit();
+  const txPerPage = 50;
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
+  const [total, setTotal] = useState(0);
+
+  const pagginationParams: {
+    pageSize: number;
+    showSizeChanger: boolean;
+    total: number;
+  } = {
+    pageSize: txPerPage,
+    showSizeChanger: false,
+    total: total,
+  };
 
   const apiKey = useMemo(() => {
     const queryParams = queryString.parseUrl(window.location.href);
@@ -31,38 +43,52 @@ function Transactions() {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
-  const refresh = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await getList(apiKey);
-      setItems(res);
-      const resAssetOptions: IAssetStorageItem[] = [
-        ...res.map(
-          (item) =>
-            ({
-              assetType: item.assetType,
-              chainId: item.chainId,
-              address: item.conditionAsset,
-              decimals: item.conditionAssetDecimals,
-              name: item.conditionAssetName,
-            } as IAssetStorageItem)
-        ),
-        ...res.map(
-          (item) =>
-            ({
-              assetType: item.assetType,
-              chainId: item.chainId,
-              address: item.assetContract,
-              decimals: item.assetDecimals,
-              name: item.assetName,
-            } as IAssetStorageItem)
-        ),
-      ];
-      addAssets(resAssetOptions);
-    } finally {
-      setLoading(false);
-    }
-  }, [addAssets, apiKey, getList]);
+  const refresh = useCallback(
+    async (pagination?: any) => {
+      let currentPage = 1;
+      if (pagination) {
+        currentPage = pagination.current;
+      }
+
+      try {
+        setLoading(true);
+        const res = await getList(apiKey, {
+          index: currentPage,
+          size: txPerPage,
+        });
+
+        setItems(res[0]);
+        setTotal(res[1]);
+
+        const resAssetOptions: IAssetStorageItem[] = [
+          ...res[0].map(
+            (item) =>
+              ({
+                assetType: item.assetType,
+                chainId: item.chainId,
+                address: item.conditionAsset,
+                decimals: item.conditionAssetDecimals,
+                name: item.conditionAssetName,
+              } as IAssetStorageItem)
+          ),
+          ...res[0].map(
+            (item) =>
+              ({
+                assetType: item.assetType,
+                chainId: item.chainId,
+                address: item.assetContract,
+                decimals: item.assetDecimals,
+                name: item.assetName,
+              } as IAssetStorageItem)
+          ),
+        ];
+        addAssets(resAssetOptions);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [addAssets, apiKey, getList]
+  );
 
   const handleSave = useCallback(async () => {
     try {
@@ -74,9 +100,6 @@ function Transactions() {
           paymentEmail: '',
           paymentRefundAddress: '',
         },
-        queryParams: {
-          apiKey,
-        },
       });
       txEdit.stopEdit();
 
@@ -84,7 +107,7 @@ function Transactions() {
     } finally {
       setLoading(false);
     }
-  }, [apiKey, editTx, refresh, txEdit]);
+  }, [editTx, refresh, txEdit]);
 
   const handleCancelTx = useCallback(
     async (record: IScheduledForUser) => {
@@ -140,6 +163,8 @@ function Transactions() {
       onSave={handleSave}
       onCancelTx={handleCancelTx}
       onOpenAddAssetModal={handleOpenAddAssetModal}
+      onChange={refresh}
+      paggination={pagginationParams}
     />
   )) ||
     (isLg && (
@@ -154,6 +179,8 @@ function Transactions() {
         onSave={handleSave}
         onCancelTx={handleCancelTx}
         onOpenAddAssetModal={handleOpenAddAssetModal}
+        onChange={refresh}
+        paggination={pagginationParams}
       />
     )) || <TransactionList items={items} loading={loading} />;
 

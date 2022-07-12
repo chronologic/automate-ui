@@ -4,7 +4,7 @@ import { notification } from 'antd';
 
 import { API_URL } from '../env';
 import { IBatchUpdateNotes, IScheduledForUser, Status } from '../types';
-import { IScheduleAccessKey, IScheduleParams, IScheduleRequest } from './SentinelAPI';
+import { IGetListParams, IScheduleAccessKey, IScheduleParams, IScheduleRequest } from './SentinelAPI';
 import { withErrorHandler } from './withErrorHandler';
 
 const api = axios.create({
@@ -12,22 +12,28 @@ const api = axios.create({
 });
 
 export const TransactionAPI = {
-  list: withErrorHandler(async (apiKey: string): Promise<IScheduledForUser[]> => {
-    const response = await api.get('/transactions', {
+  list: withErrorHandler(async (apiKey: string, params: IGetListParams): Promise<[IScheduledForUser[], number]> => {
+    const response = await api.get(`/transactions`, {
+      params,
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
     });
-    const items = response.data.items as IScheduledForUser[];
+    console.log(JSON.stringify(response.data.result));
 
-    return items.map((i) => {
-      i.statusName = Status[i.status];
+    const items = response.data.items[0] as IScheduledForUser[];
 
-      return i;
-    });
+    return [
+      items.map((i) => {
+        i.statusName = Status[i.status];
+
+        return i;
+      }),
+      response.data.items[1],
+    ];
   }),
   edit: withErrorHandler(
-    async (apiKey: string, request: IScheduleRequest, queryParams?: IScheduleParams): Promise<IScheduledForUser> => {
+    async (apiKey: string, request: IScheduleRequest, queryParams?: any): Promise<IScheduledForUser> => {
       const params = queryParams ? `?${queryString.stringify(queryParams)}` : '';
       const response = await api.post(`/transactions${params}`, request, {
         headers: {
