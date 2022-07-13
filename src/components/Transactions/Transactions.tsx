@@ -24,11 +24,14 @@ function Transactions() {
   const [items, setItems] = useState<IScheduledForUser[]>([]);
   const [total, setTotal] = useState(0);
 
-  const paginationParams: {
+  interface IPaginationParams {
+    current?: number;
     pageSize: number;
     showSizeChanger: boolean;
     total: number;
-  } = {
+  }
+
+  const pagination: IPaginationParams = {
     pageSize: txPerPage,
     showSizeChanger: false,
     total: total,
@@ -44,24 +47,25 @@ function Transactions() {
   }, [items]);
 
   const refresh = useCallback(
-    async (pagination?: any) => {
+    async (pagination?: IPaginationParams) => {
       let currentPage = 1;
       if (pagination) {
-        currentPage = pagination.current;
+        currentPage = pagination.current!;
       }
 
       try {
         setLoading(true);
+
         const res = await getList(apiKey, {
           index: currentPage,
           size: txPerPage,
         });
 
-        setItems(res[0]);
-        setTotal(res[1]);
+        setTotal(res.total);
+        setItems(res.items);
 
         const resAssetOptions: IAssetStorageItem[] = [
-          ...res[0].map(
+          ...res.items.map(
             (item) =>
               ({
                 assetType: item.assetType,
@@ -71,7 +75,7 @@ function Transactions() {
                 name: item.conditionAssetName,
               } as IAssetStorageItem)
           ),
-          ...res[0].map(
+          ...res.items.map(
             (item) =>
               ({
                 assetType: item.assetType,
@@ -167,7 +171,7 @@ function Transactions() {
       onCancelTx={handleCancelTx}
       onOpenAddAssetModal={handleOpenAddAssetModal}
       onChange={refresh}
-      pagination={paginationParams}
+      pagination={pagination}
     />
   )) ||
     (isLg && (
@@ -183,7 +187,7 @@ function Transactions() {
         onCancelTx={handleCancelTx}
         onOpenAddAssetModal={handleOpenAddAssetModal}
         onChange={refresh}
-        pagination={paginationParams}
+        pagination={pagination}
       />
     )) || <TransactionList items={items} loading={loading} />;
 
