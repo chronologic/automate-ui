@@ -19,27 +19,8 @@ function Transactions() {
   const { assetOptions, addAssets } = useAssetOptions();
   const addAssetModal = useAddAssetModal();
   const txEdit = useTxEdit();
-  const txPerPage = 50;
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<IScheduledForUser[]>([]);
-  const [total, setTotal] = useState(0);
-
-  interface IPaginationParams {
-    current?: number;
-    pageSize: number;
-    showSizeChanger: boolean;
-    total: number;
-  }
-  interface ISorterParams {
-    field: string;
-    order: string;
-  }
-
-  const pagination: IPaginationParams = {
-    pageSize: txPerPage,
-    showSizeChanger: false,
-    total: total,
-  };
 
   const apiKey = useMemo(() => {
     const queryParams = queryString.parseUrl(window.location.href);
@@ -50,62 +31,38 @@ function Transactions() {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
-  const refresh = useCallback(
-    async (pagination?: IPaginationParams, filters?, sorter?, extra?) => {
-      let currentPage = 1;
-      let sortColumn = '';
-      let sortDirection = '';
-
-      if (sorter) {
-        sortColumn = sorter.field;
-        sortDirection = sorter.order + 'ing';
-      }
-      if (pagination) {
-        currentPage = pagination.current!;
-      }
-
-      try {
-        setLoading(true);
-
-        const res = await getList(apiKey, {
-          index: currentPage,
-          size: txPerPage,
-          sortCol: sortColumn,
-          sortDir: sortDirection,
-        });
-
-        setTotal(res.total);
-        setItems(res.items);
-
-        const resAssetOptions: IAssetStorageItem[] = [
-          ...res.items.map(
-            (item) =>
-              ({
-                assetType: item.assetType,
-                chainId: item.chainId,
-                address: item.conditionAsset,
-                decimals: item.conditionAssetDecimals,
-                name: item.conditionAssetName,
-              } as IAssetStorageItem)
-          ),
-          ...res.items.map(
-            (item) =>
-              ({
-                assetType: item.assetType,
-                chainId: item.chainId,
-                address: item.assetContract,
-                decimals: item.assetDecimals,
-                name: item.assetName,
-              } as IAssetStorageItem)
-          ),
-        ];
-        addAssets(resAssetOptions);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [addAssets, apiKey, getList]
-  );
+  const refresh = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getList(apiKey);
+      setItems(res);
+      const resAssetOptions: IAssetStorageItem[] = [
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.conditionAsset,
+              decimals: item.conditionAssetDecimals,
+              name: item.conditionAssetName,
+            } as IAssetStorageItem)
+        ),
+        ...res.map(
+          (item) =>
+            ({
+              assetType: item.assetType,
+              chainId: item.chainId,
+              address: item.assetContract,
+              decimals: item.assetDecimals,
+              name: item.assetName,
+            } as IAssetStorageItem)
+        ),
+      ];
+      addAssets(resAssetOptions);
+    } finally {
+      setLoading(false);
+    }
+  }, [addAssets, apiKey, getList]);
 
   const handleSave = useCallback(async () => {
     try {
@@ -183,8 +140,6 @@ function Transactions() {
       onSave={handleSave}
       onCancelTx={handleCancelTx}
       onOpenAddAssetModal={handleOpenAddAssetModal}
-      onChange={refresh}
-      pagination={pagination}
     />
   )) ||
     (isLg && (
@@ -199,8 +154,6 @@ function Transactions() {
         onSave={handleSave}
         onCancelTx={handleCancelTx}
         onOpenAddAssetModal={handleOpenAddAssetModal}
-        onChange={refresh}
-        pagination={pagination}
       />
     )) || <TransactionList items={items} loading={loading} />;
 
@@ -222,7 +175,7 @@ function Transactions() {
               {formatCurrency(totalGasSavings)}
             </Typography.Title>
           </div>
-          */}
+  */}
         </TableHeader>
         <Alert
           message={
@@ -253,7 +206,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-
   .alert-txt {
     color: rgba(0, 0, 0, 0.85);
   }
@@ -275,11 +227,9 @@ const TableContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
-
   .table {
     width: 100%;
   }
-
   .ant-table.ant-table-small .ant-table-thead > tr > th,
   .ant-table.ant-table-small .ant-table-tbody > tr > td {
     padding: 4px 4px;
@@ -292,7 +242,6 @@ const TableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
   .title.title {
     font-weight: 300;
     margin-top: 0;
@@ -306,11 +255,9 @@ const TableHeader = styled.div`
     margin-left: 8px;
     color: ${(props) => props.theme.colors.accent};
   }
-
   @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     justify-content: center;
     margin-bottom: 16px;
-
     .title.header {
       display: none;
     }
