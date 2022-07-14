@@ -51,14 +51,14 @@ function Transactions() {
   }, [items]);
 
   const refresh = useCallback(
-    async (pagination?: IPaginationParams, sorter?: ISorterParams) => {
+    async (pagination?: IPaginationParams, filters?, sorter?, extra?) => {
       let currentPage = 1;
       let sortColumn = '';
-      let sortAscending = '';
+      let sortDirection = '';
 
       if (sorter) {
         sortColumn = sorter.field;
-        sortAscending = sorter.order;
+        sortDirection = sorter.order + 'ing';
       }
       if (pagination) {
         currentPage = pagination.current!;
@@ -66,11 +66,12 @@ function Transactions() {
 
       try {
         setLoading(true);
+
         const res = await getList(apiKey, {
           index: currentPage,
           size: txPerPage,
-          query: sortColumn,
-          ascend: sortAscending,
+          sortCol: sortColumn,
+          sortDir: sortDirection,
         });
 
         setTotal(res.total);

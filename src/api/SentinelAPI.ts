@@ -67,8 +67,8 @@ export interface IScheduleParams {
 export interface IGetListParams {
   index?: number;
   size?: number;
-  query?: string;
-  ascend?: string;
+  sortCol?: string;
+  sortDir?: string;
 }
 
 export class SentinelAPI {
