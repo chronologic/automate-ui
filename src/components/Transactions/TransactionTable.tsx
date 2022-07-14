@@ -128,6 +128,7 @@ function TransactionTable({
 
 const Container = styled.div`
   width: 100%;
+
   .table {
     width: 100%;
   }

@@ -206,6 +206,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+
   .alert-txt {
     color: rgba(0, 0, 0, 0.85);
   }
@@ -227,9 +228,11 @@ const TableContainer = styled.div`
   flex-direction: column;
   align-items: center;
   margin: 0 auto;
+
   .table {
     width: 100%;
   }
+
   .ant-table.ant-table-small .ant-table-thead > tr > th,
   .ant-table.ant-table-small .ant-table-tbody > tr > td {
     padding: 4px 4px;
@@ -242,6 +245,7 @@ const TableHeader = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+
   .title.title {
     font-weight: 300;
     margin-top: 0;
@@ -255,9 +259,11 @@ const TableHeader = styled.div`
     margin-left: 8px;
     color: ${(props) => props.theme.colors.accent};
   }
+
   @media (max-width: ${SCREEN_BREAKPOINT.SM}px) {
     justify-content: center;
     margin-bottom: 16px;
+
     .title.header {
       display: none;
     }
