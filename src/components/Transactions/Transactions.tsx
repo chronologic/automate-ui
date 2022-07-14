@@ -30,6 +30,10 @@ function Transactions() {
     showSizeChanger: boolean;
     total: number;
   }
+  interface ISorterParams {
+    field: string;
+    order: string;
+  }
 
   const pagination: IPaginationParams = {
     pageSize: txPerPage,
@@ -47,18 +51,26 @@ function Transactions() {
   }, [items]);
 
   const refresh = useCallback(
-    async (pagination?: IPaginationParams) => {
+    async (pagination?: IPaginationParams, sorter?: ISorterParams) => {
       let currentPage = 1;
+      let sortColumn = '';
+      let sortAscending = '';
+
+      if (sorter) {
+        sortColumn = sorter.field;
+        sortAscending = sorter.order;
+      }
       if (pagination) {
         currentPage = pagination.current!;
       }
 
       try {
         setLoading(true);
-
         const res = await getList(apiKey, {
           index: currentPage,
           size: txPerPage,
+          query: sortColumn,
+          ascend: sortAscending,
         });
 
         setTotal(res.total);

@@ -68,6 +68,7 @@ export interface IGetListParams {
   index?: number;
   size?: number;
   query?: string;
+  ascend?: string;
 }
 
 export class SentinelAPI {
