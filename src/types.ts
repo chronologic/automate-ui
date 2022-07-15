@@ -229,3 +229,8 @@ export interface IBatchUpdateNotes {
   transactionHash: string;
   notes: string;
 }
+
+export interface ITxListParams {
+  items: IScheduledForUser[];
+  total: number;
+}

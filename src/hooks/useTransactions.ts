@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 
 import { TransactionAPI } from '../api';
-import { IScheduleAccessKey, IScheduleParams, IScheduleRequest } from '../api/SentinelAPI';
+import { IGetListParams, IScheduleAccessKey, IScheduleParams, IScheduleRequest } from '../api/SentinelAPI';
 import { IBatchUpdateNotes } from '../types';
 
 import { useAuth } from './useAuth';
@@ -10,8 +10,8 @@ export function useTransactions() {
   const { user } = useAuth();
 
   const handleGetTransactionList = useCallback(
-    async (apiKey?: string) => {
-      const res = await TransactionAPI.list(apiKey || user?.apiKey);
+    async (apiKey: string, params: IGetListParams) => {
+      const res = await TransactionAPI.list(apiKey || user?.apiKey, params);
 
       return res;
     },
