@@ -3,7 +3,16 @@ import { ethers } from 'ethers';
 import { BigNumber, Transaction } from 'ethers';
 import queryString from 'query-string';
 
-import { AssetType, IAsset, IDecodedTransaction, IError, IScheduledForUser, PolkadotChainId, Status } from '../types';
+import {
+  AssetType,
+  IAsset,
+  IDecodedTransaction,
+  ITxListParams,
+  IError,
+  IScheduledForUser,
+  PolkadotChainId,
+  Status,
+} from '../types';
 import { API_URL } from '../env';
 import PolkadotAPI from './PolkadotAPI';
 import { TokenAPI } from './TokenAPI';
@@ -248,16 +257,20 @@ export class SentinelAPI {
     }
   }
 
-  public static async getList(apiKey: string, request: IGetListParams): Promise<IScheduledForUser[]> {
+  public static async getList(apiKey: string, request: IGetListParams): Promise<ITxListParams> {
     const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`, { params: request });
 
-    const items = response.data.items as IScheduledForUser[];
+    const item = response.data.items.items as IScheduledForUser[];
+    const totalTx = response.data.items.total as number;
 
-    return items.map((i) => {
-      i.statusName = Status[i.status];
+    return {
+      items: item.map((i) => {
+        i.statusName = Status[i.status];
 
-      return i;
-    });
+        return i;
+      }),
+      total: totalTx,
+    };
   }
 
   private static API_URL: string = API_URL + '/scheduled';
