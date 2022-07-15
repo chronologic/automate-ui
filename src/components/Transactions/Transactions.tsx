@@ -213,6 +213,7 @@ function Transactions() {
           <Typography.Title className="title header" level={5}>
             Transaction list
           </Typography.Title>
+          {/*
           <div className="savingsContainer">
             <Typography.Title className="title" level={5}>
               Total gas savings:
@@ -221,6 +222,7 @@ function Transactions() {
               {formatCurrency(totalGasSavings)}
             </Typography.Title>
           </div>
+          */}
         </TableHeader>
         <Alert
           message={
