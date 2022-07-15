@@ -50,15 +50,29 @@ function Transactions() {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
+  function handleSort(sortCol: string, sortOrder: string): ISorterParams {
+    if (sortOrder) {
+      return {
+        field: sortCol,
+        order: sortOrder + 'ing',
+      };
+    }
+    return {
+      field: '',
+      order: '',
+    };
+  }
+
   const refresh = useCallback(
-    async (pagination?: IPaginationParams, filters?, sorter?, extra?) => {
+    async (pagination?: IPaginationParams, filters?, sorter?: ISorterParams, extra?) => {
       let currentPage = 1;
       let sortColumn = '';
       let sortDirection = '';
 
       if (sorter) {
-        sortColumn = sorter.field;
-        sortDirection = sorter.order + 'ing';
+        const sortResult = handleSort(sorter.field, sorter.order);
+        sortColumn = sortResult.field;
+        sortDirection = sortResult.order;
       }
       if (pagination) {
         currentPage = pagination.current!;
