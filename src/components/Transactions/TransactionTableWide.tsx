@@ -17,8 +17,6 @@ interface IProps {
   onSave: () => void;
   onCancelTx: (record: IScheduledForUser) => void;
   onOpenAddAssetModal: () => void;
-  onChange: () => void;
-  pagination: any;
 }
 
 function TransactionTableWide({
@@ -32,8 +30,6 @@ function TransactionTableWide({
   onSave,
   onCancelTx,
   onOpenAddAssetModal,
-  onChange,
-  pagination,
 }: IProps) {
   const columns = useMemo(() => {
     return [
@@ -104,8 +100,7 @@ function TransactionTableWide({
         columns={columns}
         dataSource={items}
         loading={loading}
-        pagination={pagination}
-        onChange={onChange}
+        pagination={{ defaultPageSize: 100, showSizeChanger: false }}
       />
     </Container>
   );

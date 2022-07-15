@@ -17,8 +17,6 @@ interface IProps {
   onSave: () => void;
   onCancelTx: (record: IScheduledForUser) => void;
   onOpenAddAssetModal: () => void;
-  onChange: () => void;
-  pagination: any;
 }
 
 function TransactionTable({
@@ -32,8 +30,6 @@ function TransactionTable({
   onSave,
   onCancelTx,
   onOpenAddAssetModal,
-  onChange,
-  pagination,
 }: IProps) {
   const [expandedRowKeys, setExpandedRowKeys] = useState<string[]>([]);
 
@@ -124,8 +120,7 @@ function TransactionTable({
           onExpandedRowsChange: handleExpandedRowKeysChange as any,
         }}
         loading={loading}
-        pagination={pagination}
-        onChange={onChange}
+        pagination={{ defaultPageSize: 100, showSizeChanger: false }}
       />
     </Container>
   );

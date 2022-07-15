@@ -64,13 +64,6 @@ export interface IScheduleParams {
   draft?: boolean;
 }
 
-export interface IGetListParams {
-  index?: number;
-  size?: number;
-  sortCol?: string;
-  sortDir?: string;
-}
-
 export class SentinelAPI {
   public static async schedule(
     request: IScheduleRequest,
@@ -248,8 +241,8 @@ export class SentinelAPI {
     }
   }
 
-  public static async getList(apiKey: string, request: IGetListParams): Promise<IScheduledForUser[]> {
-    const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`, { params: request });
+  public static async getList(apiKey: string): Promise<IScheduledForUser[]> {
+    const response = await axios.get(`${this.API_URL_LIST}?apiKey=${apiKey}`);
 
     const items = response.data.items as IScheduledForUser[];
 
