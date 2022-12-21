@@ -24,8 +24,6 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
   const timeConditionForTz = hasTimeCondition ? (timeConditionLocal as any).clone().tz(timeConditionTZ) : '';
   const timeConditionTime = timeConditionForTz || moment().startOf('day');
 
-  console.log({ timeConditionTZ, tzGuess });
-
   const [editedDate, setEditedDate] = useState<moment.Moment>(timeConditionForTz);
   const [editedTime, setEditedTime] = useState<moment.Moment>(timeConditionForTz);
   const [editedTz, setEditedTz] = useState(timeConditionTZ || tzGuess);
@@ -34,14 +32,15 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
     (date) => {
       setEditedDate(date);
       if (!date || !editedTz) {
-        console.log('DATE EMPTY');
         onChange(defaultValues);
       } else {
-        console.log('DATE CALC');
         const dateStr = moment(date).format('YYYY.MM.DD');
-        const timeStr = editedTime ? moment(editedTime).format('HH:mm') : '12:00';
-        const newDate = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTz).toDate().getTime();
+        const timeStr = editedTime ? moment(editedTime).format('HH:mm') : '00:00';
+        const newMoment = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTz);
+        const newDate = newMoment.toDate().getTime();
         onChange({ timeCondition: newDate, timeConditionTZ: editedTz });
+        setEditedDate(newMoment);
+        setEditedTime(newMoment);
       }
     },
     [editedTime, editedTz, onChange]
@@ -77,8 +76,6 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
     [editedDate, editedTime, editedTz, onChange]
   );
 
-  console.log(timeConditionTZ);
-
   if (editing && canEdit) {
     return (
       <>
@@ -93,7 +90,7 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
         <br />
         <Select
           showSearch={true}
-          value={timeConditionTZ}
+          defaultValue={editedTz}
           style={{ minWidth: '120px' }}
           onChange={handleTimeConditionTZChange}
         >
