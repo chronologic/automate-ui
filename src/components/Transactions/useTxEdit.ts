@@ -39,6 +39,7 @@ function stopEdit() {
 
 function updateTx(partial: Partial<IScheduledForUser>) {
   const { tx }: ITxEditStoreState = useTxEditStore.getState();
+  console.log('AAAAAAAAAA', partial, tx);
 
   const oldDecimals = tx?.conditionAssetDecimals || 18;
   const newDecimals = partial.conditionAssetDecimals || 18;

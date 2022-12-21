@@ -15,6 +15,8 @@ const defaultValues = {
   timeConditionTZ: '',
 };
 
+const tzGuess = moment.tz.guess();
+
 function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onChange }: IProps) {
   // eslint-disable-next-line eqeqeq
   const hasTimeCondition = timeCondition && timeCondition != 0;
@@ -22,18 +24,22 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
   const timeConditionForTz = hasTimeCondition ? (timeConditionLocal as any).clone().tz(timeConditionTZ) : '';
   const timeConditionTime = timeConditionForTz || moment().startOf('day');
 
+  console.log({ timeConditionTZ, tzGuess });
+
   const [editedDate, setEditedDate] = useState<moment.Moment>(timeConditionForTz);
   const [editedTime, setEditedTime] = useState<moment.Moment>(timeConditionForTz);
-  const [editedTz, setEditedTz] = useState(timeConditionTZ);
+  const [editedTz, setEditedTz] = useState(timeConditionTZ || tzGuess);
 
   const handleDateChange = useCallback(
     (date) => {
       setEditedDate(date);
-      if (!date || !editedTime || !editedTz) {
+      if (!date || !editedTz) {
+        console.log('DATE EMPTY');
         onChange(defaultValues);
       } else {
+        console.log('DATE CALC');
         const dateStr = moment(date).format('YYYY.MM.DD');
-        const timeStr = moment(editedTime).format('HH:mm');
+        const timeStr = editedTime ? moment(editedTime).format('HH:mm') : '12:00';
         const newDate = moment.tz(`${dateStr} ${timeStr}`, 'YYYY.MM.DD HH:mm', editedTz).toDate().getTime();
         onChange({ timeCondition: newDate, timeConditionTZ: editedTz });
       }
@@ -71,6 +77,8 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
     [editedDate, editedTime, editedTz, onChange]
   );
 
+  console.log(timeConditionTZ);
+
   if (editing && canEdit) {
     return (
       <>
@@ -85,7 +93,7 @@ function TimeCondition({ editing, canEdit, timeCondition, timeConditionTZ, onCha
         <br />
         <Select
           showSearch={true}
-          defaultValue={timeConditionTZ || moment.tz.guess()}
+          value={timeConditionTZ}
           style={{ minWidth: '120px' }}
           onChange={handleTimeConditionTZChange}
         >

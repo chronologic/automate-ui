@@ -13,6 +13,17 @@ import TransactionList from './TransactionList';
 import { useTxEdit } from './useTxEdit';
 import TransactionTableWide from './TransactionTableWide';
 
+interface IPaginationParams {
+  current?: number;
+  pageSize: number;
+  showSizeChanger: boolean;
+  total: number;
+}
+interface ISorterParams {
+  field: string;
+  order: string;
+}
+
 function Transactions() {
   const { isLg, isXxl } = useScreen();
   const { getList, editTx, cancelTx } = useTransactions();
@@ -24,23 +35,6 @@ function Transactions() {
   const [items, setItems] = useState<IScheduledForUser[]>([]);
   const [total, setTotal] = useState(0);
 
-  interface IPaginationParams {
-    current?: number;
-    pageSize: number;
-    showSizeChanger: boolean;
-    total: number;
-  }
-  interface ISorterParams {
-    field: string;
-    order: string;
-  }
-
-  const pagination: IPaginationParams = {
-    pageSize: txPerPage,
-    showSizeChanger: false,
-    total: total,
-  };
-
   const apiKey = useMemo(() => {
     const queryParams = queryString.parseUrl(window.location.href);
     return queryParams.query?.apiKey as string;
@@ -50,18 +44,14 @@ function Transactions() {
     return items.reduce((sum: any, item) => sum + (item.gasSaved || 0), 0);
   }, [items]);
 
-  function handleSort(sortCol: string, sortOrder: string): ISorterParams {
-    if (sortOrder) {
-      return {
-        field: sortCol,
-        order: sortOrder + 'ing',
-      };
-    }
-    return {
-      field: '',
-      order: '',
-    };
-  }
+  const pagination: IPaginationParams = useMemo(
+    () => ({
+      pageSize: txPerPage,
+      showSizeChanger: false,
+      total: total,
+    }),
+    [total]
+  );
 
   const refresh = useCallback(
     async (pagination?: IPaginationParams, filters?, sorter?: ISorterParams, extra?) => {
@@ -259,6 +249,19 @@ function Transactions() {
       <TableContainer>{transactionsComponent}</TableContainer>
     </Container>
   );
+}
+
+function handleSort(sortCol: string, sortOrder: string): ISorterParams {
+  if (sortOrder) {
+    return {
+      field: sortCol,
+      order: sortOrder + 'ing',
+    };
+  }
+  return {
+    field: '',
+    order: '',
+  };
 }
 
 const Container = styled.div`
