@@ -6,7 +6,7 @@ import Web3 from 'web3';
 
 import { PaymentAPI } from '../../api';
 import { useAuth, useMetamask } from '../../hooks';
-import { ethereum } from '../../constants';
+import { ethereum, ChainId } from '../../constants';
 import { ERC20 } from '../../api/erc20';
 
 interface IModalProps {
@@ -42,7 +42,7 @@ function BuyCreditsModal({ children }: IModalProps) {
     setLoading(true);
     try {
       const { account } = await connect();
-      await changeNetwork(1);
+      await changeNetwork(ChainId.ethereum);
       await PaymentAPI.initialize(user.apiKey, account!);
       const amountDay = ethers.utils.parseEther(`${credits}`);
       await dayContract.methods.transfer(paymentAddress, amountDay).send({ from: account });

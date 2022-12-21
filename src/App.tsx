@@ -20,6 +20,7 @@ import {
   CallToAction,
   ResetPassword,
   BatchTx,
+  Sweep,
 } from './components';
 import { Providers } from './Providers';
 import GlobalStyle from './GlobalStyle';
@@ -79,6 +80,9 @@ function App() {
               <PrivateRoute path="/batch">
                 <BatchTx />
               </PrivateRoute>
+              <Route path="/sweep">
+                <Sweep />
+              </Route>
               <Route path="/login" component={Auth} />
               <Route path="/resetPassword" component={ResetPassword} />
               <Route path="/scheduleds" component={Transactions} />

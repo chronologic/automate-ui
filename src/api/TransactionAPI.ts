@@ -3,8 +3,8 @@ import queryString from 'query-string';
 import { notification } from 'antd';
 
 import { API_URL } from '../env';
-import { IBatchUpdateNotes, IScheduledForUser, Status } from '../types';
-import { IScheduleAccessKey, IScheduleParams, IScheduleRequest } from './SentinelAPI';
+import { IBatchUpdateNotes, IScheduledForUser, ITxListParams, Status } from '../types';
+import { IGetListParams, IScheduleAccessKey, IScheduleParams, IScheduleRequest } from './SentinelAPI';
 import { withErrorHandler } from './withErrorHandler';
 
 const api = axios.create({
@@ -12,20 +12,36 @@ const api = axios.create({
 });
 
 export const TransactionAPI = {
-  list: withErrorHandler(async (apiKey: string): Promise<IScheduledForUser[]> => {
-    const response = await api.get('/transactions', {
+  list: withErrorHandler(async (apiKey: string, params: IGetListParams): Promise<ITxListParams> => {
+    const response = await api.get(`/transactions`, {
+      params,
       headers: {
         Authorization: `Bearer ${apiKey}`,
       },
     });
-    const items = response.data.items as IScheduledForUser[];
 
-    return items.map((i) => {
-      i.statusName = Status[i.status];
+    const item = response.data.items.items as IScheduledForUser[];
+    const totalTx = response.data.items.total as number;
 
-      return i;
-    });
+    return {
+      items: item.map((i) => {
+        i.statusName = Status[i.status];
+
+        return i;
+      }),
+      total: totalTx,
+    };
   }),
+  count: withErrorHandler(async (apiKey: string): Promise<number> => {
+    const response = await api.get(`/transactions/count`, {
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    return response.data;
+  }),
+
   edit: withErrorHandler(
     async (apiKey: string, request: IScheduleRequest, queryParams?: IScheduleParams): Promise<IScheduledForUser> => {
       const params = queryParams ? `?${queryString.stringify(queryParams)}` : '';

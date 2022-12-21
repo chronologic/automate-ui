@@ -7,7 +7,9 @@ import BatchSeparator from './BatchDelimiter';
 import BatchAsset from './BatchAsset';
 import BatchCsv from './BatchCsv';
 import BatchPreview from './BatchPreview';
+import BatchTotalAmount from './BatchTotalAmount';
 import BatchExecute from './BatchExecute';
+import BatchNetwork from './BatchNetwork';
 
 function BatchTx() {
   return (
@@ -17,9 +19,11 @@ function BatchTx() {
       </Typography.Title>
       <BatchColumns />
       <BatchSeparator />
+      <BatchNetwork />
       <BatchAsset />
       <BatchCsv />
       <BatchPreview />
+      <BatchTotalAmount />
       <BatchExecute />
     </Container>
   );

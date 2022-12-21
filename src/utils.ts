@@ -1,5 +1,6 @@
 import { BigNumber, ethers, utils } from 'ethers';
 import { parseUrl } from 'query-string';
+
 import { ChainId } from './constants';
 
 const DEFAULT_USER_SOURCE = 'magic';

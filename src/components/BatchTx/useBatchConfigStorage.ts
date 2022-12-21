@@ -1,5 +1,6 @@
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
+import { Network } from '../../constants';
 
 import { IAssetStorageItem } from '../../hooks';
 
@@ -7,6 +8,7 @@ export type BatchColumn = 'address' | 'amount' | 'notes' | 'gasPrice' | 'gasLimi
 export type BatchDelimiter = 'tab' | 'comma';
 
 interface IBatchConfigStorageState {
+  network: Network;
   columns: BatchColumn[];
   delimiter: BatchDelimiter;
   asset?: IAssetStorageItem;
@@ -19,6 +21,7 @@ interface IBatchConfigStorageMethods {
 interface IBatchConfigStorageHook extends IBatchConfigStorageState, IBatchConfigStorageMethods {}
 
 const defaultState: IBatchConfigStorageState = {
+  network: Network.ethereum,
   columns: ['address', 'amount', 'notes'],
   delimiter: 'tab',
   asset: undefined,

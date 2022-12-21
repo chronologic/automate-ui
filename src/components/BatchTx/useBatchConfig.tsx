@@ -1,7 +1,8 @@
 import { ethers } from 'ethers';
-import { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import create from 'zustand';
 
+import { ChainId, Network } from '../../constants';
 import { IAssetStorageItem } from '../../hooks';
 
 import {
@@ -10,6 +11,13 @@ import {
   useBatchConfigStorage,
   useBatchConfigStorageStore,
 } from './useBatchConfigStorage';
+
+export interface IBatchNetworkConfig {
+  name: Network;
+  chainId: ChainId;
+  label: string;
+  icon: React.ReactNode;
+}
 
 export interface IBatchColumnConfig {
   name: BatchColumn;
@@ -23,6 +31,23 @@ interface IBatchDelimiterConfig {
   label: string;
   symbol: string;
 }
+
+const batchNetworks: {
+  [name in Network]?: IBatchNetworkConfig;
+} = {
+  [Network.ethereum]: {
+    name: Network.ethereum,
+    chainId: ChainId.ethereum,
+    label: 'Ethereum',
+    icon: <img alt="Ethereum" src="/assets/eth.svg" width="36" height="36" />,
+  },
+  [Network.arbitrum]: {
+    name: Network.arbitrum,
+    chainId: ChainId.arbitrum,
+    label: 'Arbitrum',
+    icon: <img alt="Arbitrum" src="/assets/arbitrum.svg" width="36" height="36" />,
+  },
+};
 
 const batchColumns: {
   [name in BatchColumn]: IBatchColumnConfig;
@@ -38,7 +63,7 @@ const batchColumns: {
     label: 'Amount',
     canDeselect: false,
     parser: (amount: string, { asset }: { asset: IAssetStorageItem }) =>
-      ethers.utils.parseUnits(amount.split(',').join(''), asset.decimals).toString(),
+      ethers.utils.parseUnits(amount.split(',').join('').split('$').join(''), asset.decimals).toString(),
   },
   notes: {
     name: 'notes',
@@ -76,6 +101,8 @@ const batchDelimiters: {
 };
 
 export interface IBatchConfigState {
+  networks: IBatchNetworkConfig[];
+  selectedNetwork?: IBatchNetworkConfig;
   columns: IBatchColumnConfig[];
   selectedColumns: IBatchColumnConfig[];
   delimiters: IBatchDelimiterConfig[];
@@ -85,6 +112,7 @@ export interface IBatchConfigState {
 }
 
 interface IBatchConfigMethods {
+  selectNetwork: (network: Network) => void;
   selectDelimiter: (delimiter: BatchDelimiter) => void;
   selectColumns: (names: BatchColumn[]) => void;
   selectAsset: (asset: IAssetStorageItem) => void;
@@ -93,6 +121,8 @@ interface IBatchConfigMethods {
 interface IBatchConfigHook extends IBatchConfigState, IBatchConfigMethods {}
 
 const defaultState: IBatchConfigState = {
+  networks: Object.keys(batchNetworks).map((name) => batchNetworks[name as Network]!),
+  selectedNetwork: undefined,
   columns: [],
   selectedColumns: [],
   delimiters: Object.keys(batchDelimiters).map((name) => batchDelimiters[name as BatchDelimiter]),
@@ -107,6 +137,12 @@ const useBatchConfig = (): IBatchConfigHook => {
   const storageState = useBatchConfigStorage();
   const state = useBatchConfigStore();
 
+  const selectNetwork = useCallback((network: Network) => {
+    useBatchConfigStorageStore.setState({ network });
+    useBatchConfigStore.setState({ selectedNetwork: batchNetworks[network] });
+    useBatchConfigStorageStore.setState({ asset: undefined });
+  }, []);
+
   const selectDelimiter = useCallback((delimiter: BatchDelimiter) => {
     useBatchConfigStorageStore.setState({ delimiter });
   }, []);
@@ -116,10 +152,13 @@ const useBatchConfig = (): IBatchConfigHook => {
   }, []);
 
   const selectAsset = useCallback((asset: IAssetStorageItem) => {
-    console.log('selectasset', asset);
     useBatchConfigStorageStore.setState({ asset });
     useBatchConfigStore.setState({ selectedAsset: asset });
   }, []);
+
+  useEffect(() => {
+    useBatchConfigStore.setState({ selectedNetwork: batchNetworks[storageState.network] });
+  }, [storageState.network]);
 
   useEffect(() => {
     const allColumnNames = Object.keys(batchColumns) as BatchColumn[];
@@ -144,12 +183,18 @@ const useBatchConfig = (): IBatchConfigHook => {
   }, [storageState.asset]);
 
   useEffect(() => {
-    const isValidConfig = !!(state.selectedColumns.length > 0 && state.selectedDelimiter && state.selectedAsset);
+    const isValidConfig = !!(
+      state.selectedNetwork &&
+      state.selectedColumns.length > 0 &&
+      state.selectedDelimiter &&
+      state.selectedAsset
+    );
     useBatchConfigStore.setState({ isValidConfig });
-  }, [state.selectedAsset, state.selectedColumns.length, state.selectedDelimiter]);
+  }, [state.selectedAsset, state.selectedColumns.length, state.selectedDelimiter, state.selectedNetwork]);
 
   return {
     ...state,
+    selectNetwork,
     selectColumns,
     selectDelimiter,
     selectAsset,

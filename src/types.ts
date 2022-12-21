@@ -191,6 +191,8 @@ export interface IStrategyPrepTx {
 
 export interface IStrategyPrepTxWithConditions extends IStrategyPrepTx {
   order: number;
+  iteration: number;
+  position: number;
   isLastForNonce?: boolean;
   priority: number;
   conditionAsset?: string;
@@ -226,4 +228,9 @@ export interface IAutomateConnectionParams {
 export interface IBatchUpdateNotes {
   transactionHash: string;
   notes: string;
+}
+
+export interface ITxListParams {
+  items: IScheduledForUser[];
+  total: number;
 }

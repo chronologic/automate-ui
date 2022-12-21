@@ -145,6 +145,8 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-input-group-addon {
     color: ${(props) => props.theme.colors.text};
+    background-color: ${(props) => props.theme.colors.accent};
+    border-color: ${(props) => props.theme.colors.accent};
   }
   .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
   .ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover {
@@ -188,6 +190,11 @@ const GlobalStyle = styled.div<IProps>`
       width: 100%;
     }
   }
+
+  .ant-empty-description {
+    color: ${(props) => props.theme.colors.text};
+  }
+
   .ant-slider-track,
   .ant-slider:hover .ant-slider-track {
     background-color: ${(props) => props.theme.colors.accent};
@@ -223,6 +230,9 @@ const GlobalStyle = styled.div<IProps>`
   }
   .ant-table-tbody > tr > td {
     border-color: ${(props) => props.theme.colors.border};
+  }
+  .ant-table-tbody > tr.ant-table-placeholder:hover > td {
+    background-color: ${(props) => props.theme.colors.weak};
   }
   .ant-table-footer {
     background-color: ${(props) => props.theme.colors.body};

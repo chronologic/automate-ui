@@ -5,7 +5,7 @@ import Web3 from 'web3';
 
 import ERC20ABI from '../../abi/ERC20.json';
 import { IBatchUpdateNotes } from '../../types';
-import { ethereum, Network } from '../../constants';
+import { ethereum, ETH_ADDRESS } from '../../constants';
 import { IAssetStorageItem, useAutomateConnection, useTransactions } from '../../hooks';
 import { useBatchConfig } from './useBatchConfig';
 import { ParsedTx, useBatchParser } from './useBatchParser';
@@ -29,7 +29,7 @@ const defaultState: IBatchExecuteState = {
 const useBatchExecuteStore = create<IBatchExecuteState>(() => defaultState);
 
 const useBatchExecute = (): IBatchExecuteHook => {
-  const { selectedAsset } = useBatchConfig();
+  const { selectedNetwork, selectedAsset } = useBatchConfig();
   const { isValid, parsedTxs } = useBatchParser();
   const { connect } = useAutomateConnection();
   const { batchUpdateNotes } = useTransactions();
@@ -43,7 +43,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
         throw new Error('Inputs are not valid');
       }
 
-      const { account } = await connect({ desiredNetwork: Network.ethereum });
+      const { account } = await connect({ desiredNetwork: selectedNetwork?.name! });
 
       const txHashes = await executeTxs(parsedTxs, account!, selectedAsset!);
 
@@ -62,7 +62,7 @@ const useBatchExecute = (): IBatchExecuteHook => {
     } finally {
       useBatchExecuteStore.setState({ loading: false });
     }
-  }, [batchUpdateNotes, connect, isValid, parsedTxs, selectedAsset]);
+  }, [batchUpdateNotes, connect, isValid, parsedTxs, selectedAsset, selectedNetwork?.name]);
 
   return {
     ...state,
@@ -71,16 +71,32 @@ const useBatchExecute = (): IBatchExecuteHook => {
 };
 
 async function executeTxs(txs: ParsedTx[], from: string, asset: IAssetStorageItem): Promise<string[]> {
-  const erc20Contract = new web3.eth.Contract(ERC20ABI as any, asset.address);
-  const promises = txs.map((tx) =>
-    erc20Contract.methods
-      .transfer(tx.address!.parsedValue, tx.amount!.parsedValue)
-      .send({ from, gasPrice: tx.gasPrice?.parsedValue, gasLimit: tx.gasLimit?.parsedValue })
-  );
+  const promises =
+    asset.address === ETH_ADDRESS ? buildEthTxPromises(txs, from) : buildErc20TxPromises(txs, from, asset);
 
   const res = await Promise.all(promises);
 
   return res.map((item) => item.transactionHash);
+}
+
+function buildErc20TxPromises(txs: ParsedTx[], from: string, asset: IAssetStorageItem): Promise<any>[] {
+  const erc20Contract = new web3.eth.Contract(ERC20ABI as any, asset.address);
+  return txs.map((tx) =>
+    erc20Contract.methods
+      .transfer(tx.address!.parsedValue, tx.amount!.parsedValue)
+      .send({ from, gasPrice: tx.gasPrice?.parsedValue, gasLimit: tx.gasLimit?.parsedValue })
+  );
+}
+
+function buildEthTxPromises(txs: ParsedTx[], from: string): Promise<any>[] {
+  return txs.map((tx) =>
+    web3.eth.sendTransaction({
+      from,
+      to: tx.address!.parsedValue,
+      value: tx.amount!.parsedValue,
+      gasPrice: tx.gasPrice?.parsedValue,
+    })
+  );
 }
 
 export { useBatchExecute, useBatchExecuteStore };

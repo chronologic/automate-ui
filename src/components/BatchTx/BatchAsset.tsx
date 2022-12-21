@@ -3,13 +3,12 @@ import { Typography } from 'antd';
 import styled from 'styled-components';
 
 import { AssetType } from '../../types';
-import { ChainId } from '../../constants';
 import { IAssetStorageItem } from '../../hooks';
 import AssetSelector from '../AssetSelector';
 import { useBatchConfig } from './useBatchConfig';
 
 function BatchAsset() {
-  const { selectedAsset, selectAsset } = useBatchConfig();
+  const { selectedAsset, selectAsset, selectedNetwork } = useBatchConfig();
 
   const handleChange = useCallback(
     (asset: IAssetStorageItem) => {
@@ -20,11 +19,12 @@ function BatchAsset() {
 
   return (
     <Container>
-      <Typography.Title level={4}>Pick transaction asset</Typography.Title>
+      <Typography.Title level={4}>Choose transaction asset</Typography.Title>
       <AssetSelector
         assetType={AssetType.Ethereum}
-        chainId={ChainId.ethereum}
+        chainId={selectedNetwork?.chainId!}
         address={selectedAsset?.address}
+        allowEth
         onChange={handleChange}
       />
     </Container>

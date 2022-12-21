@@ -14,7 +14,12 @@ export const MINUTE_MILLIS = 60 * SECOND_MILLIS;
 
 export const ethereum = (window as any).ethereum as MetaMaskInpageProvider;
 
+export const ETH_ADDRESS = 'eth';
+
 export const strategyPathKey = 'strategyPath';
+
+export const MAGIC_ADDRESS = '0x539bdE0d7Dbd336b79148AA742883198BBF60342';
+export const MAGIC_DECIMAL_UNIT = 'ether';
 
 export enum Network {
   none = 'none',
