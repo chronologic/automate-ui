@@ -41,7 +41,7 @@ function updateTx(partial: Partial<IScheduledForUser>) {
   const { tx }: ITxEditStoreState = useTxEditStore.getState();
 
   const oldDecimals = tx?.conditionAssetDecimals || 18;
-  const newDecimals = partial.conditionAssetDecimals || 18;
+  const newDecimals = partial.conditionAssetDecimals || tx?.conditionAssetDecimals || 18;
 
   if (newDecimals !== oldDecimals) {
     const newAmount = convertDecimals(
