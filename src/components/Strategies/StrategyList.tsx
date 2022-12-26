@@ -53,18 +53,20 @@ function StrategyList() {
   return (
     <Container>
       <Row gutter={[24, { xs: 8, sm: 16, md: 24, lg: 32 }]}>
-        {strategies.map((strategy) => (
-          <Col span={24} md={12} lg={8} key={strategy.id}>
-            <div onClick={() => strategyClick(strategy)}>
-              <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
-                <Meta title={strategy.title} description={strategy.subtitle} />
-                <Text type="danger" strong className="comingSoonText" id={String(strategy.id)}>
-                  COMING SOON!
-                </Text>
-              </Card>
-            </div>
-          </Col>
-        ))}
+        {strategies
+          .filter((s) => !s.hidden)
+          .map((strategy) => (
+            <Col span={24} md={12} lg={8} key={strategy.id}>
+              <div onClick={() => strategyClick(strategy)}>
+                <Card hoverable cover={<img alt={strategy.title} src={strategy.imageSrc} />}>
+                  <Meta title={strategy.title} description={strategy.subtitle} />
+                  <Text type="danger" strong className="comingSoonText" id={String(strategy.id)}>
+                    COMING SOON!
+                  </Text>
+                </Card>
+              </div>
+            </Col>
+          ))}
         <Col span={24} md={12} lg={8}>
           <Create>
             <PopupButton id="qL2sZQN7" className="typeformButton" autoClose={2000}>

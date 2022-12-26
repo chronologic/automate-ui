@@ -227,6 +227,7 @@ function buildPrepTxs({
         timeConditionTZ: repetition.tz,
       });
 
+      // TODO: use new 'fallbacks' prop here
       const { requiresFallback } = blockConfig[block];
 
       if (requiresFallback) {

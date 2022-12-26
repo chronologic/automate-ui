@@ -1,9 +1,10 @@
 import { ChainId, StrategyBlock } from '../../constants';
 import { AssetType, IStrategy } from '../../types';
+import { getTx as getVerseClaimTx } from './Blocks/Ethereum_Verse_Claim';
+import { getTx as getBridgeworldClaimTx } from './Blocks/Arbitrum_Bridgeworld_Claim';
 
 export const strategies: IStrategy[] = [
   {
-    id: 1,
     url: 'bridgeworld-claim',
     comingSoon: false,
     imageSrc: './img/atlas-mine.jpg',
@@ -15,7 +16,6 @@ export const strategies: IStrategy[] = [
     blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim],
   },
   {
-    id: 2,
     url: 'bridgeworld-claim-and-send',
     comingSoon: false,
     imageSrc: './img/atlas-mine2.jpg',
@@ -25,9 +25,11 @@ export const strategies: IStrategy[] = [
     chainId: ChainId.arbitrum,
     description: `Use this strategy when you want to periodically claim $MAGIC earned in the Atlas Mine and then immediately send some $MAGIC to a different address.`,
     blocks: [StrategyBlock.Arbitrum_Bridgeworld_Claim, StrategyBlock.Arbitrum_Magic_Send],
+    fallbacks: {
+      [StrategyBlock.Arbitrum_Magic_Send]: getBridgeworldClaimTx,
+    },
   },
   {
-    id: 7,
     url: '',
     comingSoon: true,
     title: 'Send Legions Questing',
@@ -39,7 +41,6 @@ export const strategies: IStrategy[] = [
     blocks: [],
   },
   {
-    id: 3,
     url: 'magic-dragon-dao-claim',
     comingSoon: false,
     imageSrc: './img/magic-dragon.jpg',
@@ -51,7 +52,6 @@ export const strategies: IStrategy[] = [
     blocks: [StrategyBlock.Arbitrum_MagicDragon_Claim],
   },
   {
-    id: 5,
     url: '',
     comingSoon: true,
     title: 'Claim Rewards',
@@ -63,7 +63,6 @@ export const strategies: IStrategy[] = [
     blocks: [],
   },
   {
-    id: 6,
     url: '',
     comingSoon: true,
     title: 'Go on Quests',
@@ -75,7 +74,6 @@ export const strategies: IStrategy[] = [
     blocks: [],
   },
   {
-    id: 4,
     url: '',
     comingSoon: true,
     title: 'Claim Rewards',
@@ -86,4 +84,24 @@ export const strategies: IStrategy[] = [
     description: ``,
     blocks: [],
   },
-];
+  /// hidden blocks
+  {
+    url: 'verse-claim-and-send',
+    comingSoon: false,
+    imageSrc: './img/verse.jpg',
+    title: 'Claim and Send $VERSE',
+    subtitle: 'Verse',
+    assetType: AssetType.Ethereum,
+    chainId: ChainId.ethereum,
+    description: `Use this strategy when you want to periodically claim and send vested $VERSE.`,
+    blocks: [StrategyBlock.Ethereum_Verse_Claim, StrategyBlock.Ethereum_Verse_Send],
+    fallbacks: {
+      [StrategyBlock.Ethereum_Verse_Send]: getVerseClaimTx,
+    },
+    hidden: true,
+  },
+].map((row, i) => ({ ...row, id: i }));
+
+export function getStrategyByUrl(url: string): IStrategy {
+  return strategies.find((s) => s.url === url)!;
+}

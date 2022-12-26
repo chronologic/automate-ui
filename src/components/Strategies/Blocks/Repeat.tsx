@@ -5,27 +5,22 @@ import styled from 'styled-components';
 import moment, { Moment } from 'moment-timezone';
 
 import { IStrategyRepetition, IThemeProps } from '../../../types';
-import { RepeatFrequency } from '../../../constants';
+import { RepeatFrequencyUnit } from '../../../constants';
 import { useStrategyStore } from '../../../hooks';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const defaultFrequencyHours = 6;
-
 function Repeat() {
   const setRepetitions = useStrategyStore((state) => state.setRepetitions);
   const [repeatRange, setRepeatRange] = useState<[Moment, Moment]>([] as any);
   const [startTime, setStartTime] = useState<Moment>();
-  const [repeatFrequency, setRepeatFrequency] = useState(RepeatFrequency.Daily);
-  const [frequencyHours, setFrequencyHours] = useState(defaultFrequencyHours);
+  const [repeatFrequencyUnit, setRepeatFrequencyUnit] = useState(RepeatFrequencyUnit.Daily);
+  const [repeatEvery, setRepeatEvery] = useState(1);
 
-  const handleSetRepeatFrequency = useCallback((freq) => {
-    if (freq !== RepeatFrequency.Hourly) {
-      setFrequencyHours(defaultFrequencyHours);
-    }
-    setRepeatFrequency(freq);
+  const handleSetRepeatFrequencyUnit = useCallback((freq) => {
+    setRepeatFrequencyUnit(freq);
   }, []);
 
   useEffect(() => {
@@ -38,12 +33,12 @@ function Repeat() {
       const fromDateTime = copyTime(from, startTime);
       const toDateTime = copyTime(to, startTime);
 
-      const repetitions = calculateRepetitions(fromDateTime, toDateTime, repeatFrequency, frequencyHours);
+      const repetitions = calculateRepetitions(fromDateTime, toDateTime, repeatFrequencyUnit, repeatEvery);
       setRepetitions(repetitions);
     } catch (e) {
       console.error(e);
     }
-  }, [repeatRange, repeatFrequency, setRepetitions, startTime, frequencyHours]);
+  }, [repeatRange, repeatFrequencyUnit, setRepetitions, startTime, repeatEvery]);
 
   return (
     <Container>
@@ -82,39 +77,39 @@ function Repeat() {
           <Col span={16}>
             <Form.Item
               name="repeatFrequency"
-              initialValue={RepeatFrequency.Daily}
+              initialValue={RepeatFrequencyUnit.Daily}
               rules={[{ required: true, message: 'Frequency is required' }]}
             >
-              <Radio.Group size="large" onChange={(e) => handleSetRepeatFrequency(e.target.value)}>
-                <Radio.Button value={RepeatFrequency.Hourly}>Hourly</Radio.Button>
-                <Radio.Button value={RepeatFrequency.Daily}>Daily</Radio.Button>
-                <Radio.Button value={RepeatFrequency.Weekly}>Weekly</Radio.Button>
-                <Radio.Button value={RepeatFrequency.Monthly}>Monthly</Radio.Button>
+              <Radio.Group size="large" onChange={(e) => handleSetRepeatFrequencyUnit(e.target.value)}>
+                <Radio.Button value={RepeatFrequencyUnit.Hourly}>Hourly</Radio.Button>
+                <Radio.Button value={RepeatFrequencyUnit.Daily}>Daily</Radio.Button>
+                <Radio.Button value={RepeatFrequencyUnit.Weekly}>Weekly</Radio.Button>
+                <Radio.Button value={RepeatFrequencyUnit.Monthly}>Monthly</Radio.Button>
               </Radio.Group>
             </Form.Item>
           </Col>
-
-          {repeatFrequency === RepeatFrequency.Hourly && (
-            <Col span={8} className="frequencyHours">
-              <Text>Repeat every </Text>
-              <Form.Item
-                name="frequencyHours"
-                initialValue={defaultFrequencyHours}
-                rules={[{ required: true, message: 'Hourly frequency is required' }]}
-              >
-                <InputNumber
-                  className="frequencyHoursInput"
-                  size="large"
-                  value={frequencyHours}
-                  min={1}
-                  max={23}
-                  step={1}
-                  onChange={(value) => setFrequencyHours(value)}
-                />{' '}
-              </Form.Item>
-              <Text>hour{frequencyHours > 1 && 's'}</Text>
-            </Col>
-          )}
+          <Col span={8} className="repeatEvery">
+            <Text>Repeat every </Text>
+            <Form.Item
+              name="repeatEvery"
+              initialValue={1}
+              rules={[{ required: true, message: 'This field is required' }]}
+            >
+              <InputNumber
+                className="repeatEveryInput"
+                size="large"
+                value={repeatEvery}
+                min={1}
+                max={99}
+                step={1}
+                onChange={(value) => setRepeatEvery(value)}
+              />{' '}
+            </Form.Item>
+            <Text>
+              {repeatFrequencyUnit}
+              {repeatEvery > 1 && 's'}
+            </Text>
+          </Col>
         </Row>
       </BaseBlock>
     </Container>
@@ -138,12 +133,11 @@ function copyTime(date: Moment, time: Moment): Moment {
 function calculateRepetitions(
   from: Moment,
   to: Moment,
-  repeatFrequency: RepeatFrequency,
-  frequencyHours: number
+  repeatFrequencyUnit: RepeatFrequencyUnit,
+  repeatEvery: number
 ): IStrategyRepetition[] {
   const repetitions: IStrategyRepetition[] = [];
   const tz = moment.tz.guess();
-  const step = repeatFrequency === RepeatFrequency.Hourly ? frequencyHours : 1;
 
   let currentDateTime = from;
   while (currentDateTime.isSameOrBefore(to)) {
@@ -151,7 +145,7 @@ function calculateRepetitions(
       time: currentDateTime.toDate().getTime(),
       tz,
     });
-    currentDateTime = currentDateTime.add(step, repeatFrequency);
+    currentDateTime = currentDateTime.add(repeatEvery, repeatFrequencyUnit);
   }
 
   return repetitions;
@@ -182,12 +176,12 @@ const Container = styled.div`
     width: 100%;
   }
 
-  .frequencyHoursInput {
+  .repeatEveryInput {
     width: 60px;
     margin: 0 10px;
   }
 
-  .frequencyHours {
+  .repeatEvery {
     display: flex;
   }
 `;

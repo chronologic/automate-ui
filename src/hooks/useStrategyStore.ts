@@ -1,11 +1,13 @@
 import create from 'zustand';
 
 import { ChainId, StrategyBlock } from '../constants';
-import { IStrategyBlockTx, IStrategyRepetition, StrategyBlockTxs } from '../types';
+import { IStrategyBlockTxWithFallback, IStrategyRepetition, StrategyBlockTxs } from '../types';
 
 interface IStrategyStore {
+  strategyName: string;
+  setStrategyName: (strategyName: string) => void;
   txs: StrategyBlockTxs;
-  setTx: (key: StrategyBlock, tx: IStrategyBlockTx) => void;
+  setTx: (key: StrategyBlock, tx: IStrategyBlockTxWithFallback) => void;
   repetitions: IStrategyRepetition[];
   setRepetitions: (repetitions: IStrategyRepetition[]) => void;
   chainId: ChainId | null;
@@ -13,6 +15,8 @@ interface IStrategyStore {
 }
 
 export const useStrategyStore = create<IStrategyStore>((set) => ({
+  strategyName: '',
+  setStrategyName: (strategyName: string) => set((state) => ({ strategyName })),
   txs: {} as any,
   setTx: (key, tx) => set((state) => ({ txs: { ...state.txs, [key]: tx } })),
   repetitions: [],

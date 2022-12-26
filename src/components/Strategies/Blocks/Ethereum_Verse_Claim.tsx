@@ -4,34 +4,33 @@ import { GiftOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Web3 from 'web3';
 
-import AtlasMineABI from '../../../abi/AtlasMine.json';
+import VerseClaimerABI from '../../../abi/VerseClaimer.json';
 import { IStrategyBlockTx } from '../../../types';
 import { StrategyBlock } from '../../../constants';
-import { useAutomateConnection, useStrategyStore } from '../../../hooks';
+import { useStrategyStore } from '../../../hooks';
 import BaseBlock from './BaseBlock';
 
 const { Title, Text } = Typography;
 
-const ATLAS_MINE_ADDRESS = '0xA0A89db1C899c49F98E6326b764BAFcf167fC2CE';
+const VERSE_CLAIMER_ADDRESS = '0xE5aC5142BdE69cfA722662D9C3E4C8111f60B8d5';
 
 const web3 = new Web3();
-const callData = new web3.eth.Contract(AtlasMineABI as any).methods.harvestAll().encodeABI();
+const callData = new web3.eth.Contract(VerseClaimerABI as any).methods.scrapeMyTokens().encodeABI();
 
 const tx: IStrategyBlockTx = {
-  to: ATLAS_MINE_ADDRESS,
+  to: VERSE_CLAIMER_ADDRESS,
   data: callData,
 };
 
-export function getTx() {
+export function getTx(): IStrategyBlockTx {
   return tx;
 }
 
-function Arbitrum_Bridgeworld_Claim() {
+function Ethereum_Verse_Claim() {
   const setTx = useStrategyStore((state) => state.setTx);
-  const { account } = useAutomateConnection();
 
   useEffect(() => {
-    setTx(StrategyBlock.Arbitrum_Bridgeworld_Claim, tx);
+    setTx(StrategyBlock.Ethereum_Verse_Claim, tx);
   }, [setTx]);
 
   return (
@@ -46,26 +45,20 @@ function Arbitrum_Bridgeworld_Claim() {
       >
         <Row gutter={12}>
           <Col span={6}>
-            <img alt="example" src="../img/atlas-mine.jpg" height="72px" />
+            <img alt="Verse" src="/img/verse.png" height="72px" />
           </Col>
           <Col>
             <div>
               <Title className="secondary" level={5}>
-                Bridgeworld (Atlas Mine)
-              </Title>
-              <Text type="secondary">
-                Wondering how much you will be claiming?
-                <br />
-                Check out{' '}
+                Claim from{' '}
                 <a
-                  href={`https://treasure-canary.vercel.app/${account ? `?address=${account}` : ''}`}
+                  href="https://etherscan.io/address/0xE5aC5142BdE69cfA722662D9C3E4C8111f60B8d5"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  this tool
-                </a>{' '}
-                for an estimate!
-              </Text>
+                  VerseClaimer
+                </a>
+              </Title>
             </div>
           </Col>
         </Row>
@@ -76,4 +69,4 @@ function Arbitrum_Bridgeworld_Claim() {
 
 const Container = styled.div``;
 
-export default Arbitrum_Bridgeworld_Claim;
+export default Ethereum_Verse_Claim;

@@ -46,9 +46,11 @@ export enum StrategyBlock {
   Arbitrum_Bridgeworld_Claim = 'arbitrum:bridgeworld:claim',
   Arbitrum_Magic_Send = 'arbitrum:magic:send',
   Arbitrum_MagicDragon_Claim = 'arbitrum:magicdragon:claim',
+  Ethereum_Verse_Claim = 'ethereum:verse:claim',
+  Ethereum_Verse_Send = 'ethereum:verse:send',
 }
 
-export enum RepeatFrequency {
+export enum RepeatFrequencyUnit {
   Hourly = 'hour',
   Daily = 'day',
   Weekly = 'week',

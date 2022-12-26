@@ -1,50 +1,55 @@
 import { useEffect, useState } from 'react';
-import { Col, Row, Typography, Input, Form } from 'antd';
+import { Col, Row, Typography, Input, Form, Checkbox } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import Web3 from 'web3';
 
 import ERC20ABI from '../../../abi/ERC20.json';
 import { useAutomateConnection, useStrategyStore } from '../../../hooks';
+import { IStrategyBlockTxWithFallback } from '../../../types';
 import { ethereum, StrategyBlock } from '../../../constants';
 import { ethereumAddressValidator, retryRpcCallOnIntermittentError } from '../../../utils';
-import { MAGIC_ADDRESS, MAGIC_DECIMAL_UNIT } from '../../../constants';
-import { IStrategyBlockTxWithFallback } from '../../../types';
 import { getStrategyByUrl } from '../strategyData';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
 const web3 = new Web3(ethereum as any);
 
-const magicContract = new web3.eth.Contract(ERC20ABI as any, MAGIC_ADDRESS);
+const verseAddress = '0x249cA82617eC3DfB2589c4c17ab7EC9765350a18';
+const verseContract = new web3.eth.Contract(ERC20ABI as any, verseAddress);
+const verseDecimalUnit = 'ether';
 
-function Arbitrum_Magic_Send() {
+function Ethereum_Verse_Send() {
   const strategyName = useStrategyStore((state) => state.strategyName);
-  const strategyChainId = useStrategyStore((state) => state.chainId);
   const setTx = useStrategyStore((state) => state.setTx);
+  const strategyChainId = useStrategyStore((state) => state.chainId);
   const { account, chainId } = useAutomateConnection();
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
+  const [withFallback, setWithFallback] = useState(true);
   const isCorrectChain = chainId === strategyChainId;
 
   useEffect(() => {
     try {
-      const amountWei = web3.utils.toWei(amount, MAGIC_DECIMAL_UNIT);
-      const callData = magicContract.methods.transfer(address, amountWei).encodeABI();
+      const amountWei = web3.utils.toWei(amount, verseDecimalUnit);
+      const callData = verseContract.methods.transfer(address, amountWei).encodeABI();
 
       const tx: IStrategyBlockTxWithFallback = {
-        to: MAGIC_ADDRESS,
+        to: verseAddress,
         data: callData,
         amount: amountWei,
-        asset: MAGIC_ADDRESS,
-        fallback: getStrategyByUrl(strategyName).fallbacks![StrategyBlock.Ethereum_Verse_Send]!(),
+        asset: verseAddress,
       };
 
-      setTx(StrategyBlock.Arbitrum_Magic_Send, tx);
+      if (withFallback) {
+        tx.fallback = getStrategyByUrl(strategyName).fallbacks![StrategyBlock.Ethereum_Verse_Send]!();
+      }
+
+      setTx(StrategyBlock.Ethereum_Verse_Send, tx);
     } catch (e) {
       console.error(e);
     }
-  }, [address, amount, setTx, strategyName]);
+  }, [address, amount, withFallback, setTx, strategyName]);
 
   return (
     <Container>
@@ -52,14 +57,14 @@ function Arbitrum_Magic_Send() {
         title={
           <>
             <ExportOutlined />
-            <Text className="cardTitle">Send $MAGIC</Text>
+            <Text className="cardTitle">Send $VERSE</Text>
           </>
         }
       >
         <Row gutter={24}>
           <Col span={16}>
             <Form.Item
-              name={`${StrategyBlock.Arbitrum_Magic_Send}_to`}
+              name={`${StrategyBlock.Ethereum_Verse_Send}_to`}
               validateFirst
               rules={[
                 { required: true, message: 'Recipient address is required' },
@@ -71,7 +76,7 @@ function Arbitrum_Magic_Send() {
           </Col>
           <Col span={8}>
             <Form.Item
-              name={`${StrategyBlock.Arbitrum_Magic_Send}_amount`}
+              name={`${StrategyBlock.Ethereum_Verse_Send}_amount`}
               validateFirst
               rules={[
                 { required: true, message: 'Amount is required' },
@@ -82,6 +87,18 @@ function Arbitrum_Magic_Send() {
               ]}
             >
               <Input size="large" placeholder="Amount" onChange={(e) => setAmount(e.target.value)} />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={24}>
+          <Col span={24}>
+            <Form.Item
+              name={`${StrategyBlock.Ethereum_Verse_Send}_withFallback`}
+              label="Fallback"
+              tooltip="Enabling this option will generate a fallback Claim tx for every Send. The fallback tx will be executed if there's not enough $VERSE tokens in your wallet"
+              colon={false}
+            >
+              <Checkbox checked={withFallback} onChange={(e) => setWithFallback(!withFallback)} />
             </Form.Item>
           </Col>
         </Row>
@@ -100,15 +117,15 @@ async function tokenBalanceValidator(account?: string, amount?: number): Promise
   }
 
   const balanceWei = await retryRpcCallOnIntermittentError<string>(async () =>
-    magicContract.methods.balanceOf(account).call()
+    verseContract.methods.balanceOf(account).call()
   );
-  const balanceEth = Number(web3.utils.fromWei(balanceWei, MAGIC_DECIMAL_UNIT));
+  const balanceEth = Number(web3.utils.fromWei(balanceWei, verseDecimalUnit));
 
   if (balanceEth < amount) {
-    throw new Error(`You need at least ${amount} $MAGIC in your wallet to be able to Automate`);
+    throw new Error(`You need at least ${amount} $VERSE in your wallet to be able to Automate`);
   }
 }
 
 const Container = styled.div``;
 
-export default Arbitrum_Magic_Send;
+export default Ethereum_Verse_Send;

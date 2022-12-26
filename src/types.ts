@@ -172,6 +172,12 @@ export interface IStrategy {
   imageSrc: string;
   comingSoon: boolean;
   blocks: StrategyBlock[];
+  fallbacks?: { [key in StrategyBlock]?: () => IStrategyBlockTx };
+  hidden?: boolean;
+}
+
+export interface IStrategyBlockTxWithFallback extends IStrategyBlockTx {
+  fallback?: IStrategyBlockTx;
 }
 
 export interface IStrategyBlockTx {
