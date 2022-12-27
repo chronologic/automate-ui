@@ -6,10 +6,8 @@ import Web3 from 'web3';
 
 import ERC20ABI from '../../../abi/ERC20.json';
 import { useAutomateConnection, useStrategyStore } from '../../../hooks';
-import { IStrategyBlockTxWithFallback } from '../../../types';
 import { ethereum, StrategyBlock } from '../../../constants';
 import { ethereumAddressValidator, retryRpcCallOnIntermittentError } from '../../../utils';
-import { getStrategyByUrl } from '../strategyData';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
@@ -20,7 +18,6 @@ const verseContract = new web3.eth.Contract(ERC20ABI as any, verseAddress);
 const verseDecimalUnit = 'ether';
 
 function Ethereum_Verse_Send() {
-  const strategyName = useStrategyStore((state) => state.strategyName);
   const setTx = useStrategyStore((state) => state.setTx);
   const strategyChainId = useStrategyStore((state) => state.chainId);
   const { account, chainId } = useAutomateConnection();
@@ -34,22 +31,17 @@ function Ethereum_Verse_Send() {
       const amountWei = web3.utils.toWei(amount, verseDecimalUnit);
       const callData = verseContract.methods.transfer(address, amountWei).encodeABI();
 
-      const tx: IStrategyBlockTxWithFallback = {
+      setTx(StrategyBlock.Ethereum_Verse_Send, {
         to: verseAddress,
         data: callData,
         amount: amountWei,
         asset: verseAddress,
-      };
-
-      if (withFallback) {
-        tx.fallback = getStrategyByUrl(strategyName).fallbacks![StrategyBlock.Ethereum_Verse_Send]!();
-      }
-
-      setTx(StrategyBlock.Ethereum_Verse_Send, tx);
+        fallback: withFallback,
+      });
     } catch (e) {
       console.error(e);
     }
-  }, [address, amount, withFallback, setTx, strategyName]);
+  }, [address, amount, withFallback, setTx]);
 
   return (
     <Container>
@@ -95,7 +87,7 @@ function Ethereum_Verse_Send() {
             <Form.Item
               name={`${StrategyBlock.Ethereum_Verse_Send}_withFallback`}
               label="Fallback"
-              tooltip="Enabling this option will generate a fallback Claim tx for every Send. The fallback tx will be executed if there's not enough $VERSE tokens in your wallet"
+              tooltip="Enabling this option will generate a fallback Claim tx for every Send. The fallback tx will be executed if there's not enough $VERSE tokens in your wallet. Without the fallback, the strategy is more likely to get stuck but requires you to sign more transactions."
               colon={false}
             >
               <Checkbox checked={withFallback} onChange={(e) => setWithFallback(!withFallback)} />

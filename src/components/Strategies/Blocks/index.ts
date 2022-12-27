@@ -10,17 +10,16 @@ export { default as SigningPopup } from '../SigningPopup';
 
 interface IBlockConfig {
   component: () => JSX.Element;
-  requiresFallback: boolean;
 }
 
 const blockConfig: {
   [key in StrategyBlock]: IBlockConfig;
 } = {
-  'arbitrum:bridgeworld:claim': { component: Arbitrum_Bridgeworld_Claim, requiresFallback: false },
-  'arbitrum:magic:send': { component: Arbitrum_Magic_Send, requiresFallback: true },
-  'arbitrum:magicdragon:claim': { component: Arbitrum_MagicDragon_Claim, requiresFallback: false },
-  'ethereum:verse:claim': { component: Ethereum_Verse_Claim, requiresFallback: false },
-  'ethereum:verse:send': { component: Ethereum_Verse_Send, requiresFallback: false },
+  'arbitrum:bridgeworld:claim': { component: Arbitrum_Bridgeworld_Claim },
+  'arbitrum:magic:send': { component: Arbitrum_Magic_Send },
+  'arbitrum:magicdragon:claim': { component: Arbitrum_MagicDragon_Claim },
+  'ethereum:verse:claim': { component: Ethereum_Verse_Claim },
+  'ethereum:verse:send': { component: Ethereum_Verse_Send },
 };
 
 export { blockConfig };

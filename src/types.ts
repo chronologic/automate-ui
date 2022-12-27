@@ -176,15 +176,12 @@ export interface IStrategy {
   hidden?: boolean;
 }
 
-export interface IStrategyBlockTxWithFallback extends IStrategyBlockTx {
-  fallback?: IStrategyBlockTx;
-}
-
 export interface IStrategyBlockTx {
   to: string;
   data: string;
   asset?: string;
   amount?: string;
+  fallback?: boolean;
 }
 
 export interface IStrategyPrepTx {

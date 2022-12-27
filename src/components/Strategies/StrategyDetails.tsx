@@ -18,7 +18,7 @@ import {
 import { useStrategyApi, useStrategyStore, useAutomateConnection } from '../../hooks';
 import { ChainId, ethereum, Network } from '../../constants';
 import { retryRpcCallOnIntermittentError } from '../../utils';
-import { strategies } from './strategyData';
+import { getFallback, strategies } from './strategyData';
 import { blockConfig, Repeat } from './Blocks';
 import SigningPopup from './SigningPopup';
 
@@ -227,32 +227,27 @@ function buildPrepTxs({
         timeConditionTZ: repetition.tz,
       });
 
-      // TODO: use new 'fallbacks' prop here
-      const { requiresFallback } = blockConfig[block];
+      const fallbackTx = tx.fallback ? getFallback(strategy.url, block) : undefined;
 
-      if (requiresFallback) {
-        const otherBlocks = strategy.blocks.filter((b) => b !== block);
-
-        for (const otherBlock of otherBlocks) {
-          const otherTx = txs[otherBlock];
-          priority += 1;
-          prepTxs.push({
-            assetType: strategy.assetType,
-            chainId: strategy.chainId,
-            from,
-            to: otherTx.to,
-            data: otherTx.data,
-            order: order++,
-            iteration,
-            position: position++,
-            priority,
-            conditionAsset: otherTx.asset,
-            conditionAmount: otherTx.amount,
-            timeCondition: repetition.time,
-            timeConditionTZ: repetition.tz,
-          });
-        }
+      if (fallbackTx) {
+        priority += 1;
+        prepTxs.push({
+          assetType: strategy.assetType,
+          chainId: strategy.chainId,
+          from,
+          to: fallbackTx.to,
+          data: fallbackTx.data,
+          order: order++,
+          iteration,
+          position: position++,
+          priority,
+          conditionAsset: fallbackTx.asset,
+          conditionAmount: fallbackTx.amount,
+          timeCondition: repetition.time,
+          timeConditionTZ: repetition.tz,
+        });
       }
+
       prepTxs[prepTxs.length - 1].isLastForNonce = true;
     }
     iteration++;

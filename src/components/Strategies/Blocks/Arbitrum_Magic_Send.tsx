@@ -9,8 +9,6 @@ import { useAutomateConnection, useStrategyStore } from '../../../hooks';
 import { ethereum, StrategyBlock } from '../../../constants';
 import { ethereumAddressValidator, retryRpcCallOnIntermittentError } from '../../../utils';
 import { MAGIC_ADDRESS, MAGIC_DECIMAL_UNIT } from '../../../constants';
-import { IStrategyBlockTxWithFallback } from '../../../types';
-import { getStrategyByUrl } from '../strategyData';
 import BaseBlock from './BaseBlock';
 
 const { Text } = Typography;
@@ -19,7 +17,6 @@ const web3 = new Web3(ethereum as any);
 const magicContract = new web3.eth.Contract(ERC20ABI as any, MAGIC_ADDRESS);
 
 function Arbitrum_Magic_Send() {
-  const strategyName = useStrategyStore((state) => state.strategyName);
   const strategyChainId = useStrategyStore((state) => state.chainId);
   const setTx = useStrategyStore((state) => state.setTx);
   const { account, chainId } = useAutomateConnection();
@@ -32,19 +29,17 @@ function Arbitrum_Magic_Send() {
       const amountWei = web3.utils.toWei(amount, MAGIC_DECIMAL_UNIT);
       const callData = magicContract.methods.transfer(address, amountWei).encodeABI();
 
-      const tx: IStrategyBlockTxWithFallback = {
+      setTx(StrategyBlock.Arbitrum_Magic_Send, {
         to: MAGIC_ADDRESS,
         data: callData,
         amount: amountWei,
         asset: MAGIC_ADDRESS,
-        fallback: getStrategyByUrl(strategyName).fallbacks![StrategyBlock.Ethereum_Verse_Send]!(),
-      };
-
-      setTx(StrategyBlock.Arbitrum_Magic_Send, tx);
+        fallback: true,
+      });
     } catch (e) {
       console.error(e);
     }
-  }, [address, amount, setTx, strategyName]);
+  }, [address, amount, setTx]);
 
   return (
     <Container>

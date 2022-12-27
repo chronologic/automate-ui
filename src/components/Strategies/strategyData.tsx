@@ -1,5 +1,5 @@
 import { ChainId, StrategyBlock } from '../../constants';
-import { AssetType, IStrategy } from '../../types';
+import { AssetType, IStrategy, IStrategyBlockTx } from '../../types';
 import { getTx as getVerseClaimTx } from './Blocks/Ethereum_Verse_Claim';
 import { getTx as getBridgeworldClaimTx } from './Blocks/Arbitrum_Bridgeworld_Claim';
 
@@ -104,4 +104,13 @@ export const strategies: IStrategy[] = [
 
 export function getStrategyByUrl(url: string): IStrategy {
   return strategies.find((s) => s.url === url)!;
+}
+
+export function getFallback(stragegyUrl: string, blockName: StrategyBlock): IStrategyBlockTx | undefined {
+  const strategy = getStrategyByUrl(stragegyUrl);
+  const fallbacks = strategy.fallbacks;
+  if (!fallbacks) return;
+  if (!fallbacks[blockName]) return;
+
+  return fallbacks[blockName]!();
 }
