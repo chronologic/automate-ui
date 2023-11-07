@@ -163,6 +163,9 @@ export function getProvider(chainId: ChainId): ethers.providers.BaseProvider {
     case ChainId.arbitrum: {
       return new ethers.providers.JsonRpcProvider('https://arb1.arbitrum.io/rpc');
     }
+    case ChainId.ethereum: {
+      return new ethers.providers.JsonRpcProvider('https://cloudflare-eth.com/');
+    }
   }
 
   return ethers.getDefaultProvider(ethers.providers.getNetwork(chainId));
