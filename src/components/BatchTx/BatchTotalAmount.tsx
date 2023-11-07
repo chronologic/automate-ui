@@ -28,13 +28,22 @@ function BatchTotalAmount() {
 
   return (
     <Container>
-      <Typography.Title level={4}>
-        Total Amount: {utils.formatUnits(totalAmount, decimals)} {assetType}
+      <Typography.Title level={4} className="title">
+        Total{' '}
+        <b>
+          {utils.formatUnits(totalAmount, decimals)} {assetType}
+        </b>{' '}
+        in <b>{parsedTxs.length}</b> txs
       </Typography.Title>
     </Container>
   );
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  .title {
+    font-weight: normal;
+    text-align: left;
+  }
+`;
 
 export default BatchTotalAmount;

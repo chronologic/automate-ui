@@ -10,17 +10,27 @@ function BatchPreview() {
   const { parsedTxs } = useBatchParser();
 
   const tableColumns = useMemo(() => {
-    return selectedColumns.map((col) => ({
+    const dynamicCols = selectedColumns.map((col) => ({
       title: col.label,
       key: col.name,
       dataIndex: col.name,
       render: (field: IParsedColumn) => <span>{field?.formattedValue}</span>,
     }));
+    const allCols = [
+      {
+        title: 'ID',
+        key: 'id',
+        dataIndex: 'id',
+      },
+      ...dynamicCols,
+    ];
+    return allCols;
   }, [selectedColumns]);
 
   const rowsWithKey = useMemo(() => {
     return parsedTxs.map((row, index) => ({
       key: index,
+      id: index + 1,
       ...row,
     }));
   }, [parsedTxs]);

@@ -30,6 +30,7 @@ interface IBatchDelimiterConfig {
   name: BatchDelimiter;
   label: string;
   symbol: string;
+  fileType: string;
 }
 
 const batchNetworks: {
@@ -92,11 +93,13 @@ const batchDelimiters: {
     name: 'tab',
     label: 'Tab',
     symbol: '\t',
+    fileType: 'TSV',
   },
   comma: {
     name: 'comma',
     label: 'Comma',
     symbol: ',',
+    fileType: 'CSV',
   },
 };
 

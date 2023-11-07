@@ -44,7 +44,14 @@ const useBatchParser = (): IBatchParserHook => {
   const state = useBatchParserStore();
   const { columns, selectedColumns, selectedDelimiter, selectedAsset, isValidConfig } = useBatchConfig();
 
-  const setRawInput = useCallback((rawInput: string) => useBatchParserStore.setState({ rawInput }), []);
+  const setRawInput = useCallback((input: string) => {
+    const rawInput = input
+      .split('\n')
+      .map((row) => row.trim())
+      .filter(Boolean)
+      .join('\n');
+    useBatchParserStore.setState({ rawInput });
+  }, []);
 
   useEffect(() => {
     if (!isValidConfig || !state.rawInput) {
