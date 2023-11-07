@@ -47,7 +47,12 @@ const useBatchParser = (): IBatchParserHook => {
   const setRawInput = useCallback((input: string) => {
     const rawInput = input
       .split('\n')
-      .map((row) => row.trim())
+      .map((row) =>
+        row
+          .split('\t')
+          .map((col) => col.trim())
+          .join('\t')
+      )
       .filter(Boolean)
       .join('\n');
     useBatchParserStore.setState({ rawInput });
